@@ -8,7 +8,6 @@ import { StatusBadge } from "./StatusBadge";
 import { IconPencil, IconTextPlus } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useLogMeetingModal } from "@/context/LogMeetingModalContext";
 import { useRef, useState } from "react";
 import { MeetingLogListRef } from "@/types/meeting";
 import { LogMeetingModalGlobal } from "./LogMeetingModalGlobal";
@@ -22,15 +21,9 @@ export function ContactCard({
 }) {
   const [logOpen, setLogOpen] = useState(false);
   const logListRef = useRef<MeetingLogListRef | null>(null);
+  const { setEditOpen, setSelectedContact } = useContactContext();
 
   const router = useRouter();
-  const {
-    setSelectedContact,
-    setEditOpen,
-    // setLogOpen,
-    setContactId,
-    setLogContactData,
-  } = useContactContext();
 
   const {
     email,
@@ -64,22 +57,18 @@ export function ContactCard({
         <div className="cursor-pointer flex-grow">
           <CardContent className="p-4 flex flex-col gap-2">
             <div className="font-bold uppercase text-md bg-gray-100 dark:bg-[#333] text-zinc-700 dark:text-gray-100 p-3 rounded">
-              {company ?? "-"}
+              {company || "-"}
             </div>
-
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Mail className="w-4 h-4" /> {email ?? "-"}
+              <Mail className="w-4 h-4" /> {email || "-"}
             </div>
-
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Phone className="w-4 h-4" /> {phone ?? "-"}
+              <Phone className="w-4 h-4" /> {phone || "-"}
             </div>
-
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="w-4 h-4" /> {address ?? "-"} {city ?? "-"},{" "}
-              {state ?? "-"} {zip ?? "-"}
+              <MapPin className="w-4 h-4" /> {address || "-"}, {city || "-"},{" "}
+              {state || "-"} {zip || "-"}
             </div>
-
             {showBadge && <StatusBadge status={l2_lead_status || "unknown"} />}
           </CardContent>
         </div>

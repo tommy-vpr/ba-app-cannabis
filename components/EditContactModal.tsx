@@ -1,50 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { fetchContactById } from "@/app/actions/fetchContactById";
-import { updateContactIfMatch } from "@/app/actions/updateContactByEmailandId";
-import { toast } from "react-hot-toast";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { useContactContext } from "@/context/ContactContext";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useBrand } from "@/context/BrandContext";
-import { useContactDetail } from "@/hooks/useContactDetail";
-import Spinner from "./Spinner";
-import { HubSpotContact } from "@/types/hubspot";
-import { useContactContext } from "@/context/ContactContext";
-import { useRouter } from "next/navigation";
-import { updateAndRevalidateZipPath } from "@/app/actions/updateContactAndRevalidate";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import Spinner from "@/components/Spinner";
+import { useEffect, useState } from "react";
+import { updateContact } from "@/app/actions/updateContact"; // make sure this is imported
 
-interface Props {
-  showDetails: boolean;
-  refetchContact?: () => Promise<void | HubSpotContact | undefined>;
-  mutateContact?: (data?: HubSpotContact, shouldRevalidate?: boolean) => void;
-}
-
-export function EditContactModal({ showDetails }: Props) {
+export function EditContactModal() {
   const {
-    selectedContact: contact,
-    setSelectedContact: setContact,
-    editOpen: open,
-    setEditOpen: setOpen,
+    selectedContact,
+    editOpen,
+    setEditOpen,
+    optimisticUpdate,
     fetchPage,
     page,
-    setContacts,
+    contactMutate,
   } = useContactContext();
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { brand } = useBrand();
-  const contactId = contact?.id;
-  const { refetchContactDetail, mutateContact } = useContactDetail(
-    contactId || ""
-  );
-
-  const router = useRouter();
 
   const [form, setForm] = useState({
     StoreName: "",
@@ -56,44 +34,33 @@ export function EditContactModal({ showDetails }: Props) {
     zip: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Prefill on contact change
   useEffect(() => {
-    if (!open || !contact?.id) return;
-
-    setForm({
-      StoreName: "",
-      email: "",
-      phone: "",
-      address: "",
-      city: "",
-      state: "",
-      zip: "",
-    });
-
-    fetchContactById(contact.id, brand).then((updated) => {
-      if (updated) {
-        setContact(updated);
-        setForm({
-          StoreName: updated.properties.company || "",
-          email: updated.properties.email || "",
-          phone: updated.properties.phone || "",
-          address: updated.properties.address || "",
-          city: updated.properties.city || "",
-          state: updated.properties.state || "",
-          zip: updated.properties.zip || "",
-        });
-      }
-    });
-  }, [open, contact?.id]);
+    if (selectedContact) {
+      setForm({
+        StoreName: selectedContact.properties.company ?? "",
+        email: selectedContact.properties.email ?? "",
+        phone: selectedContact.properties.phone ?? "",
+        address: selectedContact.properties.address ?? "",
+        city: selectedContact.properties.city ?? "",
+        state: selectedContact.properties.state ?? "",
+        zip: selectedContact.properties.zip ?? "",
+      });
+    }
+  }, [selectedContact]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async () => {
-    if (!contactId) return;
+    if (!selectedContact) return;
+
     setIsSubmitting(true);
 
-    const updatedFields = {
+    const updates = {
       company: form.StoreName,
       email: form.email,
       phone: form.phone,
@@ -103,45 +70,29 @@ export function EditContactModal({ showDetails }: Props) {
       zip: form.zip,
     };
 
-    const updatedContact: HubSpotContact = {
-      ...contact!,
-      properties: {
-        ...contact!.properties,
-        ...updatedFields,
-      },
-    };
+    try {
+      // Optimistically update
+      optimisticUpdate(selectedContact.id, updates);
 
-    // Optimistic UI
-    mutateContact?.(updatedContact, false);
-    setContacts((prev) =>
-      prev.map((c) => (c.id === contactId ? updatedContact : c))
-    );
+      // Await real server update
+      await updateContact(selectedContact.id, updates, "litto");
 
-    const result = await updateAndRevalidateZipPath(
-      contactId,
-      updatedFields,
-      brand,
-      form.zip
-    );
+      if (contactMutate) contactMutate();
 
-    setIsSubmitting(false);
+      fetchPage(page); // <-- Add this here
 
-    if (result.success) {
-      toast.success("Contact updated!");
-      await mutateContact?.();
-      // router.refresh(); // ✅ force UI refresh to reflect updated server data
-      setOpen(false);
-    } else {
-      toast.error(result.message || "Update failed.");
+      // Close modal
+      setEditOpen(false);
+    } catch (err) {
+      console.error("❌ Update failed:", err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent
-        autoFocus={false}
-        className="sm:max-w-lg w-full max-h-[85vh] overflow-y-auto"
-      >
+    <Dialog open={editOpen} onOpenChange={setEditOpen}>
+      <DialogContent className="sm:max-w-lg w-full max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Contact</DialogTitle>
         </DialogHeader>
@@ -162,18 +113,17 @@ export function EditContactModal({ showDetails }: Props) {
               />
             </div>
           ))}
-
           <Button
             onClick={handleSubmit}
-            disabled={isSubmitting}
             className="w-full mt-2"
+            disabled={isSubmitting}
           >
             {isSubmitting ? (
               <>
                 <Spinner size="4" /> Updating
               </>
             ) : (
-              "Save Contact"
+              "Update"
             )}
           </Button>
         </div>

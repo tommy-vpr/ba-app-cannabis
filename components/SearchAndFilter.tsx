@@ -1,82 +1,125 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { IconX } from "@tabler/icons-react";
-import { useEffect, useRef } from "react";
-import { useBrand } from "@/context/BrandContext";
+import { Search } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useContactContext } from "@/context/ContactContext";
-import { ZipcodeFilter } from "./ZipcodeFilter";
+import { useEffect, useRef, useState } from "react";
+import { StatusKey, statusList, statusLabels } from "@/types/status";
 
-type Props = {
-  showZipFilter?: boolean;
-};
-
-export default function SearchAndFilter({ showZipFilter = true }: Props) {
+export default function SearchAndFilter() {
   const {
-    query,
-    setQuery,
     selectedStatus,
     setSelectedStatus,
-    fetchPage,
-    selectedZip,
+    setQuery,
     setSelectedZip,
+    fetchPage,
+    statusCounts,
   } = useContactContext();
-  const { brand } = useBrand();
-  const lastBrand = useRef(brand);
 
-  const statuses = [
-    "all",
-    "pending visit",
-    "visit requested by rep",
-    "dropped off",
-  ];
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const statusStyles: Record<string, string> = {
+  const [localQuery, setLocalQuery] = useState("");
+  const [localZip, setLocalZip] = useState("");
+
+  // ✅ Load from URL on mount
+  useEffect(() => {
+    const urlQuery = searchParams.get("query") || "";
+    const urlStatus = (searchParams.get("status") as StatusKey) || "all";
+    const urlZip = searchParams.get("zip") || "";
+
+    setLocalQuery(urlQuery);
+    setLocalZip(urlZip);
+    setQuery(urlQuery);
+    setSelectedZip(urlZip || null);
+    setSelectedStatus(urlStatus);
+  }, []);
+
+  const updateSearchParams = (newParams: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const key in newParams) {
+      const value = newParams[key];
+      if (!value || value === "all") {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    }
+    params.set("page", "1");
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleSearch = () => {
+    setQuery(localQuery);
+    setSelectedZip(localZip || null);
+    updateSearchParams({
+      query: localQuery,
+      zip: localZip || null,
+      status: selectedStatus,
+    });
+    fetchPage(1, selectedStatus, localQuery, undefined, localZip || null);
+  };
+
+  const handleStatusClick = (status: StatusKey) => {
+    setSelectedStatus(status);
+    updateSearchParams({
+      status,
+      query: localQuery || null,
+      zip: localZip || null,
+    });
+    fetchPage(1, status, localQuery, undefined, localZip || null);
+  };
+
+  const handleClearStatus = () => {
+    setSelectedStatus("all");
+    updateSearchParams({
+      status: "all",
+      query: localQuery || null,
+      zip: localZip || null,
+    });
+    fetchPage(1, "all", localQuery, undefined, localZip || null);
+  };
+
+  const handleClearQuery = () => {
+    setLocalQuery("");
+    setQuery("");
+    updateSearchParams({
+      query: null,
+      zip: localZip || null,
+      status: selectedStatus,
+    });
+    fetchPage(1, selectedStatus, "", undefined, localZip || null);
+  };
+
+  const statusStyles: Record<StatusKey, string> = {
     all: `bg-transparent text-gray-700 dark:text-gray-300`,
     "pending visit": "bg-transparent text-orange-400",
     "visit requested by rep": "bg-transparent text-red-400",
     "dropped off": "bg-transparent text-green-400",
   };
 
-  const ringColors: Record<string, string> = {
+  const ringColors: Record<StatusKey, string> = {
     all: "ring-gray-400",
     "pending visit": "ring-orange-400",
     "visit requested by rep": "ring-red-400",
     "dropped off": "ring-green-400",
   };
 
-  const handleSearch = () => fetchPage(1, selectedStatus, query);
-
-  const handleClear = () => {
-    setQuery("");
-    setSelectedStatus("all");
-    setSelectedZip(null);
-    fetchPage(1, "all", "");
-  };
-
-  useEffect(() => {
-    if (lastBrand.current !== brand) {
-      handleClear();
-      lastBrand.current = brand;
-    }
-  }, [brand]);
-
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-col xl:flex-row xl:items-center gap-4 xl:gap-2 w-full md:justify-between">
         <div className="flex flex-wrap gap-2">
-          {statuses.map((status) => {
+          {statusList.map((status) => {
             const isActive = selectedStatus === status;
+            const count = statusCounts[status];
 
             return (
               <button
                 key={status}
-                onClick={() => {
-                  setSelectedStatus(status);
-                  // fetchPage(1, status, query);
-                  fetchPage(1, status, query, undefined, selectedZip);
-                }}
+                onClick={() => handleStatusClick(status)}
                 className={`px-3 py-1 rounded-full text-sm transition cursor-pointer ${
                   statusStyles[status]
                 } ${
@@ -85,16 +128,14 @@ export default function SearchAndFilter({ showZipFilter = true }: Props) {
                     : "opacity-80 hover:opacity-100"
                 }`}
               >
-                {status === "all"
-                  ? "All Status"
-                  : status.charAt(0).toUpperCase() + status.slice(1)}
+                {statusLabels[status]} ({count})
               </button>
             );
           })}
 
           {selectedStatus !== "all" && (
             <button
-              onClick={handleClear}
+              onClick={handleClearStatus}
               className="text-muted-foreground cursor-pointer group"
             >
               <IconX className="text-red-400 group-hover:text-white transition duration-200 group-hover:bg-red-400 rounded-sm" />
@@ -102,48 +143,60 @@ export default function SearchAndFilter({ showZipFilter = true }: Props) {
           )}
         </div>
 
-        <div className="relative w-full md:max-w-[400px]">
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            placeholder="Search store"
-            className="w-full pr-20 bg-white"
-          />
+        <div className="flex gap-2 w-full md:max-w-[600px]">
+          {/* Search Input */}
+          <div className="relative w-full">
+            <Input
+              value={localQuery}
+              onChange={(e) => setLocalQuery(e.target.value)}
+              placeholder="Search company"
+              className="w-full pr-10 bg-white"
+            />
+            {localQuery && (
+              <button
+                onClick={handleClearQuery}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                aria-label="Clear query"
+              >
+                <IconX size={16} />
+              </button>
+            )}
+          </div>
 
-          {query && (
-            <button
-              onClick={handleClear}
-              className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
-              aria-label="Clear search"
-            >
-              <IconX size={16} />
-            </button>
-          )}
+          {/* ZIP Filter Input */}
+          <div className="relative w-[120px]">
+            <Input
+              value={localZip}
+              onChange={(e) => setLocalZip(e.target.value)}
+              placeholder="ZIP"
+              className="w-full pr-10 bg-white"
+            />
+            {localZip && (
+              <button
+                onClick={() => {
+                  setLocalZip("");
+                  setSelectedZip(null);
+                  updateSearchParams({ zip: null });
+                  fetchPage(1, selectedStatus, localQuery, undefined, null);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                aria-label="Clear ZIP"
+              >
+                <IconX size={16} />
+              </button>
+            )}
+          </div>
 
+          {/* Search Button */}
           <button
             onClick={handleSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black dark:hover:text-white"
+            className="flex items-center justify-center px-3 rounded bg-gray-200 dark:bg-gray-700 hover:opacity-80 transition"
             aria-label="Search"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-4.35-4.35M16 10a6 6 0 11-12 0 6 6 0 0112 0z"
-              />
-            </svg>
+            <Search size={18} />
           </button>
         </div>
       </div>
-      {/* {showZipFilter && <ZipcodeFilter />} */}
     </div>
   );
 }

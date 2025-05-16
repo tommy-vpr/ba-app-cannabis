@@ -14,6 +14,7 @@ import {
   IconPlus,
 } from "@tabler/icons-react";
 import { useState, useTransition } from "react";
+import { EditContactModal } from "@/components/EditContactModal";
 // import { Providers } from "@/components/Providers";
 // import { SearchProvider } from "@/contexts/SearchContext";
 
@@ -22,29 +23,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [query, setQuery] = useState("");
-  const [isPending, startTransition] = useTransition();
-
-  const navItems = [
-    { title: "Home", url: "/dashboard", icon: IconHome2 },
-    // { title: "Tasks", url: "/dashboard/tasks", icon: IconClipboardList },
-    // { title: "Team", url: "/dashboard/team", icon: IconUsers },
-    // {
-    //   title: "Pending Visit",
-    //   url: "/dashboard/pending-visit",
-    //   icon: IconUsers,
-    // },
-    // {
-    //   title: "Visit Requested by Rep",
-    //   url: "/dashboard/visit-requested-by-rep",
-    //   icon: IconUsers,
-    // },
-    // { title: "Dropped Off", url: "/dashboard/dropped-off", icon: IconUsers },
-  ];
-
-  const runSearch = () => {
-    // Will be handled in the child page using context or props
-  };
+  const navItems = [{ title: "Home", url: "/dashboard", icon: IconHome2 }];
 
   return (
     <SidebarProvider

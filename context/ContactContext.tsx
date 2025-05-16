@@ -4,247 +4,226 @@ import {
   createContext,
   useContext,
   useEffect,
+  useOptimistic,
   useState,
-  ReactNode,
+  useTransition,
 } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { HubSpotContact } from "@/types/hubspot";
-import {
-  fetchHubSpotContactsPaginated,
-  fetchAllContactsByEmail,
-  searchContactsByCompany,
-  searchContactsByStatus,
-} from "@/lib/hubspot/fetch";
-import { useBrand } from "./BrandContext";
-import { usePathname } from "next/navigation";
-import { searchContactsByPostalCode } from "@/app/actions/actions";
+import { HubSpotContact } from "@/types/contact";
+import { getContacts } from "@/app/actions/getContacts";
+import { StatusCount } from "@/types/status";
+import { MeetingLogListRef } from "@/types/meeting";
 
 type ContactContextType = {
   contacts: HubSpotContact[];
-  setContacts: React.Dispatch<React.SetStateAction<HubSpotContact[]>>;
-  allZips: string[];
-  loadingContacts: boolean;
-  loadingZips: boolean;
-  refetchContacts: () => Promise<void>;
+  optimisticUpdate: (
+    id: string,
+    updates: Partial<HubSpotContact["properties"]>
+  ) => void;
+  setContacts: (data: HubSpotContact[]) => void;
   fetchPage: (
     page: number,
     status?: string,
     query?: string,
     updater?: (prev: HubSpotContact[]) => HubSpotContact[],
-    zip?: string | null
-  ) => Promise<void>;
+    zip?: string | null,
+    after?: string | null // ✅ Add this
+  ) => void;
+  loading: boolean;
   page: number;
-  setPage: (p: number) => void;
+  setPage: (n: number) => void;
+  selectedStatus: string;
+  setSelectedStatus: (s: string) => void;
+  query: string;
+  setQuery: (q: string) => void;
+  selectedZip: string | null;
+  setSelectedZip: (z: string | null) => void;
+  hasNext: boolean;
+  cursors: Record<number, string | null>;
+  setCursors: (c: Record<number, string | null>) => void;
   selectedContact: HubSpotContact | null;
   setSelectedContact: (c: HubSpotContact | null) => void;
   editOpen: boolean;
   setEditOpen: (open: boolean) => void;
+  statusCounts: StatusCount;
+  setStatusCounts: (s: StatusCount) => void;
+  availableZips: string[];
+  setAvailableZips: (zips: string[]) => void;
+  localQuery: string;
+  setLocalQuery: (q: string) => void;
+  localZip: string;
+  setLocalZip: (z: string) => void;
   logOpen: boolean;
   setLogOpen: (open: boolean) => void;
-  contactId: string | null;
-  setContactId: (id: string | null) => void;
-  setLogContactData: (c: HubSpotContact | null) => void;
-  logContactData: HubSpotContact | null;
-  hasNext: boolean;
-  setHasNext: (v: boolean) => void;
-  query: string;
-  setQuery: (q: string) => void;
-  selectedStatus: string;
-  setSelectedStatus: (s: string) => void;
-  selectedZip: string | null;
-  setSelectedZip: (zip: string | null) => void;
-  zipContacts: HubSpotContact[];
-  setZipContacts: React.Dispatch<React.SetStateAction<HubSpotContact[]>>;
-  setCursors: React.Dispatch<
-    React.SetStateAction<Record<string, string | null>>
-  >;
+  contactMutate: (() => void) | null;
+  setContactMutate: (fn: (() => void) | null) => void;
+  logListRef: React.RefObject<MeetingLogListRef | null> | null;
+  setLogListRef: (
+    ref: React.RefObject<MeetingLogListRef | null> | null
+  ) => void;
 };
 
-const ContactContext = createContext<ContactContextType | undefined>(undefined);
+const ContactContext = createContext<ContactContextType | null>(null);
+
 export const useContactContext = () => {
-  const context = useContext(ContactContext);
-  if (!context)
-    throw new Error("useContactContext must be used within a ContactProvider");
-  return context;
+  const ctx = useContext(ContactContext);
+  if (!ctx) throw new Error("Must use inside ContactProvider");
+  return ctx;
 };
 
-export function ContactProvider({ children }: { children: ReactNode }) {
-  const { data: session, status } = useSession();
-  const { brand } = useBrand();
-  const [contacts, setContacts] = useState<HubSpotContact[]>([]);
-  const [allZips, setAllZips] = useState<string[]>([]);
-  const [loadingContacts, setLoadingContacts] = useState(false);
-  const [loadingZips, setLoadingZips] = useState(false);
-  const [page, setPage] = useState(1);
-  const [cursors, setCursors] = useState<Record<string, string | null>>({});
-  const [hasNext, setHasNext] = useState(false);
+export const ContactProvider = ({
+  children,
+  initialContacts = [],
+  initialCursors = {},
+  initialHasNext = false,
+  initialStatusCounts = {
+    all: 0,
+    "pending visit": 0,
+    "visit requested by rep": 0,
+    "dropped off": 0,
+  },
+}: {
+  children: React.ReactNode;
+  initialContacts?: HubSpotContact[];
+  initialCursors?: Record<number, string | null>;
+  initialHasNext?: boolean;
+  initialStatusCounts?: StatusCount;
+}) => {
+  const [contacts, setContacts] = useState(initialContacts);
+  const [cursors, setCursors] =
+    useState<Record<number, string | null>>(initialCursors);
   const [query, setQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedZip, setSelectedZip] = useState<string | null>(null);
-  const [zipContacts, setZipContacts] = useState<HubSpotContact[]>([]);
-  const pathname = usePathname();
+  const [page, setPage] = useState(1);
+  const [hasNext, setHasNext] = useState(initialHasNext);
+  const [isPending, startTransition] = useTransition();
   const [selectedContact, setSelectedContact] = useState<HubSpotContact | null>(
     null
   );
   const [editOpen, setEditOpen] = useState(false);
+  const [statusCounts, setStatusCounts] =
+    useState<StatusCount>(initialStatusCounts);
+
+  const [availableZips, setAvailableZips] = useState<string[]>([]);
+
+  const [localQuery, setLocalQuery] = useState("");
+  const [localZip, setLocalZip] = useState("");
   const [logOpen, setLogOpen] = useState(false);
-  const [contactId, setContactId] = useState<string | null>(null);
-  const [logContactData, setLogContactData] = useState<HubSpotContact | null>(
-    null
+  const [contactMutate, setContactMutate] = useState<(() => void) | null>(null);
+  const [logListRef, setLogListRef] =
+    useState<React.RefObject<MeetingLogListRef | null> | null>(null);
+
+  useEffect(() => {
+    const uniqueZips = Array.from(
+      new Set(
+        contacts
+          .map((c) => c?.properties?.zip)
+          .filter(
+            (zip): zip is string => typeof zip === "string" && zip.trim() !== ""
+          )
+      )
+    );
+    setAvailableZips(uniqueZips);
+  }, [contacts]);
+
+  const [optimisticContacts, setOptimisticContacts] = useOptimistic<
+    HubSpotContact[],
+    { id: string; properties: Partial<HubSpotContact["properties"]> }
+  >(contacts, (state, updated) =>
+    state.map((c) =>
+      c.id === updated.id
+        ? { ...c, properties: { ...c.properties, ...updated.properties } }
+        : c
+    )
   );
 
-  const [allContacts, setAllContacts] = useState<HubSpotContact[]>([]);
-
-  const getCursorKey = (
-    page: number,
-    status: string,
-    query: string,
-    zip?: string | null
-  ) =>
-    `${page}-${status.trim().toLowerCase()}-${
-      query.trim().toLowerCase() || "none"
-    }-${zip || "nozip"}`;
-
-  const fetchPage = async (
-    pageNum: number,
-    status: string = "all",
-    query: string = "",
-    updater?: (prev: HubSpotContact[]) => HubSpotContact[],
-    zip?: string | null
+  const optimisticUpdate = (
+    id: string,
+    updates: Partial<HubSpotContact["properties"]>
   ) => {
-    setLoadingContacts(true);
+    startTransition(() => {
+      setOptimisticContacts({ id, properties: updates });
+    });
+  };
 
-    try {
+  const fetchPage = (
+    page: number,
+    status = selectedStatus,
+    q = query,
+    updater?: (prev: HubSpotContact[]) => HubSpotContact[],
+    zip = selectedZip,
+    after?: string | null
+  ) => {
+    console.log("[fetchPage] called with:", { page, status, q }); // ✅ here
+
+    startTransition(async () => {
       if (updater) {
         setContacts((prev) => updater(prev));
-        setPage(pageNum);
+        setPage(page);
         return;
       }
 
-      let filtered = [...allContacts];
-
-      if (zip) {
-        filtered = filtered.filter(
-          (c) => c.properties?.zip?.trim() === zip.trim()
-        );
-      }
-
-      if (status !== "all") {
-        filtered = filtered.filter(
-          (c) =>
-            c.properties?.l2_lead_status?.toLowerCase() === status.toLowerCase()
-        );
-      }
-
-      if (query.length >= 2) {
-        filtered = filtered.filter((c) =>
-          c.properties?.company?.toLowerCase().includes(query.toLowerCase())
-        );
-      }
-
-      const pageSize = 12;
-      const start = (pageNum - 1) * pageSize;
-      const paginated = filtered.slice(start, start + pageSize);
-
-      setContacts(paginated);
-      setHasNext(start + pageSize < filtered.length);
-      setPage(pageNum);
-    } catch (err) {
-      console.error("Error paginating contacts:", err);
-    } finally {
-      setLoadingContacts(false);
-    }
-  };
-
-  const refetchContacts = async () => {
-    if (!session?.user?.email) return;
-
-    setLoadingContacts(true);
-    setLoadingZips(true);
-
-    try {
-      const allRes = await fetchAllContactsByEmail(session.user.email, brand);
-
-      setAllContacts(allRes.results); // <- store full set
-      setContacts(allRes.results.slice(0, 12)); // show first page
-      setHasNext(allRes.results.length > 12);
-
-      const zipSet = new Set(
-        allRes.results
-          .map((c) => c.properties?.zip)
-          .filter((zip): zip is string => typeof zip === "string")
+      const res = await getContacts(
+        {
+          page,
+          status,
+          query: q,
+          zip: zip ?? undefined, // ✅ ensure zip is undefined, not null
+          after: after ?? cursors[page - 1] ?? undefined, // ✅ convert null to undefined
+        },
+        "litto"
       );
-      setAllZips(Array.from(zipSet));
-    } catch (err) {
-      console.error("Failed to fetch contacts:", err);
-    } finally {
-      setLoadingContacts(false);
-      setLoadingZips(false);
-    }
+
+      setContacts(res.contacts);
+      setPage(page);
+      setHasNext(res.hasNext);
+
+      if (res.after) {
+        setCursors((prev) => ({ ...prev, [page]: res.after }));
+      }
+    });
   };
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      setAllZips([]);
-      setCursors({});
-      refetchContacts();
-    }
-  }, [status, brand]);
-
-  useEffect(() => {
-    if (pathname === "/dashboard") {
-      setQuery("");
-      setSelectedStatus("all");
-      setSelectedZip(null);
-      setPage(1);
-      setZipContacts([]);
-      setSelectedContact(null);
-      setEditOpen(false);
-      setLogOpen(false);
-      setContactId(null);
-      setLogContactData(null);
-      setCursors({});
-      refetchContacts();
-    }
-  }, [pathname]);
 
   return (
     <ContactContext.Provider
       value={{
-        contacts,
+        contacts: optimisticContacts,
+        optimisticUpdate,
         setContacts,
-        allZips,
-        loadingContacts,
-        loadingZips,
-        refetchContacts,
         fetchPage,
+        loading: isPending,
         page,
         setPage,
-        selectedContact,
-        setSelectedContact,
-        editOpen,
-        setEditOpen,
-        logOpen,
-        setLogOpen,
-        contactId,
-        setContactId,
-        logContactData,
-        setLogContactData,
-        hasNext,
-        setHasNext,
-        query,
-        setQuery,
         selectedStatus,
         setSelectedStatus,
+        query,
+        setQuery,
         selectedZip,
         setSelectedZip,
-        zipContacts,
-        setZipContacts,
+        hasNext,
+        cursors,
         setCursors,
+        editOpen,
+        setEditOpen,
+        setSelectedContact,
+        selectedContact,
+        statusCounts,
+        setStatusCounts,
+        availableZips,
+        setAvailableZips,
+        localQuery,
+        setLocalQuery,
+        localZip,
+        setLocalZip,
+        logOpen,
+        setLogOpen,
+        contactMutate,
+        setContactMutate,
+        logListRef,
+        setLogListRef,
       }}
     >
       {children}
     </ContactContext.Provider>
   );
-}
+};

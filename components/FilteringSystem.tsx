@@ -1,0 +1,167 @@
+"use client";
+
+import { IconAdjustmentsHorizontal, IconX } from "@tabler/icons-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useContactContext } from "@/context/ContactContext";
+import { useEffect, useState } from "react";
+import { StatusKey, statusList, statusLabels } from "@/types/status";
+import { motion, AnimatePresence } from "framer-motion";
+
+export default function FilteringSystem() {
+  const {
+    selectedStatus,
+    setSelectedStatus,
+    setQuery,
+    setSelectedZip,
+    fetchPage,
+    statusCounts,
+  } = useContactContext();
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // const [localQuery, setLocalQuery] = useState("");
+  // const [localZip, setLocalZip] = useState("");
+  const { localQuery, setLocalQuery, localZip, setLocalZip } =
+    useContactContext();
+  const [showFilters, setShowFilters] = useState(true); // Toggle state
+
+  const hasFilters =
+    localQuery.trim() !== "" ||
+    localZip.trim() !== "" ||
+    selectedStatus !== "all";
+
+  const [hasSearched, setHasSearched] = useState(false);
+
+  useEffect(() => {
+    const urlQuery = searchParams.get("query") || "";
+    const urlStatus = (searchParams.get("status") as StatusKey) || "all";
+    const urlZip = searchParams.get("zip") || "";
+
+    setLocalQuery(urlQuery);
+    setLocalZip(urlZip);
+    setQuery(urlQuery);
+    setSelectedZip(urlZip || null);
+    setSelectedStatus(urlStatus);
+  }, []);
+
+  const updateSearchParams = (newParams: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const key in newParams) {
+      const value = newParams[key];
+      if (!value || value === "all") {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    }
+    params.set("page", "1");
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleStatusClick = (status: StatusKey) => {
+    setHasSearched(false);
+    setSelectedStatus(status);
+    updateSearchParams({
+      status,
+      query: localQuery || null,
+      zip: localZip || null,
+    });
+    fetchPage(1, status, localQuery, undefined, localZip || null);
+  };
+
+  const handleClearAll = () => {
+    setLocalQuery("");
+    setLocalZip("");
+    setQuery("");
+    setSelectedZip(null);
+    setSelectedStatus("all");
+    setHasSearched(false);
+
+    updateSearchParams({
+      status: "all",
+      query: null,
+      zip: null,
+    });
+
+    fetchPage(1, "all", "", undefined, null);
+  };
+
+  const statusStyles: Record<StatusKey, string> = {
+    all: `bg-transparent text-gray-700 dark:text-gray-300`,
+    "pending visit": "bg-transparent text-orange-400",
+    "visit requested by rep": "bg-transparent text-red-400",
+    "dropped off": "bg-transparent text-green-400",
+  };
+
+  const ringColors: Record<StatusKey, string> = {
+    all: "ring-gray-400",
+    "pending visit": "ring-orange-400",
+    "visit requested by rep": "ring-red-400",
+    "dropped off": "ring-green-400",
+  };
+
+  return (
+    <div className="w-full flex flex-col gap-2">
+      <div className="flex items-center justify-end gap-3">
+        {hasFilters && (
+          <button
+            onClick={handleClearAll}
+            className="cursor-pointer flex items-center gap-1 transition rounded-full hover:opacity-80"
+          >
+            <IconX
+              size={14}
+              className="bg-black text-white dark:bg-gray-300 dark:text-black"
+            />
+            Clear filters
+          </button>
+        )}
+
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="cursor-pointer flex items-center gap-1 text-md text-muted-foreground hover:opacity-80"
+        >
+          Filters <IconAdjustmentsHorizontal size={19} />
+        </button>
+      </div>
+
+      <AnimatePresence initial={false}>
+        {showFilters && (
+          <motion.div
+            key="filters"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden"
+          >
+            <div className="flex flex-col p-1 xl:flex-row xl:items-center gap-4 xl:gap-2 w-full md:justify-between">
+              <div className="flex flex-wrap gap-2">
+                {statusList.map((status) => {
+                  const isActive = selectedStatus === status;
+                  const count = statusCounts[status];
+                  return (
+                    <button
+                      key={status}
+                      onClick={() => handleStatusClick(status)}
+                      className={`px-3 py-1 rounded-full text-sm transition cursor-pointer ${
+                        statusStyles[status]
+                      } ${
+                        isActive
+                          ? `ring-1 ${ringColors[status]} ring-offset-white dark:ring-offset-[#1a1a1a]`
+                          : "opacity-80 hover:opacity-100"
+                      }`}
+                    >
+                      {statusLabels[status]} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

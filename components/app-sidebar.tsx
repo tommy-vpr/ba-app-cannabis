@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/sidebar";
 import { NavUser } from "@/components/nav-user";
 import Image from "next/image";
-import { SideZipcodeFilter } from "./ZipCodeList";
-import { ZipCodeLinkList } from "./ZipCodeLinkList";
 import Link from "next/link";
 import { useBrand } from "@/context/BrandContext";
 import { useContactContext } from "@/context/ContactContext";
@@ -76,7 +74,7 @@ export function AppSidebar({
             exit={{ x: -100, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            {isZipContactRoute ? <ZipCodeLinkList /> : <SideZipcodeFilter />}
+            {/* Zipcodes list */}
           </motion.div>
         </AnimatePresence>
       </SidebarContent>

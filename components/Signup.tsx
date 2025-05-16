@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { registerUser } from "@/app/actions/registerUser";
+// import { registerUser } from "@/app/actions/registerUser";
 import SubmitButton from "./SubmitButton";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -38,12 +38,12 @@ const AdminRegisterForm = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await registerUser(data, brand);
+      // const response = await registerUser(data, brand);
 
-      if (response?.error) {
-        toast.error(response.error);
-        return;
-      }
+      // if (response?.error) {
+      //   toast.error(response.error);
+      //   return;
+      // }
 
       const signInResponse = await signIn("credentials", {
         redirect: false,

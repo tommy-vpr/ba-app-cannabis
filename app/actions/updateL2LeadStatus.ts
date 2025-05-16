@@ -1,52 +1,32 @@
-// app/actions/updateL2LeadStatus.ts
 "use server";
 
-import { getHubspotCredentials } from "@/lib/getHubspotCredentials"; // ✅ central helper
+import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 import { revalidatePath } from "next/cache";
 
 export async function updateL2LeadStatus(
   contactId: string,
   status: string,
-  brand: "litto" | "skwezed" = "litto" // ✅ optional brand parameter
+  brand: "litto" | "skwezed" = "litto"
 ) {
-  const { baseUrl, token } = getHubspotCredentials(brand);
-
   try {
-    const response = await fetch(
-      `${baseUrl}/crm/v3/objects/contacts/${contactId}`,
+    // Use central hubspotRequest with PATCH
+    await hubspotRequest(
+      `/crm/v3/objects/contacts/${contactId}`,
+      "PATCH",
+      brand,
       {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+        properties: {
+          l2_lead_status: status,
         },
-        body: JSON.stringify({
-          properties: {
-            l2_lead_status: status,
-          },
-        }),
       }
     );
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText);
-    }
-    // ✅ Trigger revalidation for UI update
+    // ✅ Optionally revalidate a specific contact page or tag
     revalidatePath(`/dashboard/contacts/${contactId}`);
 
     return { success: true };
   } catch (error) {
-    // return {
-    //   success: false,
-    //   message: `Failed to update l2_lead_status: ${(error as Error).message}`,
-    // };
-    console.error("❌ Full Error Object:", error); // full stack trace if available
-
-    // If it's a Response object error, log more detail
-    if (error instanceof Error) {
-      console.error("❌ Error Message:", error.message);
-    }
+    console.error("❌ updateL2LeadStatus error:", error);
 
     return {
       success: false,

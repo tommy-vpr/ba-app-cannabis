@@ -1,14 +1,12 @@
 "use server";
 
 import { HubSpotContact } from "@/types/hubspot";
-import { getHubspotCredentials } from "@/lib/getHubspotCredentials"; // ✅ import central helper
+import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
 export async function getContactById(
   id: string,
   brand: "litto" | "skwezed"
 ): Promise<HubSpotContact | null> {
-  const { baseUrl, token } = getHubspotCredentials(brand);
-
   const properties = [
     "firstname",
     "lastname",
@@ -26,21 +24,19 @@ export async function getContactById(
     "hubspot_owner_id",
   ];
 
-  const params = new URLSearchParams({
+  const query = new URLSearchParams({
     properties: properties.join(","),
-  });
+  }).toString();
 
-  const url = `${baseUrl}/crm/v3/objects/contacts/${id}?${params.toString()}`;
-
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) return null;
-
-  const data = await res.json();
-  return data;
+  try {
+    const data = await hubspotRequest(
+      `/crm/v3/objects/contacts/${id}?${query}`,
+      "GET",
+      brand
+    );
+    return data;
+  } catch (err) {
+    console.error("❌ Failed to fetch contact by ID:", err);
+    return null;
+  }
 }

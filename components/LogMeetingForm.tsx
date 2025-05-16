@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { startTransition, useState, useTransition } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLogMeetingModal } from "@/context/LogMeetingModalContext";
+// import { useLogMeetingModal } from "@/context/LogMeetingModalContext";
 import { useContactDetail } from "@/hooks/useContactDetail";
 
 import {
@@ -19,12 +19,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
-import { logMeeting } from "@/app/actions/logMeeting";
+// import { logMeeting } from "@/app/actions/logMeeting";
 import Spinner from "@/components/Spinner";
-import { useBrand } from "@/context/BrandContext";
-import { OwnerSelect } from "./OwnerSelector";
-import { useContactList } from "@/context/ContactListContext";
-import { useContactContext } from "@/context/ContactContext";
 
 const formSchema = z.object({
   newFirstName: z.string().min(1, "First name is required"),
@@ -35,148 +31,59 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+import { useBrand } from "@/context/BrandContext";
+import { useContactContext } from "@/context/ContactContext";
+import { logMeeting } from "@/app/actions/logMeeting";
+
 export function LogMeetingForm({
   contactId,
   contactFirstName,
   contactJobTitle,
   contactCompany,
-  contactStatus, // ✅ Add this
-  onSuccess,
-  useGlobalList = false,
+  contactStatus,
 }: {
   contactId: string;
   contactFirstName?: string;
   contactJobTitle?: string;
   contactCompany?: string;
-  contactStatus?: string; // ✅ Add this
-  onSuccess?: (newMeeting: any) => void;
-  useGlobalList?: boolean;
+  contactStatus?: string;
 }) {
-  const [isPending, startTransition] = useTransition();
   const { brand } = useBrand();
-  const [selectedOwnerId, setSelectedOwnerId] = useState("");
-
-  // ✅ Pull contactData and setOpen from context
-  const { contactData, setOpen } = useLogMeetingModal();
-  const { mutateContact, refetchContactDetail } = useContactDetail(contactId);
-  // const { setContacts } = useContactList();
-  const {
-    setContacts: setGlobalContacts,
-    fetchPage,
-    selectedStatus,
-    query,
-  } = useContactContext(); // from global ContactContext
-  const { setContacts: setListContacts } = useContactList(); // from ContactListContext
+  const { setLogOpen, fetchPage, page, loading, logListRef } =
+    useContactContext();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       newFirstName: contactFirstName || "",
       jobTitle: contactJobTitle || "",
-      // l2Status: ([
-      //   "pending visit",
-      //   "visit requested by rep",
-      //   "dropped off",
-      // ].includes(contactStatus ?? "")
-      //   ? contactStatus
-      //   : "pending visit") as
-      //   | "pending visit"
-      //   | "visit requested by rep"
-      //   | "dropped off",
-      body: `
-      Topic discussed
-      -
-      -
-
-      Store traffic:
-      Next step:
-      `,
+      body: "",
+      l2Status: (contactStatus as any) || "pending visit",
     },
   });
 
   const onSubmit = (values: FormValues) => {
-    const generatedTitle = `Met with ${values.newFirstName} at ${
-      contactCompany ?? "Unknown Store"
-    }`;
-
-    // ✅ Optimistic update before saving
-    if (contactData?.id && contactData?.properties) {
-      mutateContact?.(
-        {
-          id: contactData.id,
-          properties: {
-            ...contactData.properties,
-            firstname: values.newFirstName,
-            jobtitle: values.jobTitle,
-            l2_lead_status: values.l2Status,
-          },
-        },
-        false
-      );
-
-      // 🔥 conditionally update the list
-      const updateList = useGlobalList ? setGlobalContacts : setListContacts;
-
-      // ✅ Optimistically update the global contact list
-      updateList((prev) =>
-        prev.map((c) =>
-          c.id === contactData.id
-            ? {
-                ...c,
-                properties: {
-                  ...c.properties,
-                  firstname: values.newFirstName,
-                  jobtitle: values.jobTitle,
-                  l2_lead_status: values.l2Status,
-                },
-              }
-            : c
-        )
-      );
-    }
-
-    // ✅ Submit to server
-    startTransition(() => {
-      logMeeting({
-        brand,
-        contactId,
-        title: generatedTitle,
-        body: values.body,
-        newFirstName: values.newFirstName,
-        jobTitle: values.jobTitle,
-        l2Status: values.l2Status,
-        ownerId: selectedOwnerId,
-      })
-        .then((newMeeting) => {
-          toast.success("Meeting logged!");
-          form.reset();
-
-          // ✅ Optimistic list update through context
-          fetchPage?.(1, selectedStatus, query, (prev) =>
-            prev.map((c) =>
-              c.id === contactId
-                ? {
-                    ...c,
-                    properties: {
-                      ...c.properties,
-                      firstname: values.newFirstName,
-                      jobtitle: values.jobTitle,
-                      l2_lead_status: values.l2Status,
-                    },
-                  }
-                : c
-            )
-          );
-
-          mutateContact?.(); // Revalidate detail view
-          refetchContactDetail?.(); // Re-fetch if needed elsewhere
-          onSuccess?.(newMeeting); // Success passed new meeting
-          setOpen(false);
-        })
-        .catch((err) => {
-          console.error(err);
-          toast.error("Failed to log meeting");
+    startTransition(async () => {
+      try {
+        const meeting = await logMeeting({
+          brand,
+          contactId,
+          title: "BA Sample Drop",
+          body: values.body,
+          newFirstName: values.newFirstName,
+          jobTitle: values.jobTitle,
+          l2Status: values.l2Status,
         });
+
+        logListRef?.current?.addOptimisticMeeting(meeting); // ✅ Now valid
+
+        toast.success("Meeting logged and task created");
+        setLogOpen(false);
+        fetchPage(page); // Re-fetch current page to get updated status
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to log meeting");
+      }
     });
   };
 
@@ -216,7 +123,7 @@ export function LogMeetingForm({
             <FormItem>
               <FormLabel>Meeting Notes</FormLabel>
               <FormControl>
-                <Textarea rows={6} {...field} />
+                <Textarea {...field} className="h-32" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -256,8 +163,8 @@ export function LogMeetingForm({
           )}
         />
         {/* <OwnerSelect brand={brand} onSelect={setSelectedOwnerId} /> */}
-        <Button type="submit" disabled={isPending}>
-          {isPending ? (
+        <Button type="submit" disabled={loading}>
+          {loading ? (
             <div className="flex items-center gap-1">
               <Spinner size="4" />
               Submitting

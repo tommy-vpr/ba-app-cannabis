@@ -1,7 +1,7 @@
 "use server";
 
 import { HubSpotContact } from "@/types/hubspot";
-import { getHubspotCredentials } from "@/lib/getHubspotCredentials"; // ✅ import the helper
+import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
 interface HubSpotSearchResponse {
   results: HubSpotContact[];
@@ -19,12 +19,6 @@ export async function fetchAllContactsByEmail(
   results: HubSpotContact[];
   paging?: { next?: { after: string } };
 }> {
-  const { baseUrl, token } = getHubspotCredentials(brand);
-
-  if (!baseUrl || !token) {
-    throw new Error(`❌ Missing HubSpot API credentials for ${brand}`);
-  }
-
   const properties = [
     "firstname",
     "lastname",
@@ -46,36 +40,30 @@ export async function fetchAllContactsByEmail(
   let lastPaging: HubSpotSearchResponse["paging"] = undefined;
 
   do {
-    const res = await fetch(`${baseUrl}/crm/v3/objects/contacts/search`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        filterGroups: [
-          {
-            filters: [
-              {
-                propertyName: "ba_email",
-                operator: "EQ",
-                value: email,
-              },
-            ],
-          },
-        ],
-        properties,
-        limit: 100,
-        after,
-      }),
-    });
+    const body = {
+      filterGroups: [
+        {
+          filters: [
+            {
+              propertyName: "ba_email",
+              operator: "EQ",
+              value: email,
+            },
+          ],
+        },
+      ],
+      properties,
+      limit: 100,
+      after,
+    };
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`HubSpot Error ${res.status}: ${text}`);
-    }
+    const data: HubSpotSearchResponse = await hubspotRequest(
+      `/crm/v3/objects/contacts/search`,
+      "POST",
+      brand,
+      body
+    );
 
-    const data: HubSpotSearchResponse = await res.json();
     results.push(...(data.results ?? []));
     after = data.paging?.next?.after;
     lastPaging = data.paging;

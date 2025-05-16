@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { HubSpotContact } from "@/types/hubspot";
@@ -45,18 +45,24 @@ export default function ContactPageClient({ id }: { id: string }) {
   const {
     setSelectedContact,
     setEditOpen,
+    logOpen,
     setLogOpen,
-    setContactId,
-    setLogContactData,
+    setContactMutate,
+    logListRef,
   } = useContactContext();
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const logListRef = useRef<MeetingLogListRef | null>(null);
 
   const { data: contact, mutate } = useSWR<HubSpotContact>(
     `/api/contacts/${id}`,
     fetcher,
     { revalidateOnFocus: false }
   );
+
+  useEffect(() => {
+    setContactMutate(() => mutate); // 👈 registers SWR mutate function
+    // setLogListRef(logListRef);
+    return () => setContactMutate(null);
+  }, [mutate]);
 
   // if (!contact) return <div>Loading...</div>;
   if (!contact) {
@@ -86,7 +92,7 @@ export default function ContactPageClient({ id }: { id: string }) {
 
   return (
     <div className="min-h-screen h-full relative p-4 w-full max-w-[1200px] m-auto">
-      <div className="flex flex-col md:flex-row rounded-md gap-8 p-6 border border-muted bg-muted/50 dark:bg-black/30">
+      <div className="shadow-sm flex flex-col md:flex-row rounded-md gap-8 p-6 border border-muted bg-white dark:bg-black/30">
         <div
           className="hidden h-36 w-36 rounded-full md:flex m-auto items-center justify-center text-4xl md:text-[48px] font-bold uppercase transition-all duration-300 ease-in-out"
           style={{ backgroundColor: bg, color: text }}
@@ -141,17 +147,16 @@ export default function ContactPageClient({ id }: { id: string }) {
             </button>
 
             <button
-              onClick={() => {
-                setContactId(contact.id);
-                setLogContactData(contact);
-                setLogOpen(true);
-              }}
               className={clsx(
                 "group cursor-pointer text-sm mt-6 px-4 py-2 border rounded transition duration-200 flex items-center gap-1",
                 brand === "skwezed"
                   ? "border-[#009444] bg-[#009444] text-white"
                   : "border-green-400 bg-green-400 text-black dark:text-green-400 dark:bg-transparent dark:hover:bg-green-400 dark:hover:text-black"
               )}
+              onClick={() => {
+                setSelectedContact(contact);
+                setLogOpen(true);
+              }}
             >
               <span className="transition-transform duration-500 transform group-hover:rotate-[180deg]">
                 <IconPlus size={18} />
@@ -172,11 +177,7 @@ export default function ContactPageClient({ id }: { id: string }) {
 
       <MeetingLogList ref={logListRef} contactId={contact.id} />
       {/* <LogMeetingModal logListRef={logListRef} onSuccess={() => mutate()} /> */}
-      <LogMeetingModal
-        logListRef={logListRef}
-        refetchContact={() => mutate()}
-      />
-      <EditContactModal showDetails={false} />
+
       <UpdateStatusModal
         open={showStatusModal}
         setOpen={setShowStatusModal}

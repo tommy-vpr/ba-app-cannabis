@@ -1,25 +1,31 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useEffect, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Pencil, Trash, ChevronDown, ChevronUp } from "lucide-react";
 import { EditMeetingModal } from "./EditMeetingModal";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DeleteMeetingModal } from "@/components/DeleteMeetingModal";
+import { DeleteMeetingModal } from "./DeleteMeetingModal";
 import moment from "moment";
-import { IconCalendar, IconCalendarWeekFilled } from "@tabler/icons-react";
+import { IconCalendarWeekFilled } from "@tabler/icons-react";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
 
 export const MeetingLogList = forwardRef(function MeetingLogList(
   { contactId }: { contactId: string },
   ref
 ) {
-  const [meetings, setMeetings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: meetings,
+    mutate,
+    isLoading,
+  } = useSWR<any[]>(`/api/meetings/${contactId}`, fetcher, {
+    revalidateOnFocus: false,
+  });
+
   const [editingMeeting, setEditingMeeting] = useState<any>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [expectedCount, setExpectedCount] = useState<number | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
-  // ✅ Deletion modal
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedMeetingId, setSelectedMeetingId] = useState<string | null>(
     null
@@ -29,20 +35,18 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
     setOpenId((prev) => (prev === id ? null : id));
   };
 
-  const fetchMeetings = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/meetings/${contactId}`);
-      const data = await res.json();
-      setMeetings(data);
-      setExpectedCount(data.length);
-    } catch (err) {
-      console.error("❌ Failed to fetch meetings", err);
-      setExpectedCount(2);
-    } finally {
-      setLoading(false);
-    }
+  const addOptimisticMeeting = (newMeeting: any) => {
+    const meetingWithId = {
+      ...newMeeting,
+      id: newMeeting.id || `temp-${Date.now()}`,
+    };
+    mutate((prev = []) => [meetingWithId, ...prev], false);
   };
+
+  useImperativeHandle(ref, () => ({
+    refetch: () => mutate(),
+    addOptimisticMeeting,
+  }));
 
   const handleDeleteClick = (meetingId: string) => {
     setSelectedMeetingId(meetingId);
@@ -54,28 +58,6 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
     setModalOpen(true);
   };
 
-  // useImperativeHandle(ref, () => ({
-  //   refetch: fetchMeetings,
-  // }));
-  // ✅ Add this to support optimistic update
-  const addOptimisticMeeting = (newMeeting: any) => {
-    const meetingWithId = {
-      ...newMeeting,
-      id: newMeeting.id || `temp-${Date.now()}`, // Fallback temp ID
-    };
-
-    setMeetings((prev) => [meetingWithId, ...prev]);
-  };
-
-  useImperativeHandle(ref, () => ({
-    refetch: fetchMeetings,
-    addOptimisticMeeting,
-  }));
-
-  useEffect(() => {
-    fetchMeetings();
-  }, [contactId]);
-
   const renderMeetingCard = (meeting: any) => {
     const isOpen = openId === meeting.id;
     const title = meeting.properties.hs_meeting_title || "Untitled Meeting";
@@ -83,16 +65,15 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
     return (
       <div
         key={meeting.id}
-        className="border border-muted bg-muted/50 dark:bg-black/30 p-4 rounded shadow-sm flex flex-col mb-4"
+        className="border border-muted bg-white dark:bg-black/30 p-4 rounded shadow-sm flex flex-col mb-4"
       >
         <div
           onClick={() => toggleCollapse(meeting.id)}
           className="flex justify-between items-start cursor-pointer hover:opacity-80 transition duration-150"
         >
-          {/* <h4 className="text-md font-semibold">{title}</h4> */}
           <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-200 capitalize flex items-center gap-1">
             <IconCalendarWeekFilled size={16} />
-            {moment(meeting.properties.hs_timestamp).fromNow()} ·{" "}
+            {moment(meeting.properties.hs_timestamp).fromNow()} ·
             <span className="font-normal capitalize text-gray-400 dark:text-gray-500 text-sm">
               (
               {meeting.properties.hs_meeting_outcome?.toLowerCase() ||
@@ -120,7 +101,7 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
                 {meeting.properties.hs_meeting_body}
               </p>
               <p className="text-xs text-gray-500 mt-2">
-                {new Date(meeting.properties.hs_timestamp).toLocaleString()} ·{" "}
+                {new Date(meeting.properties.hs_timestamp).toLocaleString()} ·
                 <span className="capitalize">
                   {meeting.properties.hs_meeting_outcome?.toLowerCase() ||
                     "unknown"}
@@ -129,16 +110,14 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
               <div className="mt-4 flex gap-2 justify-end">
                 <button
                   onClick={() => handleEdit(meeting)}
-                  className="text-sm text-green-400 flex items-center px-4 py-1 border border-green-400
-            hover:bg-green-400 hover:text-black cursor-pointer transition rounded-xs"
+                  className="text-sm text-green-400 flex items-center px-4 py-1 border border-green-400 hover:bg-green-400 hover:text-black cursor-pointer transition rounded-xs"
                 >
                   <Pencil className="w-4 h-4 mr-1" />
                   Edit
                 </button>
                 <button
                   onClick={() => handleDeleteClick(meeting.id)}
-                  className="text-sm text-red-400 flex items-center px-4 py-1 border border-red-400
-            hover:bg-red-400 hover:text-black cursor-pointer transition rounded-xs"
+                  className="text-sm text-red-400 flex items-center px-4 py-1 border border-red-400 hover:bg-red-400 hover:text-black cursor-pointer transition rounded-xs"
                 >
                   <Trash className="w-4 h-4 mr-1" />
                   Delete
@@ -151,12 +130,11 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
     );
   };
 
-  if (loading) {
-    const skeletons = expectedCount ?? 2;
+  if (isLoading) {
     return (
       <div className="flex flex-col md:flex-row gap-4 mt-4">
         <div className="w-full md:w-1/2">
-          {Array.from({ length: Math.ceil(skeletons / 2) }).map((_, i) => (
+          {[...Array(2)].map((_, i) => (
             <div
               key={i}
               className="border border-gray-200 dark:border-zinc-700 p-4 rounded shadow-sm mb-4 space-y-3"
@@ -166,7 +144,7 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
           ))}
         </div>
         <div className="w-full md:w-1/2">
-          {Array.from({ length: Math.floor(skeletons / 2) }).map((_, i) => (
+          {[...Array(2)].map((_, i) => (
             <div
               key={i}
               className="border border-gray-200 dark:border-zinc-700 p-4 rounded shadow-sm mb-4 space-y-3"
@@ -179,7 +157,7 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
     );
   }
 
-  if (!meetings.length) {
+  if (!meetings?.length) {
     return (
       <p className="text-sm text-gray-400 mt-4">
         Start by adding a meeting log.
@@ -187,7 +165,6 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
     );
   }
 
-  // Split meetings into two columns
   const leftColumn = meetings.filter((_, i) => i % 2 === 0);
   const rightColumn = meetings.filter((_, i) => i % 2 === 1);
 
@@ -202,16 +179,15 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
         open={modalOpen}
         setOpen={setModalOpen}
         meeting={editingMeeting}
-        onSave={fetchMeetings}
+        onSave={() => mutate()}
       />
 
-      {/* Delete Modal */}
       {selectedMeetingId && (
         <DeleteMeetingModal
           open={deleteModalOpen}
           setOpen={setDeleteModalOpen}
           meetingId={selectedMeetingId}
-          onDeleted={fetchMeetings}
+          onDeleted={() => mutate()}
         />
       )}
     </>

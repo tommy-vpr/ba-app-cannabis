@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Dialog,
   DialogContent,
@@ -7,53 +6,28 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { LogMeetingForm } from "./LogMeetingForm";
-import { RefObject } from "react";
 import { useContactContext } from "@/context/ContactContext";
-import type { MeetingLogListRef } from "@/types/meeting";
 
-export function LogMeetingModal({
-  logListRef,
-  refetchContact,
-}: {
-  logListRef?: RefObject<MeetingLogListRef | null>;
-  refetchContact?: () => void;
-}) {
-  const { logOpen, setLogOpen, contactId, logContactData } =
-    useContactContext();
+export function LogMeetingModal() {
+  const { logOpen, setLogOpen, selectedContact } = useContactContext();
 
-  if (!contactId || !logContactData) return null;
+  if (!selectedContact) return null;
 
   return (
     <Dialog open={logOpen} onOpenChange={setLogOpen}>
       <DialogContent className="sm:max-w-lg w-full max-h-[85vh] overflow-y-auto">
         <DialogHeader className="mb-2">
           <DialogTitle>
-            Log Meeting
-            {/* Log Meeting{" "}
-            {logContactData?.properties?.firstname
-              ? `with ${logContactData.properties.firstname}`
-              : ""} */}
+            Log Meeting for {selectedContact.properties.company || "Store"}
           </DialogTitle>
         </DialogHeader>
 
         <LogMeetingForm
-          contactId={contactId}
-          contactFirstName={logContactData.properties?.firstname}
-          contactJobTitle={logContactData.properties?.jobtitle}
-          // onSuccess={() => {
-          //   setLogOpen(false);
-          // }}
-          onSuccess={(meetingFromServer) => {
-            const formatted = {
-              id: meetingFromServer.id || `temp-${Date.now()}`,
-              properties: meetingFromServer.properties, // Ensure this structure matches what your UI expects
-            };
-
-            logListRef?.current?.addOptimisticMeeting?.(formatted);
-            logListRef?.current?.refetch?.(); // Optional if backend is slow
-            refetchContact?.();
-            setLogOpen(false);
-          }}
+          contactId={selectedContact.id}
+          contactFirstName={selectedContact.properties.firstname}
+          contactJobTitle={selectedContact.properties.jobtitle}
+          contactCompany={selectedContact.properties.company}
+          contactStatus={selectedContact.properties.l2_lead_status}
         />
       </DialogContent>
     </Dialog>
