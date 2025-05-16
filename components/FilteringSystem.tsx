@@ -120,7 +120,7 @@ export default function FilteringSystem() {
 
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="cursor-pointer flex items-center gap-1 text-md text-muted-foreground hover:opacity-80"
+          className="cursor-pointer flex items-center gap-1 text-md text-zinc-800 dark:text-gray-200 hover:opacity-80"
         >
           Filters <IconAdjustmentsHorizontal size={19} />
         </button>

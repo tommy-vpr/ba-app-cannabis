@@ -19,9 +19,14 @@ export function ContactCard({
   contact: HubSpotContact;
   href: string;
 }) {
-  const [logOpen, setLogOpen] = useState(false);
-  const logListRef = useRef<MeetingLogListRef | null>(null);
-  const { setEditOpen, setSelectedContact } = useContactContext();
+  // const [logOpen, setLogOpen] = useState(false);
+  // const logListRef = useRef<MeetingLogListRef | null>(null);
+  const { 
+    setEditOpen, 
+    setSelectedContact, 
+    setContactId, 
+    setLogContactData, 
+    setLogOpen } = useContactContext();
 
   const router = useRouter();
 
@@ -46,6 +51,7 @@ export function ContactCard({
   const showBadge =
     hs_lead_status === "Samples" &&
     validL2Statuses.includes(l2_lead_status ?? "");
+
 
   return (
     <>
@@ -89,22 +95,15 @@ export function ContactCard({
             className="text-sm cursor-pointer flex items-center gap-1 p-2 text-gray-500 dark:text-gray-200 hover:underline underline-offset-4"
             onClick={(e) => {
               e.stopPropagation(); // Prevent card click
-              setLogOpen(true);
+              setContactId(contact.id);            // ✅ Sets ID
+                setLogContactData(contact);         // ✅ Sets full contact
+                setLogOpen(true); 
             }}
           >
             <IconTextPlus size={18} /> Log Meeting
           </button>
         </div>
       </Card>
-
-      {/* 🔥 Render modal outside card to avoid event bubbling */}
-      <LogMeetingModalGlobal
-        open={logOpen}
-        setOpen={setLogOpen}
-        contactId={contact.id}
-        contactData={contact}
-        logListRef={logListRef}
-      />
     </>
   );
 }

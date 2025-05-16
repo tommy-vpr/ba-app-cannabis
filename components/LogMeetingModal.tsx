@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Dialog,
   DialogContent,
@@ -8,26 +9,41 @@ import {
 import { LogMeetingForm } from "./LogMeetingForm";
 import { useContactContext } from "@/context/ContactContext";
 
-export function LogMeetingModal() {
-  const { logOpen, setLogOpen, selectedContact } = useContactContext();
+export function LogMeetingModal({ logListRef }: { logListRef?: any }) {
+  const {
+    logOpen,
+    setLogOpen,
+    contactId,
+    logContactData,
+    fetchPage,
+    page,
+  } = useContactContext();
 
-  if (!selectedContact) return null;
+  if (!contactId || !logContactData) return null;
 
   return (
     <Dialog open={logOpen} onOpenChange={setLogOpen}>
       <DialogContent className="sm:max-w-lg w-full max-h-[85vh] overflow-y-auto">
-        <DialogHeader className="mb-2">
-          <DialogTitle>
-            Log Meeting for {selectedContact.properties.company || "Store"}
-          </DialogTitle>
+        <DialogHeader>
+          <DialogTitle>Log Meeting</DialogTitle>
         </DialogHeader>
 
         <LogMeetingForm
-          contactId={selectedContact.id}
-          contactFirstName={selectedContact.properties.firstname}
-          contactJobTitle={selectedContact.properties.jobtitle}
-          contactCompany={selectedContact.properties.company}
-          contactStatus={selectedContact.properties.l2_lead_status}
+          contactId={contactId}
+          contactFirstName={logContactData.properties?.firstname}
+          contactJobTitle={logContactData.properties?.jobtitle}
+          contactCompany={logContactData.properties?.company}
+          contactStatus={logContactData.properties?.l2_lead_status}
+          onSuccess={(meeting) => {
+            const formatted = {
+              id: meeting.id || `temp-${Date.now()}`,
+              properties: meeting.properties,
+            };
+
+            logListRef?.current?.addOptimisticMeeting?.(formatted);
+            fetchPage?.(page); // Refresh page to reflect new status
+            setLogOpen(false);
+          }}
         />
       </DialogContent>
     </Dialog>

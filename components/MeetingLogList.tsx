@@ -40,6 +40,9 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
       ...newMeeting,
       id: newMeeting.id || `temp-${Date.now()}`,
     };
+
+    console.log("🧪 Pushing formatted meeting:", meetingWithId);
+
     mutate((prev = []) => [meetingWithId, ...prev], false);
   };
 
@@ -61,6 +64,9 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
   const renderMeetingCard = (meeting: any) => {
     const isOpen = openId === meeting.id;
     const title = meeting.properties.hs_meeting_title || "Untitled Meeting";
+
+    console.log("🔁 Meeting list:", meetings);
+
 
     return (
       <div

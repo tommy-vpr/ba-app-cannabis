@@ -50,6 +50,7 @@ export async function getContacts(
     properties: [
       "firstname",
       "lastname",
+      "jobtitle",
       "email",
       "phone",
       "company",

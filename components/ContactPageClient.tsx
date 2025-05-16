@@ -48,7 +48,13 @@ export default function ContactPageClient({ id }: { id: string }) {
     logOpen,
     setLogOpen,
     setContactMutate,
+    
     logListRef,
+    setContactId, 
+    setLogContactData,
+    contactId,
+    logMutate,
+    setLogMutate
   } = useContactContext();
   const [showStatusModal, setShowStatusModal] = useState(false);
 
@@ -58,11 +64,22 @@ export default function ContactPageClient({ id }: { id: string }) {
     { revalidateOnFocus: false }
   );
 
-  useEffect(() => {
-    setContactMutate(() => mutate); // 👈 registers SWR mutate function
-    // setLogListRef(logListRef);
-    return () => setContactMutate(null);
-  }, [mutate]);
+const { data: meetings = [], mutate: logMutateFn  } = useSWR(
+  contact?.id ? `/api/meetings/${contact.id}` : null,
+  fetcher
+);
+
+
+useEffect(() => {
+  setContactMutate(() => mutate);
+  setLogMutate(() => logMutateFn );
+
+  return () => {
+    setContactMutate(null);
+    setLogMutate(null); // ✅ this was missing inside the return
+  };
+}, [mutate, logMutateFn ]); // ✅ now it runs again if either changes
+
 
   // if (!contact) return <div>Loading...</div>;
   if (!contact) {
@@ -154,8 +171,9 @@ export default function ContactPageClient({ id }: { id: string }) {
                   : "border-green-400 bg-green-400 text-black dark:text-green-400 dark:bg-transparent dark:hover:bg-green-400 dark:hover:text-black"
               )}
               onClick={() => {
-                setSelectedContact(contact);
-                setLogOpen(true);
+                setContactId(contact.id);            // ✅ Sets ID
+                setLogContactData(contact);         // ✅ Sets full contact
+                setLogOpen(true);                   // ✅ Opens modal
               }}
             >
               <span className="transition-transform duration-500 transform group-hover:rotate-[180deg]">
@@ -175,7 +193,8 @@ export default function ContactPageClient({ id }: { id: string }) {
         <hr className="flex-grow border-t border-gray-200 dark:border-zinc-800" />
       </div>
 
-      <MeetingLogList ref={logListRef} contactId={contact.id} />
+      <MeetingLogList ref={logListRef} contactId={contact.id} key={contact.id} />
+
       {/* <LogMeetingModal logListRef={logListRef} onSuccess={() => mutate()} /> */}
 
       <UpdateStatusModal

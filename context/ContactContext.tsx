@@ -60,6 +60,12 @@ type ContactContextType = {
   setLogListRef: (
     ref: React.RefObject<MeetingLogListRef | null> | null
   ) => void;
+    contactId: string | null;
+  setContactId: (id: string | null) => void;
+  logContactData: HubSpotContact | null;
+  setLogContactData: (data: HubSpotContact | null) => void;
+  logMutate: (() => void) | null;
+setLogMutate: (fn: (() => void) | null) => void;
 };
 
 const ContactContext = createContext<ContactContextType | null>(null);
@@ -112,6 +118,11 @@ export const ContactProvider = ({
   const [contactMutate, setContactMutate] = useState<(() => void) | null>(null);
   const [logListRef, setLogListRef] =
     useState<React.RefObject<MeetingLogListRef | null> | null>(null);
+
+      const [contactId, setContactId] = useState<string | null>(null);
+  const [logContactData, setLogContactData] = useState<HubSpotContact | null>(null);
+const [logMutate, setLogMutate] = useState<(() => void) | null>(null);
+
 
   useEffect(() => {
     const uniqueZips = Array.from(
@@ -221,6 +232,12 @@ export const ContactProvider = ({
         setContactMutate,
         logListRef,
         setLogListRef,
+        contactId,
+        setContactId,
+        logContactData,
+        setLogContactData,
+        setLogMutate,
+        logMutate
       }}
     >
       {children}

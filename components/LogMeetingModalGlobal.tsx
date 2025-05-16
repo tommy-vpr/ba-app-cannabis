@@ -38,12 +38,7 @@ export function LogMeetingModalGlobal({
           contactFirstName={contactData.properties?.firstname}
           contactJobTitle={contactData.properties?.jobtitle}
           contactStatus={contactData.properties?.l2_lead_status}
-          useGlobalList={true}
-          onSuccess={(newMeeting) => {
-            logListRef?.current?.addOptimisticMeeting?.(newMeeting);
-            refetchContact?.();
-            setOpen(false);
-          }}
+          // useGlobalList={true}
         />
       </DialogContent>
     </Dialog>
