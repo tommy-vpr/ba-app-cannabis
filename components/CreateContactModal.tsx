@@ -41,6 +41,7 @@ export function CreateContactModal({
     setLocalQuery,
     setLocalZip,
     fetchPage,
+    setStatusCounts,
   } = useContactContext();
 
   const {
@@ -70,34 +71,34 @@ export function CreateContactModal({
     setLoading(true);
     try {
       const res = await createNewContact(values);
-
       if (!res.success || !res.contact) throw new Error(res.message);
+
       toast.success("Contact created");
       reset();
       setOpen(false);
 
-      // setQuery("");
-      // setSelectedZip(null);
-      // setSelectedStatus("all");
-      // setPage(1);
-      // setCursors({});
-
+      // ✅ Reset local and global state
       setLocalQuery("");
       setLocalZip("");
       setQuery("");
       setSelectedZip(null);
       setSelectedStatus("all");
-      // updateSearchParams({
-      //   status: "all",
-      //   query: null,
-      //   zip: null,
-      // });
+      setPage(1);
+      setCursors({});
 
-      // ✅ Only insert if res.contact is defined
-      // fetchPage(1, "all", "", (prev) => [res.contact!, ...prev], null);
-      // ✅ Clear query params from the URL
+      // ✅ Clear search params from URL
       router.replace("/dashboard?page=1");
-      router.refresh();
+      router.refresh(); // ✅ force layout/page reload from server
+
+      // ✅ Refetch contact list and counts
+      fetchPage(1, "all", "", undefined, null);
+
+      const { statusCounts } = await import(
+        "@/app/actions/getInitialDashboardData"
+      ).then(
+        (mod) => mod.getInitialDashboardData("litto") // or use selectedBrand if dynamic
+      );
+      setStatusCounts(statusCounts);
     } catch (err: any) {
       toast.error(err.message || "Failed to create contact");
     } finally {
