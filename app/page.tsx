@@ -6,7 +6,7 @@ import React, { useState } from "react";
 export default function Page() {
   return (
     <div
-      className="relative w-full h-screen flex items-center justify-center bg-black text-white
+      className="relative w-full h-screen flex items-center justify-center text-white
        flex-col"
     >
       <FormSwitcher />

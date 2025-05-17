@@ -65,7 +65,7 @@ export function PaginationControls() {
         onClick={handlePrev}
         disabled={isPrevDisabled}
         className="hover:opacity-80 transition duration-200 cursor-pointer 
-        flex items-center gap-2 px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        flex items-center gap-2 px-4 py-2 rounded bg-gray-200 dark:bg-[#30363d] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <ArrowLeft size={16} /> Prev
       </button>
@@ -76,7 +76,7 @@ export function PaginationControls() {
         onClick={handleNext}
         disabled={isNextDisabled}
         className="hover:opacity-80 transition duration-200 cursor-pointer 
-        flex items-center gap-2 px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        flex items-center gap-2 px-4 py-2 rounded bg-gray-200 dark:bg-[#30363d] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Next <ArrowRight size={16} />
       </button>

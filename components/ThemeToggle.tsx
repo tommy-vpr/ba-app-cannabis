@@ -27,7 +27,7 @@ export function ThemeToggle() {
             exit={{ rotate: -90, opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <Sun className="w-5 h-5 text-yellow-200" />
+            <Sun className="w-5 h-5 text-slate-200" />
           </motion.span>
         ) : (
           <motion.span
@@ -37,7 +37,7 @@ export function ThemeToggle() {
             exit={{ rotate: 90, opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <Moon className="w-5 h-5 text-blue-300" />
+            <Moon className="w-5 h-5 text-[#58a6ff]" />
           </motion.span>
         )}
       </AnimatePresence>

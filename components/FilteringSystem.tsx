@@ -47,7 +47,8 @@ export default function FilteringSystem() {
   }, []);
 
   const updateSearchParams = (newParams: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
+    // const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(); // start fresh
     for (const key in newParams) {
       const value = newParams[key];
       if (!value || value === "all") {
@@ -108,11 +109,11 @@ export default function FilteringSystem() {
         {hasFilters && (
           <button
             onClick={handleClearAll}
-            className="cursor-pointer flex items-center gap-1 transition rounded-full hover:opacity-80"
+            className="text-sm cursor-pointer flex items-center gap-1 transition rounded-full hover:opacity-80 text-red-400"
           >
             <IconX
               size={14}
-              className="bg-black text-white dark:bg-gray-300 dark:text-black"
+              className="text-white bg-red-400 dark:text-black"
             />
             Clear filters
           </button>

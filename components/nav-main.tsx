@@ -64,9 +64,9 @@ export function NavMain({
                           brand === "skwezed"
                             ? "bg-gray-100"
                             : "bg-gray-200 hover:bg-gray-300"
-                        } dark:bg-white ${
+                        } dark:bg-[#161b22] dark:text-gray-100 dark:hover:text-gray-50 ${
                           brand === "skwezed" ? "text-black" : "text-black"
-                        } dark:hover:text-black`
+                        }`
                     )}
                   >
                     {item.icon && <item.icon />}

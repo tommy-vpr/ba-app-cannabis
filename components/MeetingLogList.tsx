@@ -67,24 +67,28 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
 
     console.log("🔁 Meeting list:", meetings);
 
-
     return (
       <div
         key={meeting.id}
-        className="border border-muted bg-white dark:bg-black/30 p-4 rounded shadow-sm flex flex-col mb-4"
+        className="border border-muted dark:border-[#30363d] bg-white dark:bg-[#161b22] p-4 rounded shadow-sm flex flex-col mb-4"
       >
         <div
           onClick={() => toggleCollapse(meeting.id)}
           className="flex justify-between items-start cursor-pointer hover:opacity-80 transition duration-150"
         >
-          <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-200 capitalize flex items-center gap-1">
-            <IconCalendarWeekFilled size={16} />
-            {moment(meeting.properties.hs_timestamp).fromNow()} ·
-            <span className="font-normal capitalize text-gray-400 dark:text-gray-500 text-sm">
-              (
+          <h4 className="text-sm text-gray-600 dark:text-[#4493f8] capitalize flex items-center gap-1">
+            <IconCalendarWeekFilled size={18} />
+            {/* {moment(meeting.properties.hs_timestamp).fromNow()}  */}
+            {moment(meeting.properties.hs_timestamp).format("M/D/YYYY")}
+
+            <span className="mx-1 text-gray-400">·</span>
+
+            <span
+              className="font-semibold capitalize text-green-500 dark:text-gray-700 text-[10px] px-2 py-0.5 rounded-full bg-green-100
+             dark:bg-green-400 border border-green-400"
+            >
               {meeting.properties.hs_meeting_outcome?.toLowerCase() ||
                 "unknown"}
-              )
             </span>
           </h4>
 

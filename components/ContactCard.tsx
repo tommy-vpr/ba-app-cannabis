@@ -21,12 +21,13 @@ export function ContactCard({
 }) {
   // const [logOpen, setLogOpen] = useState(false);
   // const logListRef = useRef<MeetingLogListRef | null>(null);
-  const { 
-    setEditOpen, 
-    setSelectedContact, 
-    setContactId, 
-    setLogContactData, 
-    setLogOpen } = useContactContext();
+  const {
+    setEditOpen,
+    setSelectedContact,
+    setContactId,
+    setLogContactData,
+    setLogOpen,
+  } = useContactContext();
 
   const router = useRouter();
 
@@ -52,17 +53,16 @@ export function ContactCard({
     hs_lead_status === "Samples" &&
     validL2Statuses.includes(l2_lead_status ?? "");
 
-
   return (
     <>
       <Card
         onClick={() => router.push(`/dashboard/contacts/${safeId}`)}
         // className="hover:shadow-lg transition-shadow h-full flex flex-col gap-0 dark:bg-muted/50"
-        className="hover:shadow-lg transition-shadow h-full flex flex-col gap-0 dark:bg-black/20"
+        className="hover:shadow-lg transition-shadow h-full flex flex-col gap-0 dark:bg-[#161b22] border dark:border-[#30363d]"
       >
         <div className="cursor-pointer flex-grow">
           <CardContent className="p-4 flex flex-col gap-2">
-            <div className="font-bold uppercase text-md bg-gray-100 dark:bg-[#333] text-zinc-700 dark:text-gray-100 p-3 rounded">
+            <div className="font-bold uppercase text-md bg-gray-100 dark:bg-[#30363d] text-zinc-700 dark:text-gray-100 p-3 rounded">
               {company || "-"}
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -92,12 +92,12 @@ export function ContactCard({
           </button>
 
           <button
-            className="text-sm cursor-pointer flex items-center gap-1 p-2 text-gray-500 dark:text-gray-200 hover:underline underline-offset-4"
+            className="text-sm cursor-pointer flex items-center gap-1 p-2 text-[#4493f8] hover:underline underline-offset-4"
             onClick={(e) => {
               e.stopPropagation(); // Prevent card click
-              setContactId(contact.id);            // ✅ Sets ID
-                setLogContactData(contact);         // ✅ Sets full contact
-                setLogOpen(true); 
+              setContactId(contact.id); // ✅ Sets ID
+              setLogContactData(contact); // ✅ Sets full contact
+              setLogOpen(true);
             }}
           >
             <IconTextPlus size={18} /> Log Meeting

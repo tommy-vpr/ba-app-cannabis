@@ -9,21 +9,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { createNewContact } from "@/app/actions/createNewContact";
-import {
-  ContactSchemaValues,
-  CreateContactFormValues,
-  CreateContactSchema,
-} from "@/lib/schemas";
+// import { createNewContact } from "@/app/actions/createNewContact";
+import { CreateContactFormValues, CreateContactSchema } from "@/lib/schemas";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
 import Spinner from "./Spinner";
-import { useRouter } from "next/navigation";
 import { useContactContext } from "@/context/ContactContext";
 import { states } from "@/lib/states";
+import { createNewContact } from "@/app/actions/createNewContact";
+import { useRouter } from "next/navigation";
 
 export function CreateContactModal({
   open,
@@ -34,7 +31,17 @@ export function CreateContactModal({
 }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { setSelectedStatus, setSelectedZip, setQuery } = useContactContext();
+
+  const {
+    setQuery,
+    setSelectedZip,
+    setSelectedStatus,
+    setPage,
+    setCursors,
+    setLocalQuery,
+    setLocalZip,
+    fetchPage,
+  } = useContactContext();
 
   const {
     register,
@@ -61,19 +68,40 @@ export function CreateContactModal({
 
   const onSubmit = async (values: CreateContactFormValues) => {
     setLoading(true);
-    const res = await createNewContact(values);
-    setLoading(false);
+    try {
+      const res = await createNewContact(values);
 
-    if (res.success && res.contactId) {
-      toast.success("Contact created successfully");
-      setSelectedZip(null);
-      setSelectedStatus("all");
-      setQuery("");
+      if (!res.success || !res.contact) throw new Error(res.message);
+      toast.success("Contact created");
       reset();
       setOpen(false);
-      router.push(`/dashboard/contacts/${res.contactId}`);
-    } else {
-      toast.error(res.message || "Failed to create contact");
+
+      // setQuery("");
+      // setSelectedZip(null);
+      // setSelectedStatus("all");
+      // setPage(1);
+      // setCursors({});
+
+      setLocalQuery("");
+      setLocalZip("");
+      setQuery("");
+      setSelectedZip(null);
+      setSelectedStatus("all");
+      // updateSearchParams({
+      //   status: "all",
+      //   query: null,
+      //   zip: null,
+      // });
+
+      // ✅ Only insert if res.contact is defined
+      // fetchPage(1, "all", "", (prev) => [res.contact!, ...prev], null);
+      // ✅ Clear query params from the URL
+      router.replace("/dashboard?page=1");
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to create contact");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,7 +158,7 @@ export function CreateContactModal({
             <select
               id="state"
               {...register("state")}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white dark:bg-black"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white dark:bg-[#0d1117]"
             >
               <option value="">Select State</option>
               {states.map(({ label, value }) => (
@@ -173,135 +201,3 @@ export function CreateContactModal({
     </Dialog>
   );
 }
-
-// "use client";
-
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogHeader,
-//   DialogTitle,
-// } from "@/components/ui/dialog";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
-// import { Button } from "@/components/ui/button";
-// import { createNewContact } from "@/app/actions/createNewContact";
-// import {
-//   ContactSchemaValues,
-//   CreateContactFormValues,
-//   CreateContactSchema,
-// } from "@/lib/schemas";
-
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { useForm } from "react-hook-form";
-// import { toast } from "react-hot-toast";
-// import { useState } from "react";
-// import Spinner from "./Spinner";
-// import { useRouter } from "next/navigation"; // ✅ import router
-// import { useContactContext } from "@/context/ContactContext";
-
-// type Props = {
-//   open: boolean;
-//   setOpen: (val: boolean) => void;
-// };
-
-// export function CreateContactModal({ open, setOpen }: Props) {
-//   const [loading, setLoading] = useState(false);
-//   const router = useRouter(); // ✅ initialize router
-//   const { setSelectedStatus, setSelectedZip, setQuery } = useContactContext();
-
-//   const {
-//     register,
-//     handleSubmit,
-//     reset,
-//     formState: { errors },
-//   } = useForm<CreateContactFormValues>({
-//     resolver: zodResolver(CreateContactSchema),
-//     defaultValues: {
-//       firstname: "",
-//       lastname: "",
-//       jobtitle: "",
-//       email: "",
-//       company: "",
-//       phone: "",
-//       address: "",
-//       city: "",
-//       state: "",
-//       zip: "",
-//     },
-//   });
-
-//   const onSubmit = async (values: CreateContactFormValues) => {
-//     setLoading(true);
-//     const res = await createNewContact(values);
-//     setLoading(false);
-
-//     if (res.success && res.contactId) {
-//       toast.success("Contact created successfully");
-
-//       // ✅ Clear filter state
-//       setSelectedZip(null);
-//       setSelectedStatus("all");
-//       setQuery("");
-
-//       reset();
-//       setOpen(false);
-
-//       // ✅ Redirect to detail page
-//       router.push(`/dashboard/contacts/${res.contactId}`);
-//     } else {
-//       toast.error(res.message || "Failed to create contact");
-//     }
-//   };
-
-//   return (
-//     <Dialog open={open} onOpenChange={setOpen}>
-//       <DialogContent className="max-w-lg sm:max-w-lg w-full max-h-[85vh] overflow-y-auto">
-//         <DialogHeader>
-//           <DialogTitle>Create New Contact</DialogTitle>
-//         </DialogHeader>
-
-//         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-//           {[
-//             { label: "First Name", name: "firstname" },
-//             { label: "Last Name", name: "lastname" },
-//             { label: "Job Title", name: "jobtitle" },
-//             { label: "Email", name: "email", type: "email" },
-//             { label: "Company", name: "company" },
-//             { label: "Phone", name: "phone" },
-//             { label: "Address", name: "address" },
-//             { label: "City", name: "city" },
-//             { label: "State", name: "state" },
-//             { label: "ZIP Code", name: "zip" },
-//           ].map((field) => (
-//             <div key={field.name}>
-//               <Label htmlFor={field.name} className="mb-2">
-//                 {field.label}
-//               </Label>
-//               <Input
-//                 id={field.name}
-//                 type={field.type || "text"}
-//                 {...register(field.name as keyof CreateContactFormValues)}
-//               />
-//               {errors[field.name as keyof CreateContactFormValues] && (
-//                 <p className="text-sm text-red-500 mt-1">
-//                   {errors[field.name as keyof CreateContactFormValues]?.message}
-//                 </p>
-//               )}
-//             </div>
-//           ))}
-
-//           <Button type="submit" className="w-full" disabled={loading}>
-//             {loading ? (
-//               <>
-//                 <Spinner size="4" /> Saving
-//               </>
-//             ) : (
-//               "Create Contact"
-//             )}
-//           </Button>
-//         </form>
-//       </DialogContent>
-//     </Dialog>
-//   );
-// }

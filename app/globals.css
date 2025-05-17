@@ -76,10 +76,22 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* custom dark scheme */
+  --ba-bg: #0d1117;
+  --ba-bg-2: #161b22;
+  --ba-ba-3: #30363d;
+  --ba-text: #c9d1d9;
+  --ba-muted: #8b949e;
+  --ba-accent: #58a6ff;
+  --ba-success: #3fb950;
+  --ba-warning: #d29922;
+  --ba-danger: #f85149;
+  --ba-codebg: #161b22;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: #0d1117;
+  /* --background: oklch(0.145 0 0); */
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);

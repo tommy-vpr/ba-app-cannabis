@@ -28,7 +28,9 @@ export function BrandProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("brand", newBrand);
     setCookie(null, "selected_brand", newBrand, { path: "/" });
     document.cookie = `selected_brand=${newBrand}; path=/`;
-    router.push("/dashboard");
+
+    // Refresh to fetch data base on ENV
+    router.refresh();
   };
 
   useEffect(() => {

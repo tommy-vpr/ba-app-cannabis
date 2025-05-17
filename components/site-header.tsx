@@ -71,12 +71,13 @@ export function SiteHeader({
             </div>
 
             <div className="ml-auto flex items-center gap-2">
-              {brand === "litto" && <ThemeToggle />}
+              {/* {brand === "litto" && <ThemeToggle />} */}
+              <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton
                     size="sm"
-                    className="rounded-full bg-gray-200 dark:bg-muted/90 h-8 w-8 justify-center items-center cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                    className="rounded-full bg-gray-200 dark:bg-[#30363d] h-8 w-8 justify-center items-center cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
                     {/* <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium capitalize">
@@ -88,7 +89,7 @@ export function SiteHeader({
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent
-                  className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                  className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg dark:bg-[#0d1117]"
                   side={isMobile ? "bottom" : "right"}
                   align="end"
                   sideOffset={4}
@@ -97,7 +98,7 @@ export function SiteHeader({
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                       <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarImage src={user.avatar} alt={userName} />
-                        <AvatarFallback className="rounded-lg">
+                        <AvatarFallback className="rounded-lg dark:bg-[#30363d]">
                           BA
                         </AvatarFallback>
                       </Avatar>
@@ -156,7 +157,7 @@ export function SiteHeader({
             </div>
           </div>
         </header>
-        <div className="p-2 bg-gray-200 md:hidden dark:bg-black">
+        <div className="p-2 bg-gray-200 md:hidden dark:bg-[#0d1117] border-b dark:border-b-[#30363d]">
           <SearchNavBar />
         </div>
       </div>

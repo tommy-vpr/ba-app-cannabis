@@ -12,6 +12,7 @@ import { HubSpotContact } from "@/types/contact";
 import { getContacts } from "@/app/actions/getContacts";
 import { StatusCount } from "@/types/status";
 import { MeetingLogListRef } from "@/types/meeting";
+import { useBrand } from "@/context/BrandContext"; // ✅
 
 type ContactContextType = {
   contacts: HubSpotContact[];
@@ -60,12 +61,12 @@ type ContactContextType = {
   setLogListRef: (
     ref: React.RefObject<MeetingLogListRef | null> | null
   ) => void;
-    contactId: string | null;
+  contactId: string | null;
   setContactId: (id: string | null) => void;
   logContactData: HubSpotContact | null;
   setLogContactData: (data: HubSpotContact | null) => void;
   logMutate: (() => void) | null;
-setLogMutate: (fn: (() => void) | null) => void;
+  setLogMutate: (fn: (() => void) | null) => void;
 };
 
 const ContactContext = createContext<ContactContextType | null>(null);
@@ -119,10 +120,12 @@ export const ContactProvider = ({
   const [logListRef, setLogListRef] =
     useState<React.RefObject<MeetingLogListRef | null> | null>(null);
 
-      const [contactId, setContactId] = useState<string | null>(null);
-  const [logContactData, setLogContactData] = useState<HubSpotContact | null>(null);
-const [logMutate, setLogMutate] = useState<(() => void) | null>(null);
-
+  const [contactId, setContactId] = useState<string | null>(null);
+  const [logContactData, setLogContactData] = useState<HubSpotContact | null>(
+    null
+  );
+  const [logMutate, setLogMutate] = useState<(() => void) | null>(null);
+  const { brand } = useBrand();
 
   useEffect(() => {
     const uniqueZips = Array.from(
@@ -182,7 +185,7 @@ const [logMutate, setLogMutate] = useState<(() => void) | null>(null);
           zip: zip ?? undefined, // ✅ ensure zip is undefined, not null
           after: after ?? cursors[page - 1] ?? undefined, // ✅ convert null to undefined
         },
-        "litto"
+        brand
       );
 
       setContacts(res.contacts);
@@ -194,6 +197,15 @@ const [logMutate, setLogMutate] = useState<(() => void) | null>(null);
       }
     });
   };
+
+  useEffect(() => {
+    setPage(1);
+    setSelectedStatus("all");
+    setSelectedZip(null);
+    setQuery("");
+    setCursors({});
+    fetchPage(1, "all", ""); // fetch fresh data from page 1
+  }, [brand]);
 
   return (
     <ContactContext.Provider
@@ -237,7 +249,7 @@ const [logMutate, setLogMutate] = useState<(() => void) | null>(null);
         logContactData,
         setLogContactData,
         setLogMutate,
-        logMutate
+        logMutate,
       }}
     >
       {children}

@@ -48,13 +48,13 @@ export default function ContactPageClient({ id }: { id: string }) {
     logOpen,
     setLogOpen,
     setContactMutate,
-    
+
     logListRef,
-    setContactId, 
+    setContactId,
     setLogContactData,
     contactId,
     logMutate,
-    setLogMutate
+    setLogMutate,
   } = useContactContext();
   const [showStatusModal, setShowStatusModal] = useState(false);
 
@@ -64,37 +64,52 @@ export default function ContactPageClient({ id }: { id: string }) {
     { revalidateOnFocus: false }
   );
 
-const { data: meetings = [], mutate: logMutateFn  } = useSWR(
-  contact?.id ? `/api/meetings/${contact.id}` : null,
-  fetcher
-);
+  const { data: meetings = [], mutate: logMutateFn } = useSWR(
+    contact?.id ? `/api/meetings/${contact.id}` : null,
+    fetcher
+  );
 
+  useEffect(() => {
+    setContactMutate(() => mutate);
+    setLogMutate(() => logMutateFn);
 
-useEffect(() => {
-  setContactMutate(() => mutate);
-  setLogMutate(() => logMutateFn );
-
-  return () => {
-    setContactMutate(null);
-    setLogMutate(null); // ✅ this was missing inside the return
-  };
-}, [mutate, logMutateFn ]); // ✅ now it runs again if either changes
-
+    return () => {
+      setContactMutate(null);
+      setLogMutate(null); // ✅ this was missing inside the return
+    };
+  }, [mutate, logMutateFn]); // ✅ now it runs again if either changes
 
   // if (!contact) return <div>Loading...</div>;
   if (!contact) {
     return (
-      <div className="p-6 space-y-6 min-h-screen h-full">
-        <div className="flex gap-8 items-start">
-          <Skeleton className="h-36 w-36 rounded-full hidden md:inline-block" />
+      <div className="min-h-screen h-full relative p-4 w-full max-w-[1200px] m-auto">
+        <div className="flex flex-col md:flex-row rounded-md gap-8 p-6">
+          <Skeleton className="h-36 w-36 rounded-full hidden md:flex" />
+
           <div className="flex-1 space-y-4">
-            <Skeleton className="h-6 w-1/3" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-4 w-1/3" />
-            <Skeleton className="h-4 w-2/3" />
-            <Skeleton className="h-9 w-36" />
+            <Skeleton className="h-8 w-1/3" /> {/* Company name */}
+            <Skeleton className="h-5 w-1/4" /> {/* Status badge */}
+            <Skeleton className="h-4 w-1/2" /> {/* Email */}
+            <Skeleton className="h-4 w-1/3" /> {/* Phone */}
+            <Skeleton className="h-4 w-2/3" /> {/* Address */}
+            <div className="flex gap-2">
+              <Skeleton className="h-9 w-36" /> {/* Edit button */}
+              <Skeleton className="h-9 w-36" /> {/* Log meeting button */}
+            </div>
           </div>
         </div>
+
+        <div className="flex items-center gap-4 my-6">
+          <hr className="flex-grow border-t" />
+          <Skeleton className="h-6 w-32" />
+          <hr className="flex-grow border-t" />
+        </div>
+
+        {/* <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-md" />
+          ))}
+        </div> */}
       </div>
     );
   }
@@ -109,7 +124,7 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen h-full relative p-4 w-full max-w-[1200px] m-auto">
-      <div className="shadow-sm flex flex-col md:flex-row rounded-md gap-8 p-6 border border-muted bg-white dark:bg-black/30">
+      <div className="shadow-sm flex flex-col md:flex-row rounded-md gap-8 p-6 border border-muted dark:border-[#30363d] bg-white dark:bg-[#161b22]">
         <div
           className="hidden h-36 w-36 rounded-full md:flex m-auto items-center justify-center text-4xl md:text-[48px] font-bold uppercase transition-all duration-300 ease-in-out"
           style={{ backgroundColor: bg, color: text }}
@@ -171,9 +186,9 @@ useEffect(() => {
                   : "border-green-400 bg-green-400 text-black dark:text-green-400 dark:bg-transparent dark:hover:bg-green-400 dark:hover:text-black"
               )}
               onClick={() => {
-                setContactId(contact.id);            // ✅ Sets ID
-                setLogContactData(contact);         // ✅ Sets full contact
-                setLogOpen(true);                   // ✅ Opens modal
+                setContactId(contact.id); // ✅ Sets ID
+                setLogContactData(contact); // ✅ Sets full contact
+                setLogOpen(true); // ✅ Opens modal
               }}
             >
               <span className="transition-transform duration-500 transform group-hover:rotate-[180deg]">
@@ -193,7 +208,11 @@ useEffect(() => {
         <hr className="flex-grow border-t border-gray-200 dark:border-zinc-800" />
       </div>
 
-      <MeetingLogList ref={logListRef} contactId={contact.id} key={contact.id} />
+      <MeetingLogList
+        ref={logListRef}
+        contactId={contact.id}
+        key={contact.id}
+      />
 
       {/* <LogMeetingModal logListRef={logListRef} onSuccess={() => mutate()} /> */}
 

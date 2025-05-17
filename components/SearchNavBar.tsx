@@ -52,7 +52,8 @@ export default function SearchNavBar() {
       }
     }
     params.set("page", "1");
-    router.push(`${pathname}?${params.toString()}`);
+    // router.push(`${pathname}?${params.toString()}`);
+    router.push(`/dashboard?${params.toString()}`); // <-- force dashboard route
   };
 
   const handleSearch = () => {
@@ -116,7 +117,7 @@ export default function SearchNavBar() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className="w-full flex flex-col gap-2 px-2 md:px-0">
       <div className="flex gap-2 w-full md:w-2/3 mx-auto">
         <div className="relative w-full">
           <Input

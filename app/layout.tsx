@@ -8,6 +8,7 @@ import { getInitialDashboardData } from "@/app/actions/getInitialDashboardData";
 import { ContactProvider } from "@/context/ContactContext";
 import { EditContactModal } from "@/components/EditContactModal";
 import { LogMeetingModal } from "@/components/LogMeetingModal";
+import { cookies } from "next/headers";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({
@@ -50,13 +51,18 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const selectedBrand =
+    (cookieStore.get("selected_brand")?.value as "litto" | "skwezed") ??
+    "litto";
+
   const { contacts, after, hasNext, statusCounts } =
-    await getInitialDashboardData("litto");
+    await getInitialDashboardData(selectedBrand);
 
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#111]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-[#0d1117]`}
       >
         <Providers>
           <ContactProvider

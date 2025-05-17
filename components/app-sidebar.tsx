@@ -39,7 +39,11 @@ export function AppSidebar({
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader className={`${brand === "skwezed" && "bg-[#009444]"} p-4`}>
+      <SidebarHeader
+        className={`${
+          brand === "skwezed" && "bg-[#009444]"
+        } p-4 dark:bg-[#0d1117]`}
+      >
         <Link href="/dashboard" onClick={handleReset}>
           {brand === "litto" ? (
             <Image
@@ -63,7 +67,9 @@ export function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent
-        className={`${brand === "skwezed" && "bg-[#009444]"} gap-0`}
+        className={`${
+          brand === "skwezed" && "bg-[#009444]"
+        } gap-0 dark:bg-[#0d1117]`}
       >
         {children}
         <AnimatePresence mode="wait">
@@ -79,7 +85,9 @@ export function AppSidebar({
         </AnimatePresence>
       </SidebarContent>
 
-      <SidebarFooter className={`${brand === "skwezed" && "bg-[#009444]"}`}>
+      <SidebarFooter
+        className={`${brand === "skwezed" && "bg-[#009444]"} dark:bg-[#0d1117]`}
+      >
         <NavUser
           user={{
             name: "Tom",
