@@ -28,7 +28,9 @@ export function ContactCardList() {
     );
   }
 
-  const noResults = contacts.length === 0 && (query || selectedZip);
+  // const noResults = contacts.length === 0 && (query || selectedZip);
+  const noResults =
+    contacts.length === 0 && (query || selectedZip || selectedStatus !== "all");
 
   if (noResults) {
     return (

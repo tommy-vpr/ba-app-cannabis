@@ -79,7 +79,7 @@ export function EditContactModal() {
 
       if (contactMutate) contactMutate();
 
-      fetchPage(page); // <-- Add this here
+      await fetchPage(page); // <-- Add this here
 
       // Close modal
       setEditOpen(false);

@@ -23,6 +23,7 @@ export async function updateL2LeadStatus(
 
     // ✅ Optionally revalidate a specific contact page or tag
     revalidatePath(`/dashboard/contacts/${contactId}`);
+    revalidatePath(`/dashboard`);
 
     return { success: true };
   } catch (error) {

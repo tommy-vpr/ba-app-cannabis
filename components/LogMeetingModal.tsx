@@ -10,14 +10,8 @@ import { LogMeetingForm } from "./LogMeetingForm";
 import { useContactContext } from "@/context/ContactContext";
 
 export function LogMeetingModal({ logListRef }: { logListRef?: any }) {
-  const {
-    logOpen,
-    setLogOpen,
-    contactId,
-    logContactData,
-    fetchPage,
-    page,
-  } = useContactContext();
+  const { logOpen, setLogOpen, contactId, logContactData, fetchPage, page } =
+    useContactContext();
 
   if (!contactId || !logContactData) return null;
 
@@ -34,14 +28,14 @@ export function LogMeetingModal({ logListRef }: { logListRef?: any }) {
           contactJobTitle={logContactData.properties?.jobtitle}
           contactCompany={logContactData.properties?.company}
           contactStatus={logContactData.properties?.l2_lead_status}
-          onSuccess={(meeting) => {
+          onSuccess={async (meeting) => {
             const formatted = {
               id: meeting.id || `temp-${Date.now()}`,
               properties: meeting.properties,
             };
 
             logListRef?.current?.addOptimisticMeeting?.(formatted);
-            fetchPage?.(page); // Refresh page to reflect new status
+            await fetchPage?.(page); // Refresh page to reflect new status
             setLogOpen(false);
           }}
         />

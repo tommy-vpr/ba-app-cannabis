@@ -29,16 +29,36 @@ export default function SearchNavBar() {
 
   const [hasSearched, setHasSearched] = useState(false);
 
-  useEffect(() => {
-    const urlQuery = searchParams.get("query") || "";
-    const urlStatus = (searchParams.get("status") as StatusKey) || "all";
-    const urlZip = searchParams.get("zip") || "";
+  // useEffect(() => {
+  //   const urlQuery = searchParams.get("query") || "";
+  //   const urlStatus = (searchParams.get("status") as StatusKey) || "all";
+  //   const urlZip = searchParams.get("zip") || "";
 
-    setLocalQuery(urlQuery);
-    setLocalZip(urlZip);
-    setQuery(urlQuery);
-    setSelectedZip(urlZip || null);
-    setSelectedStatus(urlStatus);
+  //   setLocalQuery(urlQuery);
+  //   setLocalZip(urlZip);
+  //   setQuery(urlQuery);
+  //   setSelectedZip(urlZip || null);
+  //   setSelectedStatus(urlStatus);
+  // }, []);
+  useEffect(() => {
+    const urlQuery = searchParams.get("query");
+    const urlStatus = searchParams.get("status") as StatusKey;
+    const urlZip = searchParams.get("zip");
+
+    // Guard: only sync if URL actually has values
+    if (urlQuery !== null) {
+      setQuery(urlQuery);
+      setLocalQuery(urlQuery);
+    }
+
+    if (urlZip !== null) {
+      setSelectedZip(urlZip);
+      setLocalZip(urlZip);
+    }
+
+    if (urlStatus !== null) {
+      setSelectedStatus(urlStatus);
+    }
   }, []);
 
   const updateSearchParams = (newParams: Record<string, string | null>) => {
@@ -56,7 +76,7 @@ export default function SearchNavBar() {
     router.push(`/dashboard?${params.toString()}`); // <-- force dashboard route
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     console.log(
       "handleSearch triggered with:",
       localQuery,
@@ -71,10 +91,10 @@ export default function SearchNavBar() {
       zip: localZip || null,
       status: selectedStatus,
     });
-    fetchPage(1, selectedStatus, localQuery, undefined, localZip || null);
+    await fetchPage(1, selectedStatus, localQuery, undefined, localZip || null);
   };
 
-  const handleStatusClick = (status: StatusKey) => {
+  const handleStatusClick = async (status: StatusKey) => {
     setHasSearched(false);
     setSelectedStatus(status);
     updateSearchParams({
@@ -82,10 +102,10 @@ export default function SearchNavBar() {
       query: localQuery || null,
       zip: localZip || null,
     });
-    fetchPage(1, status, localQuery, undefined, localZip || null);
+    await fetchPage(1, status, localQuery, undefined, localZip || null);
   };
 
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     setLocalQuery("");
     setLocalZip("");
     setQuery("");
@@ -99,7 +119,7 @@ export default function SearchNavBar() {
       zip: null,
     });
 
-    fetchPage(1, "all", "", undefined, null);
+    await fetchPage(1, "all", "", undefined, null);
   };
 
   const statusStyles: Record<StatusKey, string> = {
@@ -131,13 +151,19 @@ export default function SearchNavBar() {
           />
           {localQuery && (
             <button
-              onClick={() => {
+              onClick={async () => {
                 setLocalQuery("");
                 setQuery("");
                 setHasSearched(false); // reset
                 updateSearchParams({ query: null });
                 if (hasSearched) {
-                  fetchPage(1, selectedStatus, "", undefined, localZip || null);
+                  await fetchPage(
+                    1,
+                    selectedStatus,
+                    "",
+                    undefined,
+                    localZip || null
+                  );
                 }
               }}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white"
@@ -161,13 +187,19 @@ export default function SearchNavBar() {
           />
           {localZip && (
             <button
-              onClick={() => {
+              onClick={async () => {
                 setLocalZip("");
                 setSelectedZip(null);
                 setHasSearched(false); // reset
                 updateSearchParams({ zip: null });
                 if (hasSearched) {
-                  fetchPage(1, selectedStatus, localQuery, undefined, null);
+                  await fetchPage(
+                    1,
+                    selectedStatus,
+                    localQuery,
+                    undefined,
+                    null
+                  );
                 }
               }}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"

@@ -20,7 +20,13 @@ type ContactContextType = {
     id: string,
     updates: Partial<HubSpotContact["properties"]>
   ) => void;
-  setContacts: (data: HubSpotContact[]) => void;
+  setContacts: React.Dispatch<React.SetStateAction<HubSpotContact[]>>;
+  setOptimisticContacts: (
+    action:
+      | ((prev: HubSpotContact[]) => HubSpotContact[])
+      | { id: string; properties: Partial<HubSpotContact["properties"]> }
+  ) => void;
+
   fetchPage: (
     page: number,
     status?: string,
@@ -46,7 +52,7 @@ type ContactContextType = {
   editOpen: boolean;
   setEditOpen: (open: boolean) => void;
   statusCounts: StatusCount;
-  setStatusCounts: (s: StatusCount) => void;
+  setStatusCounts: React.Dispatch<React.SetStateAction<StatusCount>>;
   availableZips: string[];
   setAvailableZips: (zips: string[]) => void;
   localQuery: string;
@@ -67,6 +73,7 @@ type ContactContextType = {
   setLogContactData: (data: HubSpotContact | null) => void;
   logMutate: (() => void) | null;
   setLogMutate: (fn: (() => void) | null) => void;
+  updateContactInList: (updated: HubSpotContact) => void;
 };
 
 const ContactContext = createContext<ContactContextType | null>(null);
@@ -95,7 +102,10 @@ export const ContactProvider = ({
   initialHasNext?: boolean;
   initialStatusCounts?: StatusCount;
 }) => {
-  const [contacts, setContacts] = useState(initialContacts);
+  const [contacts, setContacts] = useState<HubSpotContact[]>(initialContacts);
+  const [statusCounts, setStatusCounts] =
+    useState<StatusCount>(initialStatusCounts);
+
   const [cursors, setCursors] =
     useState<Record<number, string | null>>(initialCursors);
   const [query, setQuery] = useState("");
@@ -108,8 +118,6 @@ export const ContactProvider = ({
     null
   );
   const [editOpen, setEditOpen] = useState(false);
-  const [statusCounts, setStatusCounts] =
-    useState<StatusCount>(initialStatusCounts);
 
   const [availableZips, setAvailableZips] = useState<string[]>([]);
 
@@ -142,25 +150,22 @@ export const ContactProvider = ({
 
   const [optimisticContacts, setOptimisticContacts] = useOptimistic<
     HubSpotContact[],
-    { id: string; properties: Partial<HubSpotContact["properties"]> }
-  >(contacts, (state, updated) =>
-    state.map((c) =>
-      c.id === updated.id
-        ? { ...c, properties: { ...c.properties, ...updated.properties } }
+    | ((prev: HubSpotContact[]) => HubSpotContact[])
+    | { id: string; properties: Partial<HubSpotContact["properties"]> }
+  >(contacts, (state, action) => {
+    if (typeof action === "function") {
+      return action(state); // for prepend, delete, etc.
+    }
+
+    // for updating contact properties
+    return state.map((c) =>
+      c.id === action.id
+        ? { ...c, properties: { ...c.properties, ...action.properties } }
         : c
-    )
-  );
+    );
+  });
 
-  const optimisticUpdate = (
-    id: string,
-    updates: Partial<HubSpotContact["properties"]>
-  ) => {
-    startTransition(() => {
-      setOptimisticContacts({ id, properties: updates });
-    });
-  };
-
-  const fetchPage = (
+  const fetchPage = async (
     page: number,
     status = selectedStatus,
     q = query,
@@ -199,19 +204,92 @@ export const ContactProvider = ({
   };
 
   useEffect(() => {
-    setPage(1);
-    setSelectedStatus("all");
-    setSelectedZip(null);
-    setQuery("");
-    setCursors({});
-    fetchPage(1, "all", ""); // fetch fresh data from page 1
+    if (initialContacts.length > 0) return; // already hydrated from layout
+
+    const loadInitial = async () => {
+      setPage(1);
+      setSelectedStatus("all");
+      setSelectedZip(null);
+      setQuery("");
+      setCursors({});
+
+      await fetchPage(1, "all", "");
+    };
+
+    loadInitial();
   }, [brand]);
+
+  const optimisticUpdate = (
+    id: string,
+    updates: Partial<HubSpotContact["properties"]>
+  ) => {
+    startTransition(() => {
+      setOptimisticContacts({ id, properties: updates });
+    });
+  };
+
+  // const updateContactInList = (updated: HubSpotContact) => {
+  //   setOptimisticContacts((prev) =>
+  //     prev.map((c) => (c.id === updated.id ? updated : c))
+  //   );
+  // };
+  // const updateContactInList = (updated: HubSpotContact) => {
+  //   setContacts((prev) => {
+  //     const exists = prev.some((c) => c.id === updated.id);
+  //     if (!exists) return [updated, ...prev];
+  //     return prev.map((c) => (c.id === updated.id ? updated : c));
+  //   });
+  // };
+  const updateContactInList = (updated: HubSpotContact) => {
+    setContacts((prev) => {
+      const exists = prev.some((c) => c.id === updated.id);
+      if (exists) {
+        // Update in place
+        return prev.map((c) => (c.id === updated.id ? updated : c));
+      }
+
+      // Filter guard — only insert if it matches current filters
+      const statusOk =
+        selectedStatus === "all" ||
+        updated.properties.l2_lead_status?.toLowerCase() === selectedStatus;
+
+      const queryOk =
+        !query ||
+        updated.properties.company
+          ?.toLowerCase()
+          .includes(query.toLowerCase()) ||
+        updated.properties.email?.toLowerCase().includes(query.toLowerCase());
+
+      const zipOk =
+        !selectedZip ||
+        updated.properties.zip?.toString().includes(selectedZip.toString());
+
+      if (statusOk && queryOk && zipOk) {
+        return [updated, ...prev];
+      }
+
+      // Otherwise, ignore
+      return prev;
+    });
+  };
+
+  useEffect(() => {
+    const isFiltered =
+      window?.location?.search.includes("query") ||
+      window?.location?.search.includes("zip") ||
+      window?.location?.search.includes("status");
+
+    if (initialContacts.length === 0 || isFiltered) {
+      fetchPage(1, "all", "");
+    }
+  }, []);
 
   return (
     <ContactContext.Provider
       value={{
         contacts: optimisticContacts,
         optimisticUpdate,
+        setOptimisticContacts,
         setContacts,
         fetchPage,
         loading: isPending,
@@ -250,6 +328,7 @@ export const ContactProvider = ({
         setLogContactData,
         setLogMutate,
         logMutate,
+        updateContactInList,
       }}
     >
       {children}

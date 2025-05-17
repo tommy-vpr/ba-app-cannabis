@@ -9,7 +9,6 @@ import { HubSpotContact } from "@/types/hubspot";
 import { useBrand } from "@/context/BrandContext";
 import { useContactContext } from "@/context/ContactContext";
 
-
 type Props = {
   open: boolean;
   setOpen: (val: boolean) => void;
@@ -40,8 +39,9 @@ export function UpdateStatusModal({
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(currentStatus);
   const { brand } = useBrand();
-  const { refetchContacts } = useContactContext();
+  // const { refetchContacts } = useContactContext();
 
+  const { updateContactInList } = useContactContext();
 
   const handleUpdate = async () => {
     if (!contactId || !contact) return;
@@ -58,6 +58,7 @@ export function UpdateStatusModal({
 
     mutateContact?.(updatedContact, false);
     setLocalContact?.(updatedContact); // ✅ sync status badge in ContactPageClient
+    updateContactInList(updatedContact);
 
     // 🚀 Server-side update
     const res = await updateL2LeadStatus(contactId, selected, brand);
@@ -68,9 +69,10 @@ export function UpdateStatusModal({
       if (refreshed) {
         mutateContact?.(refreshed, false);
         setLocalContact?.(refreshed); // sync again with fresh data
+        updateContactInList(refreshed); // ✅ ensure global list reflects change
       }
 
-      await refetchContacts(); // 🌀 add this
+      // await refetchContacts();
       setOpen(false);
     } else {
       toast.error(res.message || "Update failed");
@@ -115,4 +117,3 @@ export function UpdateStatusModal({
     </Dialog>
   );
 }
-

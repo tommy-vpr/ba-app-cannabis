@@ -22,6 +22,9 @@ import { clsx } from "clsx";
 import Link from "next/link";
 import { useBrand } from "@/context/BrandContext";
 import { useContactContext } from "@/context/ContactContext";
+import { useClearFiltersAndRedirect } from "@/hooks/useClearFiltersAndRedirect";
+
+import { useRouter } from "next/navigation";
 
 export function NavMain({
   items,
@@ -34,7 +37,17 @@ export function NavMain({
 }) {
   const pathname = usePathname();
   const { brand } = useBrand();
-  const { setQuery, setSelectedZip, setSelectedStatus } = useContactContext();
+  const {
+    setQuery,
+    setSelectedZip,
+    setSelectedStatus,
+    setLocalQuery,
+    setLocalZip,
+    setPage,
+    fetchPage,
+  } = useContactContext();
+
+  const router = useRouter();
 
   const handleReset = () => {
     setQuery("");
@@ -51,7 +64,23 @@ export function NavMain({
             const isActive = pathname === item.url;
             return (
               <SidebarMenuItem key={item.title} className="my-0.5">
-                <Link href={item.url} onClick={handleReset}>
+                <Link
+                  href={item.url}
+                  onClick={async () => {
+                    setQuery("");
+                    setLocalQuery("");
+                    setSelectedZip(null);
+                    setLocalZip("");
+                    setSelectedStatus("all");
+                    setPage(1);
+
+                    // ✅ Update URL
+                    // const params = new URLSearchParams();
+                    // params.set("page", "1");
+                    router.replace(`/dashboard`);
+                    await fetchPage(1, "all", "");
+                  }}
+                >
                   <SidebarMenuButton
                     tooltip={item.title}
                     className={clsx(
@@ -73,6 +102,28 @@ export function NavMain({
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </Link>
+
+                <div className="mt-4">
+                  <button
+                    className="cursor-pointer hover:bg-gray-700 transition duration-200"
+                    onClick={async () => {
+                      setQuery("");
+                      setLocalQuery("");
+                      setSelectedZip(null);
+                      setLocalZip("");
+                      setSelectedStatus("all");
+                      setPage(1);
+
+                      // ✅ Update URL
+                      // const params = new URLSearchParams();
+                      // params.set("page", "1");
+                      router.replace(`/dashboard`);
+                      await fetchPage(1, "all", "");
+                    }}
+                  >
+                    Test Link
+                  </button>
+                </div>
               </SidebarMenuItem>
             );
           })}

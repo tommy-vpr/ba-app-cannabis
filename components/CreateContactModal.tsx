@@ -9,18 +9,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-// import { createNewContact } from "@/app/actions/createNewContact";
-import { CreateContactFormValues, CreateContactSchema } from "@/lib/schemas";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
-import { useState } from "react";
 import Spinner from "./Spinner";
-import { useContactContext } from "@/context/ContactContext";
-import { states } from "@/lib/states";
-import { createNewContact } from "@/app/actions/createNewContact";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import { createNewContact } from "@/app/actions/createNewContact";
+import { CreateContactFormValues, CreateContactSchema } from "@/lib/schemas";
+import { states } from "@/lib/states";
+
+import { useClearFiltersAndRedirect } from "@/hooks/useClearFiltersAndRedirect";
+import { useContactContext } from "@/context/ContactContext";
+import { StatusKey } from "@/types/status";
 
 export function CreateContactModal({
   open,
@@ -29,9 +32,8 @@ export function CreateContactModal({
   open: boolean;
   setOpen: (val: boolean) => void;
 }) {
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
-
+  const [loading, setLoading] = useState(false);
   const {
     setQuery,
     setSelectedZip,
@@ -43,6 +45,7 @@ export function CreateContactModal({
     fetchPage,
     setStatusCounts,
   } = useContactContext();
+  const clearFiltersAndRedirect = useClearFiltersAndRedirect();
 
   const {
     register,
@@ -67,6 +70,10 @@ export function CreateContactModal({
     },
   });
 
+  function isStatusKey(value: string): value is StatusKey {
+    return Object.values(StatusKey).includes(value as StatusKey);
+  }
+
   const onSubmit = async (values: CreateContactFormValues) => {
     setLoading(true);
     try {
@@ -77,28 +84,31 @@ export function CreateContactModal({
       reset();
       setOpen(false);
 
-      // ✅ Reset local and global state
-      setLocalQuery("");
-      setLocalZip("");
+      // 🧼 Clear filters
       setQuery("");
+      setLocalQuery("");
       setSelectedZip(null);
+      setLocalZip("");
       setSelectedStatus("all");
       setPage(1);
       setCursors({});
 
-      // ✅ Clear search params from URL
-      router.replace("/dashboard?page=1");
-      router.refresh(); // ✅ force layout/page reload from server
+      // 🔄 Update URL to clean state
+      router.push("/dashboard?page=1");
 
-      // ✅ Refetch contact list and counts
-      fetchPage(1, "all", "", undefined, null);
+      // ✅ Replace entire list with the new contact (optimistic style)
+      fetchPage(1, "all", "", () => [res.contact], null);
 
-      const { statusCounts } = await import(
-        "@/app/actions/getInitialDashboardData"
-      ).then(
-        (mod) => mod.getInitialDashboardData("litto") // or use selectedBrand if dynamic
-      );
-      setStatusCounts(statusCounts);
+      const rawStatus = res.contact.properties.lead_status?.toLowerCase() ?? "";
+      const statusKey = isStatusKey(rawStatus)
+        ? rawStatus
+        : StatusKey.PendingVisit;
+
+      setStatusCounts((prev) => ({
+        ...prev,
+        [StatusKey.All]: prev[StatusKey.All] + 1,
+        [statusKey]: (prev[statusKey] ?? 0) + 1,
+      }));
     } catch (err: any) {
       toast.error(err.message || "Failed to create contact");
     } finally {
@@ -106,7 +116,6 @@ export function CreateContactModal({
     }
   };
 
-  // Phone formatting handler
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/[^\d]/g, "");
     if (value.length > 6)
@@ -123,7 +132,6 @@ export function CreateContactModal({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-          {/* Common fields */}
           {[
             "firstname",
             "lastname",
@@ -151,9 +159,8 @@ export function CreateContactModal({
             </div>
           ))}
 
-          {/* State Dropdown */}
           <div>
-            <Label className="mb-2" htmlFor="state">
+            <Label htmlFor="state" className="mb-2">
               State
             </Label>
             <select
@@ -173,9 +180,8 @@ export function CreateContactModal({
             )}
           </div>
 
-          {/* Phone */}
           <div>
-            <Label className="mb-2" htmlFor="phone">
+            <Label htmlFor="phone" className="mb-2">
               Phone
             </Label>
             <Input

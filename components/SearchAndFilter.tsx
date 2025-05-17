@@ -52,7 +52,7 @@ export default function SearchAndFilter() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     setQuery(localQuery);
     setSelectedZip(localZip || null);
     updateSearchParams({
@@ -60,30 +60,30 @@ export default function SearchAndFilter() {
       zip: localZip || null,
       status: selectedStatus,
     });
-    fetchPage(1, selectedStatus, localQuery, undefined, localZip || null);
+    await fetchPage(1, selectedStatus, localQuery, undefined, localZip || null);
   };
 
-  const handleStatusClick = (status: StatusKey) => {
+  const handleStatusClick = async (status: StatusKey) => {
     setSelectedStatus(status);
     updateSearchParams({
       status,
       query: localQuery || null,
       zip: localZip || null,
     });
-    fetchPage(1, status, localQuery, undefined, localZip || null);
+    await fetchPage(1, status, localQuery, undefined, localZip || null);
   };
 
-  const handleClearStatus = () => {
+  const handleClearStatus = async () => {
     setSelectedStatus("all");
     updateSearchParams({
       status: "all",
       query: localQuery || null,
       zip: localZip || null,
     });
-    fetchPage(1, "all", localQuery, undefined, localZip || null);
+    await fetchPage(1, "all", localQuery, undefined, localZip || null);
   };
 
-  const handleClearQuery = () => {
+  const handleClearQuery = async () => {
     setLocalQuery("");
     setQuery("");
     updateSearchParams({
@@ -91,7 +91,7 @@ export default function SearchAndFilter() {
       zip: localZip || null,
       status: selectedStatus,
     });
-    fetchPage(1, selectedStatus, "", undefined, localZip || null);
+    await fetchPage(1, selectedStatus, "", undefined, localZip || null);
   };
 
   const statusStyles: Record<StatusKey, string> = {

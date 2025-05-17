@@ -34,16 +34,35 @@ export default function FilteringSystem() {
 
   const [hasSearched, setHasSearched] = useState(false);
 
-  useEffect(() => {
-    const urlQuery = searchParams.get("query") || "";
-    const urlStatus = (searchParams.get("status") as StatusKey) || "all";
-    const urlZip = searchParams.get("zip") || "";
+  // useEffect(() => {
+  //   const urlQuery = searchParams.get("query") || "";
+  //   const urlStatus = (searchParams.get("status") as StatusKey) || "all";
+  //   const urlZip = searchParams.get("zip") || "";
 
-    setLocalQuery(urlQuery);
-    setLocalZip(urlZip);
-    setQuery(urlQuery);
-    setSelectedZip(urlZip || null);
-    setSelectedStatus(urlStatus);
+  //   setLocalQuery(urlQuery);
+  //   setLocalZip(urlZip);
+  //   setQuery(urlQuery);
+  //   setSelectedZip(urlZip || null);
+  //   setSelectedStatus(urlStatus);
+  // }, []);
+  useEffect(() => {
+    const urlQuery = searchParams.get("query");
+    const urlStatus = searchParams.get("status") as StatusKey;
+    const urlZip = searchParams.get("zip");
+
+    if (urlQuery !== null) {
+      setLocalQuery(urlQuery);
+      setQuery(urlQuery);
+    }
+
+    if (urlZip !== null) {
+      setLocalZip(urlZip);
+      setSelectedZip(urlZip);
+    }
+
+    if (urlStatus !== null) {
+      setSelectedStatus(urlStatus);
+    }
   }, []);
 
   const updateSearchParams = (newParams: Record<string, string | null>) => {
@@ -61,7 +80,7 @@ export default function FilteringSystem() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const handleStatusClick = (status: StatusKey) => {
+  const handleStatusClick = async (status: StatusKey) => {
     setHasSearched(false);
     setSelectedStatus(status);
     updateSearchParams({
@@ -69,10 +88,10 @@ export default function FilteringSystem() {
       query: localQuery || null,
       zip: localZip || null,
     });
-    fetchPage(1, status, localQuery, undefined, localZip || null);
+    await fetchPage(1, status, localQuery, undefined, localZip || null);
   };
 
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     setLocalQuery("");
     setLocalZip("");
     setQuery("");
@@ -86,7 +105,7 @@ export default function FilteringSystem() {
       zip: null,
     });
 
-    fetchPage(1, "all", "", undefined, null);
+    await fetchPage(1, "all", "", undefined, null);
   };
 
   const statusStyles: Record<StatusKey, string> = {

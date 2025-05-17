@@ -26,11 +26,11 @@ export function PaginationControls() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const nextPage = page + 1;
     const afterCursor = cursors[page]; // cursor for current page gets us to next
 
-    fetchPage(
+    await fetchPage(
       nextPage,
       selectedStatus,
       query,
@@ -41,11 +41,11 @@ export function PaginationControls() {
     updateSearchParamPage(nextPage);
   };
 
-  const handlePrev = () => {
+  const handlePrev = async () => {
     const prevPage = page - 1;
     const prevCursor = prevPage <= 1 ? undefined : cursors[prevPage - 1];
 
-    fetchPage(
+    await fetchPage(
       prevPage,
       selectedStatus,
       query,

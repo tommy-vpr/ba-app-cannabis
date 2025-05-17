@@ -63,7 +63,7 @@ export default function SearchAndFilter() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     setHasSearched(true);
     setQuery(localQuery);
     setSelectedZip(localZip || null);
@@ -72,10 +72,10 @@ export default function SearchAndFilter() {
       zip: localZip || null,
       status: selectedStatus,
     });
-    fetchPage(1, selectedStatus, localQuery, undefined, localZip || null);
+    await fetchPage(1, selectedStatus, localQuery, undefined, localZip || null);
   };
 
-  const handleStatusClick = (status: StatusKey) => {
+  const handleStatusClick = async (status: StatusKey) => {
     setHasSearched(false);
     setSelectedStatus(status);
     updateSearchParams({
@@ -83,10 +83,10 @@ export default function SearchAndFilter() {
       query: localQuery || null,
       zip: localZip || null,
     });
-    fetchPage(1, status, localQuery, undefined, localZip || null);
+    await fetchPage(1, status, localQuery, undefined, localZip || null);
   };
 
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     setLocalQuery("");
     setLocalZip("");
     setQuery("");
@@ -100,7 +100,7 @@ export default function SearchAndFilter() {
       zip: null,
     });
 
-    fetchPage(1, "all", "", undefined, null);
+    await fetchPage(1, "all", "", undefined, null);
   };
 
   const statusStyles: Record<StatusKey, string> = {
@@ -129,13 +129,19 @@ export default function SearchAndFilter() {
           />
           {localQuery && (
             <button
-              onClick={() => {
+              onClick={async () => {
                 setLocalQuery("");
                 setQuery("");
                 setHasSearched(false); // reset
                 updateSearchParams({ query: null });
                 if (hasSearched) {
-                  fetchPage(1, selectedStatus, "", undefined, localZip || null);
+                  await fetchPage(
+                    1,
+                    selectedStatus,
+                    "",
+                    undefined,
+                    localZip || null
+                  );
                 }
               }}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
@@ -154,13 +160,19 @@ export default function SearchAndFilter() {
           />
           {localZip && (
             <button
-              onClick={() => {
+              onClick={async () => {
                 setLocalZip("");
                 setSelectedZip(null);
                 setHasSearched(false); // reset
                 updateSearchParams({ zip: null });
                 if (hasSearched) {
-                  fetchPage(1, selectedStatus, localQuery, undefined, null);
+                  await fetchPage(
+                    1,
+                    selectedStatus,
+                    localQuery,
+                    undefined,
+                    null
+                  );
                 }
               }}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
