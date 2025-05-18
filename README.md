@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-Version 3 Ba App, run the development server:
+Version 3 Ba App Server Base, run the development server:
 
 ```bash
 npm run dev
