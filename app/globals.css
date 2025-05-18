@@ -78,6 +78,7 @@
   --sidebar-ring: oklch(0.708 0 0);
   /* custom dark scheme */
   --ba-bg: #0d1117;
+  --ba-bg-1: #212830;
   --ba-bg-2: #161b22;
   --ba-ba-3: #30363d;
   --ba-text: #c9d1d9;

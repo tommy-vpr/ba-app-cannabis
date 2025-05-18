@@ -49,7 +49,7 @@ export function LogMeetingForm({
 }) {
   const [isPending, startTransition] = useTransition();
   const { brand } = useBrand();
-  const { logMutate, setLogOpen, contactMutate, logContactData  } = useContactContext();
+  const { logMutate, setLogOpen, contactMutate, logContactData, updateContactInList  } = useContactContext();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -96,6 +96,17 @@ export function LogMeetingForm({
           logMutate?.();
           contactMutate?.();
           setLogOpen(false);
+
+          // ✅ Optimistic update of contact status
+        updateContactInList?.({
+          ...logContactData!,
+          properties: {
+            ...logContactData!.properties,
+            l2_lead_status: values.l2Status,
+          },
+        });
+
+        onSuccess?.(meeting);
         })
         .catch((err) => {
           console.error(err);

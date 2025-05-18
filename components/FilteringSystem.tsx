@@ -34,17 +34,6 @@ export default function FilteringSystem() {
 
   const [hasSearched, setHasSearched] = useState(false);
 
-  // useEffect(() => {
-  //   const urlQuery = searchParams.get("query") || "";
-  //   const urlStatus = (searchParams.get("status") as StatusKey) || "all";
-  //   const urlZip = searchParams.get("zip") || "";
-
-  //   setLocalQuery(urlQuery);
-  //   setLocalZip(urlZip);
-  //   setQuery(urlQuery);
-  //   setSelectedZip(urlZip || null);
-  //   setSelectedStatus(urlStatus);
-  // }, []);
   useEffect(() => {
     const urlQuery = searchParams.get("query");
     const urlStatus = searchParams.get("status") as StatusKey;

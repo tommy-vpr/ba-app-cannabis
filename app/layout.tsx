@@ -62,7 +62,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-[#0d1117]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-[#06070a]`}
       >
         <Providers>
           <ContactProvider

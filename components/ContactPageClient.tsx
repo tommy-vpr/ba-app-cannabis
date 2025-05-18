@@ -84,25 +84,25 @@ export default function ContactPageClient({ id }: { id: string }) {
     return (
       <div className="min-h-screen h-full relative p-4 w-full max-w-[1200px] m-auto">
         <div className="flex flex-col md:flex-row rounded-md gap-8 p-6">
-          <Skeleton className="h-36 w-36 rounded-full hidden md:flex" />
+          <Skeleton className="h-36 w-36 rounded-full hidden md:flex dark:bg-[#212830]" />
 
           <div className="flex-1 space-y-4">
-            <Skeleton className="h-8 w-1/3" /> {/* Company name */}
-            <Skeleton className="h-5 w-1/4" /> {/* Status badge */}
-            <Skeleton className="h-4 w-1/2" /> {/* Email */}
-            <Skeleton className="h-4 w-1/3" /> {/* Phone */}
-            <Skeleton className="h-4 w-2/3" /> {/* Address */}
+            <Skeleton className="h-8 w-1/3 dark:bg-[#161b22]" /> {/* Company name */}
+            <Skeleton className="h-5 w-1/4 dark:bg-[#161b22]" /> {/* Status badge */}
+            <Skeleton className="h-4 w-1/2 dark:bg-[#161b22]" /> {/* Email */}
+            <Skeleton className="h-4 w-1/3 dark:bg-[#161b22]" /> {/* Phone */}
+            <Skeleton className="h-4 w-2/3 dark:bg-[#161b22]" /> {/* Address */}
             <div className="flex gap-2">
-              <Skeleton className="h-9 w-36" /> {/* Edit button */}
-              <Skeleton className="h-9 w-36" /> {/* Log meeting button */}
+              <Skeleton className="h-9 w-36 dark:bg-[#161b22]" /> {/* Edit button */}
+              <Skeleton className="h-9 w-36 dark:bg-[#161b22]" /> {/* Log meeting button */}
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-4 my-6">
-          <hr className="flex-grow border-t" />
-          <Skeleton className="h-6 w-32" />
-          <hr className="flex-grow border-t" />
+          <hr className="flex-grow border-t dark:border-[#161b22]" />
+          <Skeleton className="h-6 w-32 dark:bg-[#161b22]" />
+          <hr className="flex-grow border-t dark:border-[#161b22]" />
         </div>
 
         {/* <div className="space-y-4">

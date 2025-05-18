@@ -57,7 +57,7 @@ export function SiteHeader({
   return (
     <div className="sticky top-0 z-50">
       <div className="flex flex-col">
-        <header className="p-[6px] bg-background flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height]">
+        <header className="p-[6px] bg-background dark:bg-[#06070a] flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height]">
           <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
             <SidebarTrigger className="-ml-1" />
             <Separator

@@ -147,9 +147,9 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
           {[...Array(2)].map((_, i) => (
             <div
               key={i}
-              className="border border-gray-200 dark:border-zinc-700 p-4 rounded shadow-sm mb-4 space-y-3"
+              className="dark:bg-[#212830] p-4 rounded shadow-sm mb-4 space-y-3"
             >
-              <Skeleton className="h-5 w-3/4 rounded" />
+              <Skeleton className="h-5 w-3/4 rounded dark:bg-[#161b22]" />
             </div>
           ))}
         </div>
@@ -157,9 +157,9 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
           {[...Array(2)].map((_, i) => (
             <div
               key={i}
-              className="border border-gray-200 dark:border-zinc-700 p-4 rounded shadow-sm mb-4 space-y-3"
+              className="dark:bg-[#212830] p-4 rounded shadow-sm mb-4 space-y-3"
             >
-              <Skeleton className="h-5 w-3/4 rounded" />
+              <Skeleton className="h-5 w-3/4 rounded dark:bg-[#161b22]" />
             </div>
           ))}
         </div>

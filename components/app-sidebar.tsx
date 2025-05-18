@@ -42,7 +42,7 @@ export function AppSidebar({
       <SidebarHeader
         className={`${
           brand === "skwezed" && "bg-[#009444]"
-        } p-4 dark:bg-[#0d1117]`}
+        } p-4 dark:bg-[#06070a]`}
       >
         <Link href="/dashboard" onClick={handleReset}>
           {brand === "litto" ? (
@@ -69,7 +69,7 @@ export function AppSidebar({
       <SidebarContent
         className={`${
           brand === "skwezed" && "bg-[#009444]"
-        } gap-0 dark:bg-[#0d1117]`}
+        } gap-0 dark:bg-[#06070a]`}
       >
         {children}
         <AnimatePresence mode="wait">
@@ -86,7 +86,7 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter
-        className={`${brand === "skwezed" && "bg-[#009444]"} dark:bg-[#0d1117]`}
+        className={`${brand === "skwezed" && "bg-[#009444]"} dark:bg-[#06070a]`}
       >
         <NavUser
           user={{
