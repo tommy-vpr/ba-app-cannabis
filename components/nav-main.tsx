@@ -103,9 +103,9 @@ export function NavMain({
                   </SidebarMenuButton>
                 </Link>
 
-                <div className="mt-4">
-                  <button
-                    className="cursor-pointer hover:bg-gray-700 transition duration-200"
+                <div className="mt-4 flex flex-col gap-2">
+                  {/* <button
+                    className="cursor-pointer hover:bg-pink-500 transition duration-200"
                     onClick={async () => {
                       setQuery("");
                       setLocalQuery("");
@@ -122,7 +122,11 @@ export function NavMain({
                     }}
                   >
                     Test Link
-                  </button>
+                  </button> */}
+
+                  <Link href="/dashboard/saved-contacts" className="">
+                    Priority
+                  </Link>
                 </div>
               </SidebarMenuItem>
             );

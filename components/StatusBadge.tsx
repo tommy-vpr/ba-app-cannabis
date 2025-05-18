@@ -17,10 +17,10 @@ const statusMap: Record<
   },
   "visit requested by rep": {
     label: "Visit requested by rep",
-    dotColor: "bg-red-300",
-    bgColor: "bg-red-50 dark:bg-transparent",
-    textColor: "text-red-400",
-    borderColor: "border-red-300",
+    dotColor: "bg-pink-300",
+    bgColor: "bg-pink-50 dark:bg-transparent",
+    textColor: "text-pink-400",
+    borderColor: "border-pink-300",
   },
   "dropped off": {
     label: "Dropped Off",

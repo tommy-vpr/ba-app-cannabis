@@ -33,3 +33,7 @@ export type HubSpotProperty = {
 export type HubSpotFieldsResult =
   | { success: true; fields: HubSpotProperty[] }
   | { success: false; error: string };
+
+export type HubSpotContactWithSaved = HubSpotContact & {
+  isSaved: boolean;
+};

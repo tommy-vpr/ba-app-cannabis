@@ -1,26 +1,50 @@
 "use client";
 
-import { HubSpotContact } from "@/types/hubspot";
+import { HubSpotContact, HubSpotContactWithSaved } from "@/types/hubspot";
 import { useContactContext } from "@/context/ContactContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { IconPencil, IconTextPlus } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useRef, useState } from "react";
-import { MeetingLogListRef } from "@/types/meeting";
-import { LogMeetingModalGlobal } from "./LogMeetingModalGlobal";
+
+import { Bookmark, BookmarkCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { unsaveContact } from "@/app/actions/prisma/unsaveContact";
+import { saveContact } from "@/app/actions/prisma/saveContact";
 
 export function ContactCard({
   contact,
   href,
+  savedIds,
+  mutateSavedIds,
 }: {
-  contact: HubSpotContact;
+  contact: HubSpotContactWithSaved;
   href: string;
+  savedIds: string[];
+  mutateSavedIds?: () => void;
 }) {
   // const [logOpen, setLogOpen] = useState(false);
   // const logListRef = useRef<MeetingLogListRef | null>(null);
+  const [isSaved, setIsSaved] = useState(savedIds.includes(contact.id));
+
+  useEffect(() => {
+    setIsSaved(savedIds.includes(contact.id));
+  }, [savedIds, contact.id]);
+
+  const toggleSaved = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isSaved) {
+      await unsaveContact(contact.id);
+      setIsSaved(false);
+      mutateSavedIds?.(); // ✅ remove from UI list
+    } else {
+      await saveContact(contact.id);
+      setIsSaved(true);
+      // ⛔️ don't call mutateSavedIds here — let SWR revalidate passively if needed
+    }
+  };
+
   const {
     setEditOpen,
     setSelectedContact,
@@ -101,6 +125,22 @@ export function ContactCard({
             }}
           >
             <IconTextPlus size={18} /> Log Meeting
+          </button>
+
+          <button
+            className="text-sm cursor-pointer flex items-center gap-1 p-2 text-gray-400 hover:underline 
+            underline-offset-4 ml-auto"
+            onClick={toggleSaved}
+          >
+            {isSaved ? (
+              <>
+                <BookmarkCheck size={18} /> Saved
+              </>
+            ) : (
+              <>
+                <Bookmark size={18} /> Save
+              </>
+            )}
           </button>
         </div>
       </Card>

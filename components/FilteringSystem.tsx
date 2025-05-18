@@ -100,14 +100,14 @@ export default function FilteringSystem() {
   const statusStyles: Record<StatusKey, string> = {
     all: `bg-transparent text-gray-700 dark:text-gray-300`,
     "pending visit": "bg-transparent text-orange-400",
-    "visit requested by rep": "bg-transparent text-red-400",
+    "visit requested by rep": "bg-transparent text-pink-400",
     "dropped off": "bg-transparent text-green-400",
   };
 
   const ringColors: Record<StatusKey, string> = {
     all: "ring-gray-400",
     "pending visit": "ring-orange-400",
-    "visit requested by rep": "ring-red-400",
+    "visit requested by rep": "ring-pink-400",
     "dropped off": "ring-green-400",
   };
 
@@ -117,11 +117,11 @@ export default function FilteringSystem() {
         {hasFilters && (
           <button
             onClick={handleClearAll}
-            className="text-sm cursor-pointer flex items-center gap-1 transition rounded-full hover:opacity-80 text-red-400"
+            className="text-sm cursor-pointer flex items-center gap-1 transition rounded-full hover:opacity-80 text-pink-400"
           >
             <IconX
               size={14}
-              className="text-white bg-red-400 dark:text-black"
+              className="text-white bg-pink-400 dark:text-black"
             />
             Clear filters
           </button>

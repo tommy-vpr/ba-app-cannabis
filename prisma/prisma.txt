@@ -28,3 +28,13 @@ model BrandAmbassadorId {
 
   user      User?
 }
+
+// prisma/schema.prisma
+model SavedContact {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  contactId String   // HubSpot contact ID
+  createdAt DateTime @default(now())
+
+  @@unique([userId, contactId]) // prevent duplicates
+}
