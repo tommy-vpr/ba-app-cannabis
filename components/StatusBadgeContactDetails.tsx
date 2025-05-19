@@ -17,17 +17,17 @@ const statusMap: Record<
   },
   "visit requested by rep": {
     label: "Visit requested by rep",
-    dotColor: "bg-red-400",
-    bgColor: "bg-red-100 dark:bg-red-200/20",
-    textColor: "text-red-500 dark:text-red-400",
-    borderColor: "border-red-400",
+    dotColor: "bg-pink-400",
+    bgColor: "bg-pink-100 dark:bg-pink-200/20",
+    textColor: "text-pink-500 dark:text-pink-400",
+    borderColor: "border-pink-400",
   },
   "dropped off": {
     label: "Dropped Off",
-    dotColor: "bg-green-400",
-    bgColor: "bg-green-100 dark:bg-green-200/20",
-    textColor: "text-green-500 dark:text-green-400",
-    borderColor: "border-green-400",
+    dotColor: "bg-emerald-400",
+    bgColor: "bg-emerald-100 dark:bg-emerald-200/20",
+    textColor: "text-emerald-500 dark:text-emerald-400",
+    borderColor: "border-emerald-400",
   },
 };
 

@@ -77,12 +77,14 @@ export function ContactCard({
     hs_lead_status === "Samples" &&
     validL2Statuses.includes(l2_lead_status ?? "");
 
+    console.log('PRORITY', contact)
+
   return (
     <>
       <Card
         onClick={() => router.push(`/dashboard/contacts/${safeId}`)}
         // className="hover:shadow-lg transition-shadow h-full flex flex-col gap-0 dark:bg-muted/50"
-        className="hover:shadow-lg transition-shadow h-full flex flex-col gap-0 dark:bg-[#161b22] border dark:border-[#30363d]"
+        className="shadow-md shadow-gray-200 dark:shadow-black/30 hover:shadow-lg transition-shadow h-full flex flex-col gap-0 dark:bg-[#161b22] dark:border dark:border-[#30363d]"
       >
         <div className="cursor-pointer flex-grow">
           <CardContent className="p-4 flex flex-col gap-2">
@@ -105,7 +107,7 @@ export function ContactCard({
 
         <div className="flex gap-1 px-4 pb-4">
           <button
-            className="text-sm cursor-pointer flex items-center gap-1 p-2 text-green-400 hover:underline underline-offset-4"
+            className="text-sm cursor-pointer flex items-center gap-1 p-2 text-emerald-400 hover:underline underline-offset-4"
             onClick={(e) => {
               e.stopPropagation();
               setSelectedContact(contact);
@@ -134,7 +136,7 @@ export function ContactCard({
           >
             {isSaved ? (
               <>
-                <BookmarkCheck size={18} /> Saved
+                <BookmarkCheck size={18} className="text-[#4493f8]" /> Saved
               </>
             ) : (
               <>

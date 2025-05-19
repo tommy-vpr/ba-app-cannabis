@@ -122,9 +122,25 @@ export default function ContactPageClient({ id }: { id: string }) {
     return `${first[0] ?? ""}${second[0] ?? ""}`.toUpperCase();
   };
 
+  const fullAddress = `${contact.properties.address}, ${contact.properties.city}, ${contact.properties.state} ${contact.properties.zip}`;
+  const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    fullAddress
+  )}`;
+  const phoneLink = contact.properties.phone
+    ? `tel:${contact.properties.phone}`
+    : null;
+  const emailLink = contact.properties.email
+    ? `mailto:${contact.properties.email}`
+    : null;
+
+  function capitalizeWords(str: string) {
+    return str.replace(/\b\w/g, char => char.toUpperCase());
+  }
+
+
   return (
     <div className="min-h-screen h-full relative p-4 w-full max-w-[1200px] m-auto">
-      <div className="shadow-sm flex flex-col md:flex-row rounded-md gap-8 p-6 border border-muted dark:border-[#30363d] bg-white dark:bg-[#161b22]">
+      <div className="shadow-md shadow-gray-200 dark:shadow-black/30 flex flex-col md:flex-row rounded-md gap-8 p-6 border border-muted dark:border-[#30363d] bg-white dark:bg-[#161b22]">
         <div
           className="hidden h-36 w-36 rounded-full md:flex m-auto items-center justify-center text-4xl md:text-[48px] font-bold uppercase transition-all duration-300 ease-in-out"
           style={{ backgroundColor: bg, color: text }}
@@ -147,24 +163,51 @@ export default function ContactPageClient({ id }: { id: string }) {
             />
           </div>
 
+          {/* Email */}
           <div className="flex items-center gap-2 mt-4 dark:text-gray-300">
-            <IconMail size={18} />
-            {contact.properties?.email || "N/A"}
-          </div>
-
-          <div className="flex items-center gap-2 dark:text-gray-300 my-1">
-            <IconDeviceMobile size={18} />
-            {contact.properties?.phone || "N/A"}
-          </div>
-
-          <div className="flex gap-2 dark:text-gray-300">
-            <IconMapPin size={18} />
-            <div className="w-full">
-              {contact.properties?.address || "N/A"}{" "}
-              {contact.properties?.city || "N/A"},{" "}
-              {contact.properties?.state || "N/A"}{" "}
-              {contact.properties?.zip || "N/A"}
+            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-[#212830] dark:hover:bg-zinc-700 transition">
+              <IconMail size={18} />
             </div>
+            {emailLink ? (
+              <a href={emailLink} className="hover:underline">
+                {contact.properties.email}
+              </a>
+            ) : (
+              "N/A"
+            )}
+          </div>
+
+          {/* Phone */}
+          <div className="flex items-center gap-2 dark:text-gray-300 my-1">
+            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-[#212830] dark:hover:bg-zinc-700 transition">
+              <IconDeviceMobile size={18} />
+            </div>
+            {phoneLink ? (
+              <a href={phoneLink} className="hover:underline">
+                {contact.properties.phone}
+              </a>
+            ) : (
+              "N/A"
+            )}
+          </div>
+
+          {/* Address */}
+          <div className="flex items-center gap-2 dark:text-gray-300">
+            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-[#212830] dark:hover:bg-zinc-700 transition">
+              <IconMapPin size={18} />
+            </div>
+            {contact.properties.address ? (
+              <a
+                href={googleMapsLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline capitalized"
+              >
+                {capitalizeWords(fullAddress.toLocaleLowerCase())}
+              </a>
+            ) : (
+              "N/A"
+            )}
           </div>
 
           <div className="flex gap-2 items-center">
@@ -183,7 +226,7 @@ export default function ContactPageClient({ id }: { id: string }) {
                 "group cursor-pointer text-sm mt-6 px-4 py-2 border rounded transition duration-200 flex items-center gap-1",
                 brand === "skwezed"
                   ? "border-[#009444] bg-[#009444] text-white"
-                  : "border-green-400 bg-green-400 text-black dark:text-green-400 dark:bg-transparent dark:hover:bg-green-400 dark:hover:text-black"
+                  : "border-emerald-400 bg-emerald-400 text-black dark:text-emerald-400 dark:bg-transparent dark:hover:bg-emerald-400 dark:hover:text-black"
               )}
               onClick={() => {
                 setContactId(contact.id); // ✅ Sets ID
@@ -201,11 +244,11 @@ export default function ContactPageClient({ id }: { id: string }) {
       </div>
 
       <div className="flex items-center gap-4 my-6">
-        <hr className="flex-grow border-t border-gray-200 dark:border-zinc-800" />
+        <hr className="flex-grow border-t border-gray-200 dark:border-[#212830]" />
         <div className="text-lg font-semibold whitespace-nowrap">
           Meeting Logs
         </div>
-        <hr className="flex-grow border-t border-gray-200 dark:border-zinc-800" />
+        <hr className="flex-grow border-t border-gray-200 dark:border-[#212830]" />
       </div>
 
       <MeetingLogList

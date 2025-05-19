@@ -101,14 +101,14 @@ export default function FilteringSystem() {
     all: `bg-transparent text-gray-700 dark:text-gray-300`,
     "pending visit": "bg-transparent text-orange-400",
     "visit requested by rep": "bg-transparent text-pink-400",
-    "dropped off": "bg-transparent text-green-400",
+    "dropped off": "bg-transparent text-emerald-400",
   };
 
   const ringColors: Record<StatusKey, string> = {
     all: "ring-gray-400",
     "pending visit": "ring-orange-400",
     "visit requested by rep": "ring-pink-400",
-    "dropped off": "ring-green-400",
+    "dropped off": "ring-emerald-400",
   };
 
   return (
@@ -129,7 +129,7 @@ export default function FilteringSystem() {
 
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="cursor-pointer flex items-center gap-1 text-md text-zinc-800 dark:text-gray-200 hover:opacity-80"
+          className="cursor-pointer flex items-center gap-1 text-md text-[#4493f8] hover:opacity-80"
         >
           Filters <IconAdjustmentsHorizontal size={19} />
         </button>

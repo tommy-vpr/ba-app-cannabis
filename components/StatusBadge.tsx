@@ -24,10 +24,10 @@ const statusMap: Record<
   },
   "dropped off": {
     label: "Dropped Off",
-    dotColor: "bg-green-300",
-    bgColor: "bg-green-50 dark:bg-transparent",
-    textColor: "text-green-400",
-    borderColor: "border-green-300",
+    dotColor: "bg-emerald-300",
+    bgColor: "bg-emerald-50 dark:bg-transparent",
+    textColor: "text-emerald-400",
+    borderColor: "border-emerald-300",
   },
 };
 
