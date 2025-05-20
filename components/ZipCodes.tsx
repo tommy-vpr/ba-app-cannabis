@@ -24,7 +24,7 @@ export function ZipCodes({ brand }: { brand: "litto" | "skwezed" }) {
     const newZips = Array.isArray(data.zips) ? data.zips : [];
     const unique = new Set([...zips, ...newZips]);
 
-    setZips(Array.from(unique));
+    setZips(Array.from(unique).sort((a, b) => a.localeCompare(b)));
     setAfter(data.after ?? null);
     setLoading(false);
   };
