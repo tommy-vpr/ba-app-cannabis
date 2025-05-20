@@ -146,7 +146,7 @@ export default function SearchNavBar() {
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSearch();
             }}
-            placeholder="Search company"
+            placeholder="Search Store"
             className="w-full pr-10 bg-white shadow-none"
           />
           {localQuery && (
