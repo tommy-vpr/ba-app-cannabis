@@ -27,7 +27,7 @@ const formSchema = z.object({
   newFirstName: z.string().min(1, "First name is required"),
   jobTitle: z.string().min(1, "Job title is required"),
   body: z.string().min(1, "Meeting notes are required"),
-  l2Status: z.enum(["pending visit", "visit requested by rep", "dropped off"]),
+  l2Status: z.enum(["assigned", "visited", "dropped off"]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -49,43 +49,36 @@ export function LogMeetingForm({
 }) {
   const [isPending, startTransition] = useTransition();
   const { brand } = useBrand();
-  const { logMutate, setLogOpen, contactMutate, logContactData, updateContactInList  } = useContactContext();
-  
+  const {
+    logMutate,
+    setLogOpen,
+    contactMutate,
+    logContactData,
+    updateContactInList,
+  } = useContactContext();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       newFirstName: contactFirstName || "",
       jobTitle: contactJobTitle || "",
       body: "",
-      l2Status:
-        (["pending visit", "visit requested by rep", "dropped off"].includes(contactStatus || "")
-          ? contactStatus
-          : "pending visit") as FormValues["l2Status"],
+      l2Status: (["assigned", "visited", "dropped off"].includes(
+        contactStatus || ""
+      )
+        ? contactStatus
+        : "assigned") as FormValues["l2Status"],
     },
   });
-
-  // useEffect(() => {
-  //   if (logContactData) {
-  //     form.reset({
-  //       newFirstName: logContactData.properties?.firstname || "",
-  //       jobTitle: logContactData.properties?.jobtitle || "",
-  //       body: "",
-  //       l2Status:
-  //         (["pending visit", "visit requested by rep", "dropped off"].includes(
-  //           logContactData.properties?.l2_lead_status || ""
-  //         )
-  //           ? logContactData.properties?.l2_lead_status
-  //           : "pending visit") as FormValues["l2Status"],
-  //     });
-  //   }
-  // }, [logContactData, form]); // ✅ include form in deps
 
   const onSubmit = (values: FormValues) => {
     startTransition(() => {
       logMeeting({
         brand,
         contactId,
-        title: `Met with ${values.newFirstName} at ${contactCompany ?? "Store"}`,
+        title: `Met with ${values.newFirstName} at ${
+          contactCompany ?? "Store"
+        }`,
         body: values.body,
         newFirstName: values.newFirstName,
         jobTitle: values.jobTitle,
@@ -98,15 +91,15 @@ export function LogMeetingForm({
           setLogOpen(false);
 
           // ✅ Optimistic update of contact status
-        updateContactInList?.({
-          ...logContactData!,
-          properties: {
-            ...logContactData!.properties,
-            l2_lead_status: values.l2Status,
-          },
-        });
+          updateContactInList?.({
+            ...logContactData!,
+            properties: {
+              ...logContactData!.properties,
+              l2_lead_status: values.l2Status,
+            },
+          });
 
-        onSuccess?.(meeting);
+          onSuccess?.(meeting);
         })
         .catch((err) => {
           console.error(err);
@@ -164,8 +157,11 @@ export function LogMeetingForm({
             <FormItem>
               <FormLabel>Status</FormLabel>
               <div className="space-y-2">
-                {["pending visit", "visit requested by rep", "dropped off"].map((status) => (
-                  <label key={status} className="flex items-center gap-2 cursor-pointer">
+                {["assigned", "visited", "dropped off"].map((status) => (
+                  <label
+                    key={status}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
                     <input
                       type="radio"
                       name="l2Status"

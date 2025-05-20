@@ -30,7 +30,7 @@ export async function createNewContact(
       ...input,
       ba_email: baEmail,
       hs_lead_status: "Samples",
-      l2_lead_status: "pending visit",
+      l2_lead_status: "assigned",
       hubspot_owner_id: ownerId,
     });
 

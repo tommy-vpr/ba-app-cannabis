@@ -70,7 +70,7 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
     return (
       <div
         key={meeting.id}
-        className="shadow-md shadow-gray-200 dark:shadow-black/30 border border-muted dark:border-[#30363d] bg-white dark:bg-[#161b22] p-4 rounded shadow-sm flex flex-col mb-4"
+        className="shadow-md shadow-gray-200 dark:shadow-black/30 border border-muted dark:border-[#30363d] bg-white dark:bg-[#161b22] p-4 rounded flex flex-col mb-4"
       >
         <div
           onClick={() => toggleCollapse(meeting.id)}
@@ -84,8 +84,8 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
             <span className="mx-1 text-gray-400">·</span>
 
             <span
-              className="font-semibold capitalize text-emerald-400 dark:text-white text-[10px] px-2 py-0.5 rounded-full bg-emerald-100
-             dark:bg-emerald-600 border border-emerald-400"
+              className="font-semibold capitalize text-green-400 dark:text-white text-[10px] px-2 py-0.5 rounded-full bg-green-100
+             dark:bg-green-600 border border-green-400"
             >
               {meeting.properties.hs_meeting_outcome?.toLowerCase() ||
                 "unknown"}
@@ -111,7 +111,8 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
                 {meeting.properties.hs_meeting_body}
               </p>
               <p className="text-xs text-gray-500 mt-2">
-                {new Date(meeting.properties.hs_timestamp).toLocaleString()} ·
+                {new Date(meeting.properties.hs_timestamp).toLocaleString()}
+                {" - "}
                 <span className="capitalize">
                   {meeting.properties.hs_meeting_outcome?.toLowerCase() ||
                     "unknown"}
@@ -120,7 +121,7 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
               <div className="mt-4 flex gap-2 justify-end">
                 <button
                   onClick={() => handleEdit(meeting)}
-                  className="text-sm text-emerald-400 flex items-center px-4 py-1 border border-emerald-400 hover:bg-emerald-400 hover:text-black cursor-pointer transition rounded-xs"
+                  className="text-sm text-green-400 flex items-center px-4 py-1 border border-green-400 hover:bg-green-400 hover:text-black cursor-pointer transition rounded-xs"
                 >
                   <Pencil className="w-4 h-4 mr-1" />
                   Edit
@@ -147,9 +148,9 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
           {[...Array(2)].map((_, i) => (
             <div
               key={i}
-              className="dark:bg-[#212830] p-4 rounded shadow-sm mb-4 space-y-3"
+              className="bg-gray-200 dark:bg-[#212830] p-4 rounded shadow-sm mb-4 space-y-3"
             >
-              <Skeleton className="h-5 w-3/4 rounded dark:bg-[#161b22]" />
+              <Skeleton className="h-5 w-3/4 rounded bg-gray-300 dark:bg-[#161b22]" />
             </div>
           ))}
         </div>
@@ -157,9 +158,9 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
           {[...Array(2)].map((_, i) => (
             <div
               key={i}
-              className="dark:bg-[#212830] p-4 rounded shadow-sm mb-4 space-y-3"
+              className="bg-gray-200 dark:bg-[#212830] p-4 rounded shadow-sm mb-4 space-y-3"
             >
-              <Skeleton className="h-5 w-3/4 rounded dark:bg-[#161b22]" />
+              <Skeleton className="h-5 w-3/4 rounded bg-gray-300 dark:bg-[#161b22]" />
             </div>
           ))}
         </div>

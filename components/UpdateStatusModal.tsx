@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { HubSpotContact } from "@/types/hubspot";
 import { useBrand } from "@/context/BrandContext";
 import { useContactContext } from "@/context/ContactContext";
+import { getStatusCounts } from "@/app/actions/getStatusCounts";
 
 type Props = {
   open: boolean;
@@ -20,11 +21,7 @@ type Props = {
   setLocalContact?: (c: HubSpotContact) => void; // ✅ to update local UI
 };
 
-const statuses = [
-  "pending visit",
-  "visit requested by rep",
-  "dropped off",
-] as const;
+const statuses = ["assigned", "visited", "dropped off"] as const;
 
 export function UpdateStatusModal({
   open,
@@ -41,7 +38,7 @@ export function UpdateStatusModal({
   const { brand } = useBrand();
   // const { refetchContacts } = useContactContext();
 
-  const { updateContactInList } = useContactContext();
+  const { updateContactInList, setStatusCounts } = useContactContext();
 
   const handleUpdate = async () => {
     if (!contactId || !contact) return;
@@ -71,6 +68,10 @@ export function UpdateStatusModal({
         setLocalContact?.(refreshed); // sync again with fresh data
         updateContactInList(refreshed); // ✅ ensure global list reflects change
       }
+
+      // ✅ Update status counts globally
+      const newCounts = await getStatusCounts(brand);
+      setStatusCounts(newCounts); // from useContactContext
 
       // await refetchContacts();
       setOpen(false);

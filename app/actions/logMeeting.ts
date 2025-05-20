@@ -18,7 +18,7 @@ export async function logMeeting({
   body: string;
   newFirstName?: string;
   jobTitle: string;
-  l2Status: "pending visit" | "visit requested by rep" | "dropped off";
+  l2Status: "assigned" | "visited" | "dropped off";
 }) {
   const contact = await hubspotRequest(
     `/crm/v3/objects/contacts/${contactId}?properties=firstname,jobtitle,company,l2_lead_status`,

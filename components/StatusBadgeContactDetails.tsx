@@ -8,26 +8,26 @@ const statusMap: Record<
     borderColor: string;
   }
 > = {
-  "pending visit": {
-    label: "Pending Visit",
-    dotColor: "bg-orange-400",
-    bgColor: "bg-orange-100 dark:bg-orange-200/20",
-    textColor: "text-orange-500 dark:text-orange-400",
-    borderColor: "border-orange-400",
+  assigned: {
+    label: "Assigned",
+    dotColor: "bg-amber-400",
+    bgColor: "bg-amber-100 dark:bg-amber-200/20",
+    textColor: "text-amber-500 dark:text-amber-400",
+    borderColor: "border-amber-400",
   },
-  "visit requested by rep": {
-    label: "Visit requested by rep",
-    dotColor: "bg-pink-400",
-    bgColor: "bg-pink-100 dark:bg-pink-200/20",
-    textColor: "text-pink-500 dark:text-pink-400",
-    borderColor: "border-pink-400",
+  visited: {
+    label: "Visited",
+    dotColor: "bg-rose-400",
+    bgColor: "bg-rose-100 dark:bg-rose-200/20",
+    textColor: "text-rose-500 dark:text-rose-400",
+    borderColor: "border-rose-400",
   },
   "dropped off": {
     label: "Dropped Off",
-    dotColor: "bg-emerald-400",
-    bgColor: "bg-emerald-100 dark:bg-emerald-200/20",
-    textColor: "text-emerald-500 dark:text-emerald-400",
-    borderColor: "border-emerald-400",
+    dotColor: "bg-green-400",
+    bgColor: "bg-green-100 dark:bg-green-200/20",
+    textColor: "text-green-500 dark:text-green-400",
+    borderColor: "border-green-400",
   },
 };
 

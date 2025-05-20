@@ -14,6 +14,8 @@ import { StatusCount } from "@/types/status";
 import { MeetingLogListRef } from "@/types/meeting";
 import { useBrand } from "@/context/BrandContext"; // ✅
 
+import { StatusKey } from "@/types/status"; // Assuming correct import path
+
 type ContactContextType = {
   contacts: HubSpotContact[];
   optimisticUpdate: (
@@ -91,8 +93,8 @@ export const ContactProvider = ({
   initialHasNext = false,
   initialStatusCounts = {
     all: 0,
-    "pending visit": 0,
-    "visit requested by rep": 0,
+    assigned: 0,
+    visited: 0,
     "dropped off": 0,
   },
 }: {
@@ -203,21 +205,21 @@ export const ContactProvider = ({
     });
   };
 
-  useEffect(() => {
-    if (initialContacts.length > 0) return; // already hydrated from layout
+  // useEffect(() => {
+  //   if (initialContacts.length > 0) return; // already hydrated from layout
 
-    const loadInitial = async () => {
-      setPage(1);
-      setSelectedStatus("all");
-      setSelectedZip(null);
-      setQuery("");
-      setCursors({});
+  //   const loadInitial = async () => {
+  //     setPage(1);
+  //     setSelectedStatus("all");
+  //     setSelectedZip(null);
+  //     setQuery("");
+  //     setCursors({});
 
-      await fetchPage(1, "all", "");
-    };
+  //     await fetchPage(1, "all", "");
+  //   };
 
-    loadInitial();
-  }, [brand]);
+  //   loadInitial();
+  // }, [brand]);
 
   const optimisticUpdate = (
     id: string,
@@ -240,35 +242,70 @@ export const ContactProvider = ({
   //     return prev.map((c) => (c.id === updated.id ? updated : c));
   //   });
   // };
+
+  function isValidStatusKey(key: string): key is StatusKey {
+    return Object.values(StatusKey).includes(key as StatusKey);
+  }
+
   const updateContactInList = (updated: HubSpotContact) => {
     setContacts((prev) => {
-      const exists = prev.some((c) => c.id === updated.id);
-      if (exists) {
-        // Update in place
+      const existing = prev.find((c) => c.id === updated.id);
+
+      const newStatusRaw =
+        updated.properties.l2_lead_status?.toLowerCase() || "";
+      const prevStatusRaw =
+        existing?.properties.l2_lead_status?.toLowerCase() || "";
+
+      const newStatus = isValidStatusKey(newStatusRaw)
+        ? newStatusRaw
+        : undefined;
+      const prevStatus = isValidStatusKey(prevStatusRaw)
+        ? prevStatusRaw
+        : undefined;
+
+      // ✅ Contact already exists, possibly status update
+      if (existing) {
+        if (newStatus && prevStatus && newStatus !== prevStatus) {
+          setStatusCounts((counts) => ({
+            ...counts,
+            [prevStatus]: Math.max(counts[prevStatus] - 1, 0),
+            [newStatus]: counts[newStatus] + 1,
+          }));
+        }
+
+        // Replace contact
         return prev.map((c) => (c.id === updated.id ? updated : c));
       }
 
-      // Filter guard — only insert if it matches current filters
-      const statusOk =
-        selectedStatus === "all" ||
-        updated.properties.l2_lead_status?.toLowerCase() === selectedStatus;
+      // ✅ New contact — check if it should be included and counted
+      if (newStatus) {
+        const statusOk =
+          selectedStatus === StatusKey.All || newStatus === selectedStatus;
 
-      const queryOk =
-        !query ||
-        updated.properties.company
-          ?.toLowerCase()
-          .includes(query.toLowerCase()) ||
-        updated.properties.email?.toLowerCase().includes(query.toLowerCase());
+        const queryOk =
+          !query ||
+          updated.properties.company
+            ?.toLowerCase()
+            .includes(query.toLowerCase()) ||
+          updated.properties.email?.toLowerCase().includes(query.toLowerCase());
 
-      const zipOk =
-        !selectedZip ||
-        updated.properties.zip?.toString().includes(selectedZip.toString());
+        const zipOk =
+          !selectedZip ||
+          updated.properties.zip?.toString().includes(selectedZip.toString());
 
-      if (statusOk && queryOk && zipOk) {
-        return [updated, ...prev];
+        if (statusOk && queryOk && zipOk) {
+          setStatusCounts((counts) => ({
+            ...counts,
+            [newStatus]: counts[newStatus] + 1,
+          }));
+
+          // Deduplicate just in case and prepend
+          const deduped = [updated, ...prev.filter((c) => c.id !== updated.id)];
+          return deduped;
+        }
       }
 
-      // Otherwise, ignore
+      // No update needed
       return prev;
     });
   };
@@ -282,7 +319,7 @@ export const ContactProvider = ({
     if (initialContacts.length === 0 || isFiltered) {
       fetchPage(1, "all", "");
     }
-  }, []);
+  }, [brand]);
 
   return (
     <ContactContext.Provider

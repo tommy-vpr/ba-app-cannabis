@@ -100,9 +100,7 @@ export function CreateContactModal({
       fetchPage(1, "all", "", () => [res.contact], null);
 
       const rawStatus = res.contact.properties.lead_status?.toLowerCase() ?? "";
-      const statusKey = isStatusKey(rawStatus)
-        ? rawStatus
-        : StatusKey.PendingVisit;
+      const statusKey = isStatusKey(rawStatus) ? rawStatus : StatusKey.Assigned;
 
       setStatusCounts((prev) => ({
         ...prev,

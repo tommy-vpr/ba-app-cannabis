@@ -10,8 +10,8 @@ export async function getStatusCounts(
 
   const counts: StatusCount = {
     all: 0,
-    "pending visit": 0,
-    "visit requested by rep": 0,
+    assigned: 0,
+    visited: 0,
     "dropped off": 0,
   };
 

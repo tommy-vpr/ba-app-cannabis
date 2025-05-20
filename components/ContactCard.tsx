@@ -68,16 +68,18 @@ export function ContactCard({
   } = contact.properties;
 
   const safeId = encodeURIComponent(contact.id ?? "");
-  const validL2Statuses = [
-    "pending visit",
-    "visit requested by rep",
-    "dropped off",
-  ];
+  const validL2Statuses = ["assigned", "visited", "dropped off"];
   const showBadge =
     hs_lead_status === "Samples" &&
     validL2Statuses.includes(l2_lead_status ?? "");
 
-    console.log('PRORITY', contact)
+  const fullAddress = `${contact.properties.address || "-"}, ${
+    contact.properties.city || "-"
+  }`;
+
+  function capitalizeWords(str: string) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+  }
 
   return (
     <>
@@ -98,8 +100,9 @@ export function ContactCard({
               <Phone className="w-4 h-4" /> {phone || "-"}
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="w-4 h-4" /> {address || "-"}, {city || "-"},{" "}
-              {state || "-"} {zip || "-"}
+              <MapPin className="w-4 h-4" />{" "}
+              {capitalizeWords(fullAddress.toLocaleLowerCase())}, {state || "-"}{" "}
+              {zip || "-"}
             </div>
             {showBadge && <StatusBadge status={l2_lead_status || "unknown"} />}
           </CardContent>
@@ -107,7 +110,7 @@ export function ContactCard({
 
         <div className="flex gap-1 px-4 pb-4">
           <button
-            className="text-sm cursor-pointer flex items-center gap-1 p-2 text-emerald-400 hover:underline underline-offset-4"
+            className="text-sm cursor-pointer flex items-center gap-1 p-2 text-green-400 hover:underline underline-offset-4"
             onClick={(e) => {
               e.stopPropagation();
               setSelectedContact(contact);
@@ -136,7 +139,7 @@ export function ContactCard({
           >
             {isSaved ? (
               <>
-                <BookmarkCheck size={18} className="text-[#4493f8]" /> Saved
+                <BookmarkCheck size={18} className="text-amber-300" /> Saved
               </>
             ) : (
               <>

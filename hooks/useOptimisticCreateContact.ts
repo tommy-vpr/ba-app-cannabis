@@ -65,7 +65,7 @@ export function useOptimisticCreateContact() {
       const allowedStatuses = Object.values(StatusKey);
       const leadStatus = allowedStatuses.includes(rawStatus)
         ? (rawStatus as StatusKey)
-        : StatusKey.PendingVisit;
+        : StatusKey.Assigned;
 
       setStatusCounts((prev) => ({
         ...prev,

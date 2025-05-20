@@ -10,7 +10,10 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
+  IconAlarm,
   IconCirclePlusFilled,
+  IconHome,
+  IconLocationPin,
   IconMail,
   IconSearch,
   type Icon,
@@ -25,6 +28,7 @@ import { useContactContext } from "@/context/ContactContext";
 import { useClearFiltersAndRedirect } from "@/hooks/useClearFiltersAndRedirect";
 
 import { useRouter } from "next/navigation";
+import { BookmarkCheck } from "lucide-react";
 
 export function NavMain({
   items,
@@ -59,78 +63,50 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col p-2">
         {/* 🔗 Nav Items */}
-        <SidebarMenu className="mt-2">
-          {items.map((item) => {
-            const isActive = pathname === item.url;
-            return (
-              <SidebarMenuItem key={item.title} className="my-0.5">
-                <Link
-                  href={item.url}
-                  onClick={async () => {
-                    setQuery("");
-                    setLocalQuery("");
-                    setSelectedZip(null);
-                    setLocalZip("");
-                    setSelectedStatus("all");
-                    setPage(1);
-
-                    // ✅ Update URL
-                    // const params = new URLSearchParams();
-                    // params.set("page", "1");
-                    router.replace(`/dashboard`);
-                    await fetchPage(1, "all", "");
-                  }}
-                >
-                  <SidebarMenuButton
-                    tooltip={item.title}
-                    className={clsx(
-                      `cursor-pointer ${
-                        brand === "skwezed" &&
-                        "text-white bg-green-900/20 transition duration-200"
-                      }`,
-                      isActive &&
-                        `${
-                          brand === "skwezed"
-                            ? "bg-gray-100"
-                            : "bg-gray-200 hover:bg-gray-300"
-                        } dark:bg-[#161b22] dark:text-gray-100 dark:hover:text-gray-50 ${
-                          brand === "skwezed" ? "text-black" : "text-black"
-                        }`
-                    )}
-                  >
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </Link>
-
-                <div className="mt-4 flex flex-col gap-2">
-                  {/* <button
-                    className="cursor-pointer hover:bg-pink-500 transition duration-200"
-                    onClick={async () => {
-                      setQuery("");
-                      setLocalQuery("");
-                      setSelectedZip(null);
-                      setLocalZip("");
-                      setSelectedStatus("all");
-                      setPage(1);
-
-                      // ✅ Update URL
-                      // const params = new URLSearchParams();
-                      // params.set("page", "1");
-                      router.replace(`/dashboard`);
-                      await fetchPage(1, "all", "");
-                    }}
-                  >
-                    Test Link
-                  </button> */}
-
-                  <Link href="/dashboard/saved-contacts" className="">
-                    Priority
-                  </Link>
-                </div>
-              </SidebarMenuItem>
-            );
-          })}
+        <SidebarMenu>
+          <Link
+            className={clsx(
+              "flex items-center gap-2 p-2 transition-colors",
+              pathname === "/dashboard" &&
+                "dark:bg-[#161b22] dark:border-[#30363d] border border-gray-200 bg-muted rounded-sm"
+            )}
+            href={"/dashboard"}
+            onClick={async () => {
+              setQuery("");
+              setLocalQuery("");
+              setSelectedZip(null);
+              setLocalZip("");
+              setSelectedStatus("all");
+              setPage(1);
+              router.replace(`/dashboard`);
+              await fetchPage(1, "all", "");
+            }}
+          >
+            <IconHome size={18} />
+            Home
+          </Link>
+          <Link
+            href="/dashboard/saved-contacts"
+            className={clsx(
+              "flex items-center gap-2 p-2 transition-colors",
+              pathname === "/dashboard/saved-contacts" &&
+                "dark:bg-[#161b22] dark:border-[#30363d] border border-gray-200 bg-gray-100 rounded-sm"
+            )}
+          >
+            <BookmarkCheck size={18} />
+            Priority
+          </Link>
+          <Link
+            href="/dashboard/zip-codes"
+            className={clsx(
+              "flex items-center gap-2 p-2 transition-colors",
+              pathname === "/dashboard/zip-codes" &&
+                "dark:bg-[#161b22] dark:border-[#30363d] border border-gray-200 bg-gray-100 rounded-sm"
+            )}
+          >
+            <IconLocationPin size={18} />
+            Zip Codes
+          </Link>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
