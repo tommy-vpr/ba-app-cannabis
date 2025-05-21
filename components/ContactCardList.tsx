@@ -8,6 +8,7 @@ import { useState } from "react";
 import useSWR from "swr";
 
 import { useRouter } from "next/navigation";
+import { HubSpotContactWithSaved } from "@/types/hubspot";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -75,7 +76,11 @@ export function ContactCardList() {
         {contacts.map((contact) => (
           <ContactCard
             key={contact.id + contact.properties.company}
-            contact={{ ...contact, isSaved: savedIds.includes(contact.id) }}
+            contact={{
+              ...(contact as HubSpotContactWithSaved),
+              isSaved: savedIds.includes(contact.id),
+              dbId: (contact as any).dbId ?? "unknown",
+            }}
             href={contact.id}
             savedIds={savedIds}
           />
