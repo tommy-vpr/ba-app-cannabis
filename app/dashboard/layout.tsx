@@ -25,6 +25,8 @@ export default async function DashboardLayout({
   const { contacts, after, hasNext, statusCounts } =
     await getInitialDashboardData(selectedBrand, userEmail);
 
+  console.log(contacts.length);
+
   return (
     <ContactProvider
       initialContacts={contacts}

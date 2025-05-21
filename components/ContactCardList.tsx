@@ -7,11 +7,26 @@ import { CreateContactModal } from "@/components/CreateContactModal";
 import { useState } from "react";
 import useSWR from "swr";
 
+import { useRouter } from "next/navigation";
+
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export function ContactCardList() {
-  const { contacts, loading, query, selectedZip, selectedStatus } =
-    useContactContext();
+  const {
+    contacts,
+    loading,
+    query,
+    selectedZip,
+    selectedStatus,
+    setQuery,
+    setPage,
+    setSelectedStatus,
+    setSelectedZip,
+    setCursors,
+    fetchPage,
+    setLocalQuery,
+    setLocalZip,
+  } = useContactContext();
 
   const [openContactModal, setOpenContactModal] = useState(false);
   const { data, isLoading: loadingSaved } = useSWR(
@@ -19,6 +34,8 @@ export function ContactCardList() {
     fetcher
   );
   const savedIds: string[] = data?.savedIds || [];
+
+  const router = useRouter();
 
   if (loading || loadingSaved) {
     return (
@@ -53,15 +70,37 @@ export function ContactCardList() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      {contacts.map((contact) => (
-        <ContactCard
-          key={contact.id + contact.properties.company}
-          contact={{ ...contact, isSaved: savedIds.includes(contact.id) }}
-          href={contact.id}
-          savedIds={savedIds}
-        />
-      ))}
+    <div className="w-full flex flex-col">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {contacts.map((contact) => (
+          <ContactCard
+            key={contact.id + contact.properties.company}
+            contact={{ ...contact, isSaved: savedIds.includes(contact.id) }}
+            href={contact.id}
+            savedIds={savedIds}
+          />
+        ))}
+      </div>
+      {contacts.length === 1 && (
+        <div className="text-center my-4">
+          <button
+            onClick={async () => {
+              setQuery("");
+              setLocalQuery("");
+              setSelectedZip(null);
+              setLocalZip("");
+              setSelectedStatus("all");
+              setPage(1);
+              setCursors({});
+              router.replace(`/dashboard`);
+              await fetchPage(1, "all", "");
+            }}
+            className="cursor-pointer px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+          >
+            View All Contacts
+          </button>
+        </div>
+      )}
     </div>
   );
 }

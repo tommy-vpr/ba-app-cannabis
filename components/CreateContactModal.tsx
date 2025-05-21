@@ -24,6 +24,9 @@ import { states } from "@/lib/states";
 import { useClearFiltersAndRedirect } from "@/hooks/useClearFiltersAndRedirect";
 import { useContactContext } from "@/context/ContactContext";
 import { StatusKey } from "@/types/status";
+import { getStatusCounts } from "@/app/actions/getStatusCounts";
+import { useBrand } from "@/context/BrandContext";
+import { useSession } from "next-auth/react";
 
 export function CreateContactModal({
   open,
@@ -44,6 +47,7 @@ export function CreateContactModal({
     setLocalZip,
     fetchPage,
     setStatusCounts,
+    updateContactInList,
   } = useContactContext();
   const clearFiltersAndRedirect = useClearFiltersAndRedirect();
 
@@ -70,6 +74,9 @@ export function CreateContactModal({
     },
   });
 
+  const { brand } = useBrand();
+  const { data: session } = useSession();
+
   function isStatusKey(value: string): value is StatusKey {
     return Object.values(StatusKey).includes(value as StatusKey);
   }
@@ -79,6 +86,12 @@ export function CreateContactModal({
     try {
       const res = await createNewContact(values);
       if (!res.success || !res.contact) throw new Error(res.message);
+
+      // ✅ Optimistically show the new contact immediately
+      updateContactInList(res.contact);
+
+      const newCounts = await getStatusCounts(brand, session?.user.email || "");
+      setStatusCounts(newCounts); // from useContactContext
 
       toast.success("Contact created");
       reset();
@@ -94,7 +107,8 @@ export function CreateContactModal({
       setCursors({});
 
       startTransition(async () => {
-        await fetchPage(1, "all", "");
+        // await fetchPage(1, "all", "");
+        fetchPage(1, "all", "", (prev) => [res.contact, ...prev], null);
       });
 
       router.replace("/dashboard");

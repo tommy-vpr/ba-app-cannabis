@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
   const body = {
     properties: ["zip"],
-    limit: 100,
+    limit: 50,
     after: after || undefined,
   };
 
