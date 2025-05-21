@@ -2,11 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 import { cookies } from "next/headers";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { zip: string } }
-) {
-  const zip = params.zip;
+export async function GET(req: NextRequest) {
+  const match = req.nextUrl.pathname.match(/\/zip-codes\/(.+)$/);
+  const zip = match?.[1];
 
   const cookieStore = await cookies();
   const brand = (cookieStore.get("selected_brand")?.value ??
@@ -40,7 +38,7 @@ export async function GET(
       "l2_lead_status",
       "meeting_logs",
     ],
-    limit: 100, // Optional: you can add pagination with `after` if needed
+    limit: 100,
   };
 
   try {
