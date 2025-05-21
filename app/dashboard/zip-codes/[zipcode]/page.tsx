@@ -1,10 +1,10 @@
 import ContactZipClient from "@/components/ContactZipClient";
 
-type Props = {
+interface PageProps {
   params: { zipcode: string };
-};
+}
 
-export default function ZipCodePage({ params }: Props) {
+export default function ZipCodePage({ params }: PageProps) {
   return (
     <div className="p-4 w-full max-w-[1200px] mx-auto py-12">
       <h1 className="dark:text-gray-200 text-2xl font-semibold mb-4">
