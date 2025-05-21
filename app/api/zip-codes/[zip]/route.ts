@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 import { cookies } from "next/headers";
+import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
-export async function GET(req: NextRequest) {
-  const match = req.nextUrl.pathname.match(/\/zip-codes\/(.+)$/);
-  const zip = match?.[1];
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { zip: string } }
+) {
+  const zip = params.zip;
 
   const cookieStore = await cookies();
   const brand = (cookieStore.get("selected_brand")?.value ??
@@ -13,13 +15,7 @@ export async function GET(req: NextRequest) {
   const body = {
     filterGroups: [
       {
-        filters: [
-          {
-            propertyName: "zip",
-            operator: "EQ",
-            value: zip,
-          },
-        ],
+        filters: [{ propertyName: "zip", operator: "EQ", value: zip }],
       },
     ],
     sorts: [{ propertyName: "createdate", direction: "DESCENDING" }],
@@ -50,8 +46,8 @@ export async function GET(req: NextRequest) {
     );
 
     return NextResponse.json({ contacts: data.results ?? [] });
-  } catch (error: any) {
-    console.error("Error fetching contacts by ZIP:", error.message);
+  } catch (err: any) {
+    console.error("Failed to fetch ZIP contacts:", err.message);
     return NextResponse.json(
       { error: "Failed to fetch contacts" },
       { status: 500 }
