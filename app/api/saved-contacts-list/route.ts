@@ -1,4 +1,3 @@
-// /app/api/saved-contacts-list/route.ts
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
@@ -10,9 +9,9 @@ const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return NextResponse.json({ contacts: [] });
-
-  const url = new URL(req.url);
+  if (!session?.user?.id) {
+    return NextResponse.json({ contacts: [] });
+  }
 
   const cookieStore = await cookies(); // no await needed
   const brand = (cookieStore.get("selected_brand")?.value ??
@@ -23,7 +22,12 @@ export async function GET(req: Request) {
     orderBy: [{ position: "asc" }, { createdAt: "asc" }],
   });
 
-  const contacts: any[] = [];
+  const contacts: {
+    id: string;
+    properties: any;
+    isSaved: boolean;
+    dbId: string;
+  }[] = [];
 
   for (const entry of savedContacts) {
     try {
@@ -34,20 +38,21 @@ export async function GET(req: Request) {
         dbId: entry.id,
       });
     } catch (e: any) {
+      console.warn(`❌ Error fetching ${entry.contactId}: ${e.message}`);
       if (e.message?.includes("Rate limit exceeded")) {
         await delay(1100);
         try {
           const retryContact = await getHubSpotContact(entry.contactId, brand);
-          contacts.push({ ...retryContact, isSaved: true });
+          contacts.push({
+            ...retryContact,
+            isSaved: true,
+            dbId: entry.id,
+          });
         } catch (retryError: any) {
           console.warn(
-            "❌ Retry failed for",
-            entry.contactId,
-            retryError.message
+            `❌ Retry failed for ${entry.contactId}: ${retryError.message}`
           );
         }
-      } else {
-        console.warn("❌ Failed to fetch", entry.contactId, e.message);
       }
     }
   }
