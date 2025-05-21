@@ -4,13 +4,18 @@ interface PageProps {
   params: { zipcode: string };
 }
 
-export default function ZipCodePage({ params }: PageProps) {
+export default async function ZipCodePage({
+  params,
+}: {
+  params: Promise<{ zipcode: string }>;
+}) {
+  const { zipcode } = await params;
   return (
     <div className="p-4 w-full max-w-[1200px] mx-auto py-12">
       <h1 className="dark:text-gray-200 text-2xl font-semibold mb-4">
-        Contacts in ZIP: {params.zipcode}
+        Contacts in ZIP: {zipcode}
       </h1>
-      <ContactZipClient zip={params.zipcode} />
+      <ContactZipClient zip={zipcode} />
     </div>
   );
 }
