@@ -9,9 +9,8 @@ export async function GET(
   const zip = params.zip;
 
   const cookieStore = await cookies();
-  const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-    | "litto"
-    | "skwezed";
+  const brand = (cookieStore.get("selected_brand")?.value ??
+    "litto-cannabis") as "litto-cannabis" | "skwezed";
 
   const body = {
     filterGroups: [

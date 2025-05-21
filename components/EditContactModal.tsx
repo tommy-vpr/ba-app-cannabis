@@ -75,7 +75,7 @@ export function EditContactModal() {
       optimisticUpdate(selectedContact.id, updates);
 
       // Await real server update
-      await updateContact(selectedContact.id, updates, "litto");
+      await updateContact(selectedContact.id, updates, "litto-cannabis");
 
       if (contactMutate) contactMutate();
 

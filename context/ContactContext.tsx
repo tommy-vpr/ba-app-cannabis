@@ -15,6 +15,7 @@ import { MeetingLogListRef } from "@/types/meeting";
 import { useBrand } from "@/context/BrandContext"; // ✅
 
 import { StatusKey } from "@/types/status"; // Assuming correct import path
+import { useSession } from "next-auth/react";
 
 type ContactContextType = {
   contacts: HubSpotContact[];
@@ -137,6 +138,9 @@ export const ContactProvider = ({
   const [logMutate, setLogMutate] = useState<(() => void) | null>(null);
   const { brand } = useBrand();
 
+  const { data: session } = useSession();
+  const email = session?.user?.email;
+
   useEffect(() => {
     const uniqueZips = Array.from(
       new Set(
@@ -192,7 +196,8 @@ export const ContactProvider = ({
           zip: zip ?? undefined, // ✅ ensure zip is undefined, not null
           after: after ?? cursors[page - 1] ?? undefined, // ✅ convert null to undefined
         },
-        brand
+        brand,
+        email ?? ""
       );
 
       setContacts(res.contacts);

@@ -12,7 +12,7 @@ export async function logMeeting({
   jobTitle,
   l2Status,
 }: {
-  brand: "litto" | "skwezed";
+  brand: "litto-cannabis" | "skwezed";
   contactId: string;
   title: string;
   body: string;

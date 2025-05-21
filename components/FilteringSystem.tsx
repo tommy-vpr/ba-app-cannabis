@@ -99,15 +99,15 @@ export default function FilteringSystem() {
 
   const statusStyles: Record<StatusKey, string> = {
     all: `bg-transparent text-gray-700 dark:text-gray-300`,
-    assigned: "bg-transparent text-purple-500",
-    visited: "bg-transparent text-orange-400",
+    assigned: "bg-transparent text-purple-400",
+    visited: "bg-transparent text-rose-400",
     "dropped off": "bg-transparent text-green-400",
   };
 
   const ringColors: Record<StatusKey, string> = {
     all: "ring-gray-400",
-    assigned: "ring-purple-500",
-    visited: "ring-orange-400",
+    assigned: "ring-purple-400",
+    visited: "ring-rose-400",
     "dropped off": "ring-green-400",
   };
 
@@ -159,7 +159,7 @@ export default function FilteringSystem() {
                       } ${
                         isActive
                           ? `ring-1 ${ringColors[status]} ring-offset-white dark:ring-offset-[#1a1a1a]`
-                          : "opacity-100 hover:opacity-80"
+                          : "opacity-80 hover:opacity-100"
                       }`}
                     >
                       {statusLabels[status]} ({count})

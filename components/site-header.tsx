@@ -71,7 +71,7 @@ export function SiteHeader({
             </div>
 
             <div className="ml-auto flex items-center gap-2">
-              {/* {brand === "litto" && <ThemeToggle />} */}
+              {/* {brand === "litto-cannabis" && <ThemeToggle />} */}
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -125,7 +125,7 @@ export function SiteHeader({
 
                     <DropdownMenuItem
                       className="cursor-pointer"
-                      onClick={() => setBrand("litto")} // ✅ set LITTO
+                      onClick={() => setBrand("litto-cannabis")} // ✅ set LITTO
                     >
                       <IconClipboardText />
                       LITTO

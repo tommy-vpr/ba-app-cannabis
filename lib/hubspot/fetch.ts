@@ -15,7 +15,7 @@ interface HubSpotSearchResponse {
 
 export async function fetchAllContactsByEmail(
   email: string,
-  brand: "litto" | "skwezed"
+  brand: "litto-cannabis" | "skwezed"
 ): Promise<HubSpotSearchResponse> {
   const { baseUrl, token } = getHubspotCredentials(brand);
 
@@ -77,7 +77,7 @@ export async function fetchHubSpotContactsPaginated(
   limit: number,
   after: string,
   email: string,
-  brand: "litto" | "skwezed"
+  brand: "litto-cannabis" | "skwezed"
 ): Promise<HubSpotSearchResponse> {
   const { baseUrl, token } = getHubspotCredentials(brand);
   const properties = [
@@ -127,7 +127,7 @@ export async function searchContactsByCompany(
   after = "",
   limit = 50,
   email?: string,
-  brand: "litto" | "skwezed" = "litto"
+  brand: "litto-cannabis" | "skwezed" = "litto-cannabis"
 ): Promise<HubSpotSearchResponse> {
   const { baseUrl, token } = getHubspotCredentials(brand);
   const properties = [
@@ -187,7 +187,7 @@ export async function searchContactsByStatus(
   after = "",
   limit = 50,
   email?: string,
-  brand: "litto" | "skwezed" = "litto"
+  brand: "litto-cannabis" | "skwezed" = "litto-cannabis"
 ): Promise<HubSpotSearchResponse> {
   const { baseUrl, token } = getHubspotCredentials(brand);
   const properties = [

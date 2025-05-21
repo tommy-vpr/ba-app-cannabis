@@ -2,7 +2,9 @@
 
 import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
-export async function getAllZipCodesFromHubSpot(brand: "litto" | "skwezed") {
+export async function getAllZipCodesFromHubSpot(
+  brand: "litto-cannabis" | "skwezed"
+) {
   const uniqueZips = new Set<string>();
   let after: string | null = null;
 
@@ -35,7 +37,7 @@ export async function getAllZipCodesFromHubSpot(brand: "litto" | "skwezed") {
   return Array.from(uniqueZips).sort((a, b) => a.localeCompare(b));
 }
 
-// export async function getAllZipCodesFromHubSpot(brand: "litto" | "skwezed") {
+// export async function getAllZipCodesFromHubSpot(brand: "litto-cannabis" | "skwezed") {
 //   const uniqueZips = new Set<string>();
 //   let after: string | null = null;
 

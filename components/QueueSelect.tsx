@@ -4,7 +4,7 @@ export function QueueSelect({
   brand,
   onSelect,
 }: {
-  brand: "litto" | "skwezed";
+  brand: "litto-cannabis" | "skwezed";
   onSelect: (queueId: string) => void;
 }) {
   const queues = STATIC_TASK_QUEUES[brand];

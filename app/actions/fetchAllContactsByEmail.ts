@@ -14,7 +14,7 @@ interface HubSpotSearchResponse {
 
 export async function fetchAllContactsByEmail(
   email: string,
-  brand: "litto" | "skwezed"
+  brand: "litto-cannabis" | "skwezed"
 ): Promise<{
   results: HubSpotContact[];
   paging?: { next?: { after: string } };

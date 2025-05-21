@@ -10,9 +10,8 @@ export async function GET(
 ) {
   const { contactId } = await context.params; // ✅ await the promise
   const cookieStore = await cookies(); // ✅ no await
-  const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-    | "litto"
-    | "skwezed";
+  const brand = (cookieStore.get("selected_brand")?.value ??
+    "litto-cannabis") as "litto-cannabis" | "skwezed";
 
   if (!contactId) {
     return NextResponse.json({ error: "Missing contactId" }, { status: 400 });
@@ -42,8 +41,8 @@ export async function GET(
 // ) {
 //   const { contactId } = await params;
 //   const cookieStore = await cookies(); // no `await` needed anymore in Next 15
-//   const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-//     | "litto"
+//   const brand = (cookieStore.get("selected_brand")?.value ?? "litto-cannabis") as
+//     | "litto-cannabis"
 //     | "skwezed";
 
 //   if (!contactId) {

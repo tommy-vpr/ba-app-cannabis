@@ -121,7 +121,7 @@ export function NavUser({
               </Link>
               <DropdownMenuItem
                 className="cursor-pointer"
-                onClick={() => setBrand("litto")}
+                onClick={() => setBrand("litto-cannabis")}
               >
                 <IconClipboardText />
                 LITTO

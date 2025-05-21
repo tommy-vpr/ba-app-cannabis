@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export function ZipCodes({ brand }: { brand: "litto" | "skwezed" }) {
+export function ZipCodes({ brand }: { brand: "litto-cannabis" | "skwezed" }) {
   const [zips, setZips] = useState<string[]>([]);
   const [after, setAfter] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -77,7 +77,7 @@ export function ZipCodes({ brand }: { brand: "litto" | "skwezed" }) {
 // import { useRouter } from "next/navigation"; // ✅ import router
 // import { getAllZipCodesFromHubSpot } from "@/app/actions/getAllZipCodesFromHubSpot";
 
-// export function ZipCodes({ brand }: { brand: "litto" | "skwezed" }) {
+// export function ZipCodes({ brand }: { brand: "litto-cannabis" | "skwezed" }) {
 //   const [zips, setZips] = useState<string[]>([]);
 //   const [loading, setLoading] = useState(true);
 //   const router = useRouter(); // ✅ initialize router

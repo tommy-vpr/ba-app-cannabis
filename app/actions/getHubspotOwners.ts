@@ -9,7 +9,7 @@ type HubspotOwner = {
   email?: string;
 };
 
-export async function getHubspotOwners(brand: "litto" | "skwezed") {
+export async function getHubspotOwners(brand: "litto-cannabis" | "skwezed") {
   try {
     const data = await hubspotRequest("/crm/v3/owners/", "GET", brand);
 

@@ -17,9 +17,8 @@ export async function GET(req: Request) {
   const after = url.searchParams.get("after");
 
   const cookieStore = await cookies(); // no await needed
-  const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-    | "litto"
-    | "skwezed";
+  const brand = (cookieStore.get("selected_brand")?.value ??
+    "litto-cannabis") as "litto-cannabis" | "skwezed";
 
   const savedContacts = await prisma.savedContact.findMany({
     where: { userId: session.user.id },
@@ -81,8 +80,8 @@ export async function GET(req: Request) {
 //   if (!session?.user?.id) return NextResponse.json({ contacts: [] });
 
 //   const cookieStore = await cookies();
-//   const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-//     | "litto"
+//   const brand = (cookieStore.get("selected_brand")?.value ?? "litto-cannabis") as
+//     | "litto-cannabis"
 //     | "skwezed";
 
 //   const cursor = req.nextUrl.searchParams.get("after");
@@ -139,8 +138,8 @@ export async function GET(req: Request) {
 //   }
 
 //   const cookieStore = await cookies(); // No need for await
-//   const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-//     | "litto"
+//   const brand = (cookieStore.get("selected_brand")?.value ?? "litto-cannabis") as
+//     | "litto-cannabis"
 //     | "skwezed";
 
 //   // Get saved contact IDs for the current user

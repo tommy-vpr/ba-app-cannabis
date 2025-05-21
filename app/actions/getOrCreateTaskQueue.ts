@@ -3,7 +3,7 @@
 import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
 export async function getOrCreateTaskQueue(
-  brand: "litto" | "skwezed",
+  brand: "litto-cannabis" | "skwezed",
   queueName = "Ba sample drop off"
 ): Promise<string | null> {
   try {

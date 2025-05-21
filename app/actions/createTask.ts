@@ -4,7 +4,7 @@ import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 import { getContactById } from "./getContactById";
 
 type CreateTaskOptions = {
-  brand: "litto" | "skwezed";
+  brand: "litto-cannabis" | "skwezed";
   contactId: string;
   title: string;
   dueDate: Date;

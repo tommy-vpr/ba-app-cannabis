@@ -4,7 +4,7 @@ import { getHubspotCredentials } from "@/lib/getHubspotCredentials";
 
 export async function GET() {
   try {
-    const { baseUrl, token } = getHubspotCredentials("litto");
+    const { baseUrl, token } = getHubspotCredentials("litto-cannabis");
 
     const filters = [
       {

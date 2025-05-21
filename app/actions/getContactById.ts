@@ -5,7 +5,7 @@ import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
 export async function getContactById(
   id: string,
-  brand: "litto" | "skwezed"
+  brand: "litto-cannabis" | "skwezed"
 ): Promise<HubSpotContact | null> {
   const properties = [
     "firstname",

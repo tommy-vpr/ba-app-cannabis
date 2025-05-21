@@ -8,7 +8,7 @@ const page = () => {
         Zip Codes
       </h1>
       <div className="">
-        <ZipCodes brand="litto" />
+        <ZipCodes brand="litto-cannabis" />
       </div>
     </div>
   );

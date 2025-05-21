@@ -17,7 +17,7 @@ const ContactUpdateSchema = z.object({
 export async function updateContact(
   contactId: string,
   updates: z.infer<typeof ContactUpdateSchema>,
-  brand: "litto" | "skwezed" = "litto" // Default to litto
+  brand: "litto-cannabis" | "skwezed" = "litto-cannabis" // Default to litto
 ) {
   const validated = ContactUpdateSchema.safeParse(updates);
 

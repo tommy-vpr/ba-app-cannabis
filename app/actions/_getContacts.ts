@@ -5,7 +5,7 @@ import { getHubspotCredentials } from "@/lib/getHubspotCredentials";
 
 export async function getContacts(
   filter: ContactFilter & { after?: string },
-  brand: "litto" | "skwezed"
+  brand: "litto-cannabis" | "skwezed"
 ) {
   const { baseUrl, token } = getHubspotCredentials(brand);
   const limit = filter.limit && filter.limit > 0 ? filter.limit : 12;

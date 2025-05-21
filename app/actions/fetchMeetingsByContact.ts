@@ -4,7 +4,7 @@ import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
 export async function fetchMeetingsByContact(
   contactId: string,
-  brand: "litto" | "skwezed"
+  brand: "litto-cannabis" | "skwezed"
 ) {
   // Step 1: Get associated meeting IDs
   const assocData = await hubspotRequest(

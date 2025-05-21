@@ -3,7 +3,7 @@ import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
 export async function getHubSpotContact(
   contactId: string,
-  brand: "litto" | "skwezed" = "litto"
+  brand: "litto-cannabis" | "skwezed" = "litto-cannabis"
 ) {
   return await hubspotRequest(
     `/crm/v3/objects/contacts/${contactId}?properties=firstname,lastname,email,phone,company,jobtitle,address,city,state,zip,hs_lead_status,l2_lead_status`,

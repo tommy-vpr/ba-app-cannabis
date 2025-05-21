@@ -8,7 +8,7 @@ import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
 export async function createNewContact(
   input: CreateContactFormValues,
-  brand: "litto" | "skwezed" = "litto"
+  brand: "litto-cannabis" | "skwezed" = "litto-cannabis"
 ) {
   try {
     // 1. Validate session

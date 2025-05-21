@@ -6,7 +6,9 @@ import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const after = searchParams.get("after");
-  const brand = (searchParams.get("brand") ?? "litto") as "litto" | "skwezed";
+  const brand = (searchParams.get("brand") ?? "litto-cannabis") as
+    | "litto-cannabis"
+    | "skwezed";
 
   const uniqueZips = new Set<string>();
 
@@ -39,8 +41,8 @@ export async function GET(req: NextRequest) {
 // import { getPaginatedZipCodesFromHubSpot } from "@/app/actions/getPaginatedZipCodesFromHubSpot";
 
 // export async function GET(req: NextRequest) {
-//   const brand = (req.nextUrl.searchParams.get("brand") || "litto") as
-//     | "litto"
+//   const brand = (req.nextUrl.searchParams.get("brand") || "litto-cannabis") as
+//     | "litto-cannabis"
 //     | "skwezed";
 //   const after = req.nextUrl.searchParams.get("after") || undefined;
 

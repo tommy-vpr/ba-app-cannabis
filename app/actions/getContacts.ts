@@ -6,11 +6,28 @@ import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
 export async function getContacts(
   filter: ContactFilter & { after?: string },
-  brand: "litto" | "skwezed"
+  brand: "litto-cannabis" | "skwezed",
+  email: string
 ) {
   const limit = filter.limit && filter.limit > 0 ? filter.limit : 12;
 
   const filters = [];
+
+  // ✅ Now use the separate `email` param when needed
+  // if (email) {
+  //   filters.push({
+  //     propertyName: "ba_email",
+  //     operator: "EQ",
+  //     value: email,
+  //   });
+  // }
+  if (email && email.trim()) {
+    filters.push({
+      propertyName: "ba_email",
+      operator: "EQ",
+      value: email.trim().toLowerCase(),
+    });
+  }
 
   if (filter.status && filter.status.trim().toLowerCase() !== "all") {
     filters.push({
@@ -45,7 +62,7 @@ export async function getContacts(
   }
 
   const body = {
-    filterGroups: filters.length ? [{ filters }] : [],
+    filterGroups: filters.length > 0 ? [{ filters }] : [],
     sorts: [{ propertyName: "createdate", direction: "DESCENDING" }],
     properties: [
       "firstname",
@@ -58,6 +75,7 @@ export async function getContacts(
       "state",
       "zip",
       "address",
+      "ba_email",
       "hs_lead_status",
       "l2_lead_status",
       "meeting_logs",

@@ -45,7 +45,7 @@ export function AppSidebar({
         } p-4 dark:bg-[#06070a]`}
       >
         <Link href="/dashboard" onClick={handleReset}>
-          {brand === "litto" ? (
+          {brand === "litto-cannabis" ? (
             <Image
               src="/images/litto-logo-blk.webp"
               width={100}

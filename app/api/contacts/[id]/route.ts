@@ -8,9 +8,8 @@ export async function GET(
 ) {
   const { id } = await context.params; // ✅ await the promise
   const cookieStore = await cookies(); // no await needed
-  const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-    | "litto"
-    | "skwezed";
+  const brand = (cookieStore.get("selected_brand")?.value ??
+    "litto-cannabis") as "litto-cannabis" | "skwezed";
 
   const contact = await getContactById(id, brand);
 

@@ -13,9 +13,8 @@ export default async function SavedContactsPage() {
 
   // ✅ Get selected brand from cookie
   const cookieStore = await cookies();
-  const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-    | "litto"
-    | "skwezed";
+  const brand = (cookieStore.get("selected_brand")?.value ??
+    "litto-cannabis") as "litto-cannabis" | "skwezed";
 
   const savedContacts = await prisma.savedContact.findMany({
     where: { userId: session.user.id },

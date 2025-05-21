@@ -10,7 +10,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 
-type Brand = "litto" | "skwezed";
+type Brand = "litto-cannabis" | "skwezed";
 
 interface BrandContextType {
   brand: Brand;
@@ -20,7 +20,7 @@ interface BrandContextType {
 const BrandContext = createContext<BrandContextType | undefined>(undefined);
 
 export function BrandProvider({ children }: { children: ReactNode }) {
-  const [brand, setBrandState] = useState<Brand>("litto"); // ✅ renamed
+  const [brand, setBrandState] = useState<Brand>("litto-cannabis"); // ✅ renamed
   const router = useRouter();
 
   const setBrand = (newBrand: Brand) => {

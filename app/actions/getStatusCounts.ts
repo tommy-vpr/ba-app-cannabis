@@ -4,7 +4,8 @@ import { getHubspotCredentials } from "@/lib/getHubspotCredentials";
 import { StatusKey, StatusCount } from "@/types/status";
 
 export async function getStatusCounts(
-  brand: "litto" | "skwezed"
+  brand: "litto-cannabis" | "skwezed",
+  email: string // 👈 pass session user's email here
 ): Promise<StatusCount> {
   const { baseUrl, token } = getHubspotCredentials(brand);
 
@@ -26,11 +27,21 @@ export async function getStatusCounts(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        filterGroups: [
+          {
+            filters: [
+              {
+                propertyName: "ba_email",
+                operator: "EQ",
+                value: email,
+              },
+            ],
+          },
+        ],
         properties: ["hs_lead_status", "l2_lead_status"],
-        limit: 100, // ✅ within API bounds
+        limit: 100,
         after,
       }),
-      // ✅ Cache result for 60 seconds to avoid rate limits
       next: {
         revalidate: 60,
         tags: ["statusCounts"],

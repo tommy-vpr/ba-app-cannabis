@@ -1,5 +1,5 @@
 export const STATIC_TASK_QUEUES: Record<
-  "litto" | "skwezed",
+  "litto-cannabis" | "skwezed",
   { id: string; name: string }[]
 > = {
   litto: [

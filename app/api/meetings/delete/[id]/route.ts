@@ -13,9 +13,8 @@ export async function DELETE(req: NextRequest) {
   }
 
   const cookieStore = await cookies();
-  const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-    | "litto"
-    | "skwezed";
+  const brand = (cookieStore.get("selected_brand")?.value ??
+    "litto-cannabis") as "litto-cannabis" | "skwezed";
 
   const { baseUrl, token } = getHubspotCredentials(brand);
 
@@ -41,7 +40,6 @@ export async function DELETE(req: NextRequest) {
     );
   }
 }
-
 
 // import { NextRequest, NextResponse } from "next/server";
 
@@ -90,8 +88,8 @@ export async function DELETE(req: NextRequest) {
 // ) {
 //   const { id } = await context.params; // ✅ await the promise
 //   const cookieStore = await cookies();
-//   const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-//     | "litto"
+//   const brand = (cookieStore.get("selected_brand")?.value ?? "litto-cannabis") as
+//     | "litto-cannabis"
 //     | "skwezed";
 
 //   const { baseUrl, token } = getHubspotCredentials(brand);

@@ -5,7 +5,7 @@ import { getHubspotOwners } from "@/app/actions/getHubspotOwners";
 // Replace 'litto' with a query param if needed
 export async function GET() {
   try {
-    const owners = await getHubspotOwners("litto");
+    const owners = await getHubspotOwners("litto-cannabis");
 
     return NextResponse.json({
       success: true,

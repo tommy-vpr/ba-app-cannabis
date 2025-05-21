@@ -7,7 +7,7 @@ export function OwnerSelect({
   brand,
   onSelect,
 }: {
-  brand: "litto" | "skwezed";
+  brand: "litto-cannabis" | "skwezed";
   onSelect: (ownerId: string) => void;
 }) {
   const [owners, setOwners] = useState<{ id: string; name: string }[]>([]);

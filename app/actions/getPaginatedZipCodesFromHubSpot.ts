@@ -4,7 +4,7 @@
 import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
 export async function getPaginatedZipCodesFromHubSpot(
-  brand: "litto" | "skwezed",
+  brand: "litto-cannabis" | "skwezed",
   after?: string
 ) {
   const uniqueZips = new Set<string>();

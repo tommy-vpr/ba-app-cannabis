@@ -6,7 +6,7 @@ import { hubspotLimiter } from "./bottleneck";
 export const hubspotRequest = async (
   path: string,
   method: "GET" | "POST" | "PATCH" | "DELETE" | "PUT" = "GET",
-  brand: "litto" | "skwezed",
+  brand: "litto-cannabis" | "skwezed",
   data?: any
 ): Promise<any> => {
   const { baseUrl, token } = getHubspotCredentials(brand);
@@ -45,7 +45,7 @@ export const hubspotRequest = async (
 // export const hubspotRequest = async (
 //   path: string,
 //   method: "GET" | "POST" | "PATCH" | "DELETE" | "PUT" = "GET",
-//   brand: "litto" | "skwezed",
+//   brand: "litto-cannabis" | "skwezed",
 //   data?: any
 // ) => {
 //   const { baseUrl, token } = getHubspotCredentials(brand);

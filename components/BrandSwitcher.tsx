@@ -6,7 +6,7 @@ export function BrandSwitcher() {
   const { brand, setBrand } = useBrand();
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = e.target.value as "litto" | "skwezed";
+    const selected = e.target.value as "litto-cannabis" | "skwezed";
     setBrand(selected);
   };
 
@@ -16,7 +16,7 @@ export function BrandSwitcher() {
       onChange={handleChange}
       className="border px-3 py-2 rounded-md"
     >
-      <option value="litto" className="text-black">
+      <option value="litto-cannabis" className="text-black">
         Litto
       </option>
       <option value="skwezed" className="text-black">

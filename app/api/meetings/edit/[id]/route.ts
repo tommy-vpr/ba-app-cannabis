@@ -15,9 +15,8 @@ export async function PUT(req: NextRequest) {
   const { title, body, outcome } = await req.json();
 
   const cookieStore = await cookies();
-  const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-    | "litto"
-    | "skwezed";
+  const brand = (cookieStore.get("selected_brand")?.value ??
+    "litto-cannabis") as "litto-cannabis" | "skwezed";
 
   const { baseUrl, token } = getHubspotCredentials(brand);
 
@@ -52,7 +51,6 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-
 // import { getHubspotCredentials } from "@/lib/getHubspotCredentials";
 // import { NextRequest, NextResponse } from "next/server";
 // import { cookies } from "next/headers";
@@ -67,8 +65,8 @@ export async function PUT(req: NextRequest) {
 //   const { title, body, outcome } = await req.json();
 
 //   const cookieStore = await cookies();
-//   const brand = (cookieStore.get("selected_brand")?.value ?? "litto") as
-//     | "litto"
+//   const brand = (cookieStore.get("selected_brand")?.value ?? "litto-cannabis") as
+//     | "litto-cannabis"
 //     | "skwezed";
 
 //   const { baseUrl, token } = getHubspotCredentials(brand);

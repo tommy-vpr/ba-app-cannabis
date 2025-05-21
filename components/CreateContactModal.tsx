@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 
 import { createNewContact } from "@/app/actions/createNewContact";
 import { CreateContactFormValues, CreateContactSchema } from "@/lib/schemas";
@@ -93,11 +93,11 @@ export function CreateContactModal({
       setPage(1);
       setCursors({});
 
-      // 🔄 Update URL to clean state
-      router.push("/dashboard?page=1");
+      startTransition(async () => {
+        await fetchPage(1, "all", "");
+      });
 
-      // ✅ Replace entire list with the new contact (optimistic style)
-      fetchPage(1, "all", "", () => [res.contact], null);
+      router.replace("/dashboard");
 
       const rawStatus = res.contact.properties.lead_status?.toLowerCase() ?? "";
       const statusKey = isStatusKey(rawStatus) ? rawStatus : StatusKey.Assigned;

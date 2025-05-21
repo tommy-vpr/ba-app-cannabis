@@ -10,7 +10,10 @@ export async function GET(req: Request) {
   const query = searchParams.get("query") ?? "";
   const zip = searchParams.get("zip") ?? "";
 
-  const result = await getContacts({ page, status, query, zip }, "litto");
+  const result = await getContacts(
+    { page, status, query, zip },
+    "litto-cannabis"
+  );
 
   return NextResponse.json(result);
 }

@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 export async function updateL2LeadStatus(
   contactId: string,
   status: string,
-  brand: "litto" | "skwezed" = "litto"
+  brand: "litto-cannabis" | "skwezed" = "litto-cannabis"
 ) {
   try {
     // Use central hubspotRequest with PATCH
