@@ -4,9 +4,9 @@ import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { zip: string } }
+  context: { params: Promise<{ zip: string }> }
 ) {
-  const zip = params.zip;
+  const { zip } = await context.params;
 
   const cookieStore = await cookies();
   const brand = (cookieStore.get("selected_brand")?.value ??
