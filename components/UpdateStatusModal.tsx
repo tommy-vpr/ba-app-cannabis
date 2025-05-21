@@ -9,6 +9,7 @@ import { HubSpotContact } from "@/types/hubspot";
 import { useBrand } from "@/context/BrandContext";
 import { useContactContext } from "@/context/ContactContext";
 import { getStatusCounts } from "@/app/actions/getStatusCounts";
+import { useSession } from "next-auth/react";
 
 type Props = {
   open: boolean;
@@ -60,6 +61,8 @@ export function UpdateStatusModal({
     // 🚀 Server-side update
     const res = await updateL2LeadStatus(contactId, selected, brand);
 
+    const { data: session } = useSession();
+
     if (res.success) {
       toast.success("Status updated");
       const refreshed = await refetchContact?.();
@@ -70,7 +73,7 @@ export function UpdateStatusModal({
       }
 
       // ✅ Update status counts globally
-      const newCounts = await getStatusCounts(brand);
+      const newCounts = await getStatusCounts(brand, session?.user.email ?? "");
       setStatusCounts(newCounts); // from useContactContext
 
       // await refetchContacts();
