@@ -1,12 +1,15 @@
-import AdminLoginForm from "@/components/LoginForm";
-import React from "react";
+"use client";
 
-const page = () => {
+import FormSwitcher from "@/components/FormSwitcher";
+import React, { useState } from "react";
+
+export default function Page() {
   return (
-    <div>
-      <AdminLoginForm />
+    <div
+      className="relative w-full h-screen flex items-center justify-center text-white
+       flex-col"
+    >
+      <FormSwitcher />
     </div>
   );
-};
-
-export default page;
+}

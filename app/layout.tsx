@@ -30,37 +30,14 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const selectedBrand = (cookieStore.get("selected_brand")?.value ??
-    "litto-cannabis") as "litto-cannabis" | "skwezed";
-
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.email) {
-    redirect("/login"); // 🔁 This replaces unauthorized message with actual redirect
-  }
-
-  const userEmail = session.user.email;
-  const { contacts, after, hasNext, statusCounts } =
-    await getInitialDashboardData(selectedBrand, userEmail);
-
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-[#06070a]`}
       >
         <Providers>
-          <ContactProvider
-            initialContacts={contacts}
-            initialCursors={{ 1: after ?? null }}
-            initialHasNext={hasNext}
-            initialStatusCounts={statusCounts}
-          >
-            <Toaster position="top-center" />
-            {children}
-            <EditContactModal />
-            <LogMeetingModal />
-          </ContactProvider>
+          <Toaster position="top-center" />
+          {children}
         </Providers>
       </body>
     </html>

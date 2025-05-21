@@ -253,7 +253,7 @@ export default function ContactPageClient({ id }: { id: string }) {
 
             <button
               className="text-center w-full md:w-fit group cursor-pointer text-sm mt-1 md:mt-6 px-4 py-2 border border-blue-400 bg-blue-400 text-black justify-center
-              dark:text-blue-400 dark:bg-blue-500/20 dark:hover:bg-blue-00 dark:hover:text-black rounded transition duration-200 flex items-center gap-1"
+              dark:text-blue-400 dark:bg-blue-500/20 dark:hover:bg-blue-400 dark:hover:text-black rounded transition duration-200 flex items-center gap-1"
               onClick={() => {
                 setDemoContactData(contact);
                 setDemoOpen(true);
