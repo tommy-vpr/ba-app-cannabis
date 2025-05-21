@@ -108,17 +108,6 @@ export function NavMain({
             <IconLocationPin size={18} />
             Zip Codes
           </Link>
-          <Link
-            href="/dashboard/forms"
-            className={clsx(
-              "flex items-center gap-2 p-2 transition-colors",
-              pathname === "/dashboard/forms" &&
-                "dark:bg-[#161b22] dark:border-[#30363d] border border-gray-200 bg-gray-100 rounded-sm"
-            )}
-          >
-            <IconListCheck size={18} />
-            Forms
-          </Link>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

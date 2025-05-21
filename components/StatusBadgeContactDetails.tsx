@@ -10,10 +10,10 @@ const statusMap: Record<
 > = {
   assigned: {
     label: "Assigned",
-    dotColor: "bg-purple-400",
-    bgColor: "bg-purple-100 dark:bg-purple-200/20",
-    textColor: "text-purple-500 dark:text-purple-400",
-    borderColor: "border-purple-400",
+    dotColor: "bg-amber-400",
+    bgColor: "bg-amber-100 dark:bg-amber-200/20",
+    textColor: "text-amber-500 dark:text-amber-400",
+    borderColor: "border-amber-400",
   },
   visited: {
     label: "Visited",

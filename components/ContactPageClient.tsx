@@ -227,7 +227,7 @@ export default function ContactPageClient({ id }: { id: string }) {
                 setEditOpen(true);
               }}
               className="cursor-pointer text-sm text-center w-full md:w-fit mt-6 px-4 py-2 border border-black hover:bg-black hover:text-white dark:border-gray-100 
-              dark:bg-gray-100 dark:text-black md:dark:text-gray-100 md:dark:hover:bg-gray-100 md:dark:bg-white/20 md:dark:hover:text-black rounded transition duration-200 flex items-center gap-1 justify-center"
+              dark:bg-gray-100 dark:text-black md:dark:text-gray-100 md:dark:hover:bg-gray-100 md:dark:bg-transparent md:dark:hover:text-black rounded transition duration-200 flex items-center gap-1 justify-center"
             >
               <IconPencil size={18} /> Edit Contact
             </button>
@@ -237,7 +237,7 @@ export default function ContactPageClient({ id }: { id: string }) {
                 "text-center w-full md:w-fit group cursor-pointer text-sm mt-1 md:mt-6 px-4 py-2 border rounded transition duration-200 flex items-center justify-center gap-1",
                 brand === "skwezed"
                   ? "border-[#009444] bg-[#009444] text-white"
-                  : "dark:bg-green-400 border-green-400 bg-green-400 text-black md:dark:text-green-400 md:dark:bg-green-500/20 md:dark:hover:bg-green-400 dark:hover:text-black"
+                  : "dark:bg-green-400 border-green-400 bg-green-400 text-black md:dark:text-green-400 md:dark:bg-transparent md:dark:hover:bg-green-400 dark:hover:text-black"
               )}
               onClick={() => {
                 setContactId(contact.id); // ✅ Sets ID
@@ -249,20 +249,6 @@ export default function ContactPageClient({ id }: { id: string }) {
                 <IconPlus size={18} />
               </span>
               Log Meeting
-            </button>
-
-            <button
-              className="text-center w-full md:w-fit group cursor-pointer text-sm mt-1 md:mt-6 px-4 py-2 border border-blue-400 bg-blue-400 text-black justify-center
-              dark:bg-blue-400 md:dark:text-blue-400 md:dark:bg-blue-500/20 md:dark:hover:bg-blue-400 md:dark:hover:text-black rounded transition duration-200 flex items-center gap-1"
-              onClick={() => {
-                setDemoContactData(contact);
-                setDemoOpen(true);
-              }}
-            >
-              <span className="transition-transform duration-500 transform group-hover:rotate-[180deg]">
-                <IconPlus size={18} />
-              </span>{" "}
-              Demo Day
             </button>
           </div>
         </div>
@@ -284,7 +270,7 @@ export default function ContactPageClient({ id }: { id: string }) {
 
       {/* <LogMeetingModal logListRef={logListRef} onSuccess={() => mutate()} /> */}
 
-      <DemoDayModal open={demoOpen} setOpen={setDemoOpen} />
+      {/* <DemoDayModal open={demoOpen} setOpen={setDemoOpen} /> */}
 
       <UpdateStatusModal
         open={showStatusModal}

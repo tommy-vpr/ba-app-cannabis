@@ -3,9 +3,9 @@
 import { HubSpotContact, HubSpotContactWithSaved } from "@/types/hubspot";
 import { useContactContext } from "@/context/ContactContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, MoreVertical } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
-import { IconPencil, IconTextPlus } from "@tabler/icons-react";
+import { IconListNumbers, IconPencil, IconTextPlus } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 
 import { Bookmark, BookmarkCheck } from "lucide-react";
@@ -18,14 +18,18 @@ export function ContactCard({
   href,
   savedIds,
   mutateSavedIds,
+  index,
+  onReorder,
 }: {
   contact: HubSpotContactWithSaved;
   href: string;
   savedIds: string[];
   mutateSavedIds?: () => void;
+  index?: number;
+  onReorder?: (id: string, newIndex: number) => void;
 }) {
-  // const [logOpen, setLogOpen] = useState(false);
-  // const logListRef = useRef<MeetingLogListRef | null>(null);
+  const [showSelect, setShowSelect] = useState(false);
+
   const [isSaved, setIsSaved] = useState(savedIds.includes(contact.id));
 
   useEffect(() => {
@@ -81,13 +85,33 @@ export function ContactCard({
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
   }
 
+  const handleReorderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.stopPropagation();
+    const newIndex = parseInt(e.target.value, 10) - 1;
+    onReorder?.(contact.id, newIndex);
+    setShowSelect(false); // hide after selection
+  };
+
+  const handleMoreClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowSelect((prev) => !prev);
+  };
+
   return (
     <>
       <Card
         onClick={() => router.push(`/dashboard/contacts/${safeId}`)}
         // className="hover:shadow-lg transition-shadow h-full flex flex-col gap-0 dark:bg-muted/50"
-        className="shadow-md shadow-gray-200 dark:shadow-black/30 hover:shadow-lg transition-shadow h-full flex flex-col gap-0 dark:bg-[#161b22] dark:border dark:border-[#30363d]"
+        className="relative shadow-md shadow-gray-200 dark:shadow-black/30 hover:shadow-lg transition-shadow h-full flex flex-col gap-0 dark:bg-[#161b22] dark:border dark:border-[#30363d]"
       >
+        {index && (
+          <div
+            className="z-10 absolute top-2 left-2 text-xs font-mono h-6 w-6 rounded-full
+          bg-gray-400 text-white border-[2px] border-white dark:border-[#161b22] dark:bg-blue-500 dark:text-gray-100 flex items-center justify-center"
+          >
+            {index}
+          </div>
+        )}
         <div className="cursor-pointer flex-grow">
           <CardContent className="p-4 flex flex-col gap-2">
             <div className="font-bold uppercase text-md bg-gray-100 dark:bg-[#30363d] text-zinc-700 dark:text-gray-100 p-3 rounded">
@@ -107,6 +131,29 @@ export function ContactCard({
             {showBadge && <StatusBadge status={l2_lead_status || "unknown"} />}
           </CardContent>
         </div>
+
+        {index && (
+          <div
+            className="absolute top-2 right-2 text-gray-400 bg-gray-200 border-white dark:bg-[#30363d] dark:text-gray-300 h-8 w-6 rounded-md border-[2px] dark:border-[#161b22] flex justify-center items-center"
+            onClick={handleMoreClick}
+          >
+            <MoreVertical className="w-5 h-5 cursor-pointer" />
+            {onReorder && index !== undefined && showSelect && (
+              <select
+                className="absolute top-6 right-0 bg-white dark:bg-[#1c1c1c] text-sm border rounded z-10"
+                value={index}
+                onChange={handleReorderChange}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {Array.from({ length: savedIds.length }).map((_, i) => (
+                  <option key={i} value={i + 1}>
+                    Move to {i + 1}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        )}
 
         <div className="flex gap-1 px-4 pb-4">
           <button

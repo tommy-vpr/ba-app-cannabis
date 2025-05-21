@@ -99,14 +99,14 @@ export default function FilteringSystem() {
 
   const statusStyles: Record<StatusKey, string> = {
     all: `bg-transparent text-gray-700 dark:text-gray-300`,
-    assigned: "bg-transparent text-purple-400",
+    assigned: "bg-transparent text-amber-400",
     visited: "bg-transparent text-rose-400",
     "dropped off": "bg-transparent text-green-400",
   };
 
   const ringColors: Record<StatusKey, string> = {
     all: "ring-gray-400",
-    assigned: "ring-purple-400",
+    assigned: "ring-amber-400",
     visited: "ring-rose-400",
     "dropped off": "ring-green-400",
   };

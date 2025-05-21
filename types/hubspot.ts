@@ -36,4 +36,5 @@ export type HubSpotFieldsResult =
 
 export type HubSpotContactWithSaved = HubSpotContact & {
   isSaved: boolean;
+  dbId: string;
 };

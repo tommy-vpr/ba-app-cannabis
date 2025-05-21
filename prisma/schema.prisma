@@ -24,6 +24,7 @@ model SavedContact {
   userId    String
   contactId String   // HubSpot contact ID
   createdAt DateTime @default(now())
+  position Int @default(0)
 
   @@unique([userId, contactId]) // prevent duplicates
 }
