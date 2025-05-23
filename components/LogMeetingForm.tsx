@@ -27,7 +27,7 @@ const formSchema = z.object({
   newFirstName: z.string().min(1, "First name is required"),
   jobTitle: z.string().min(1, "Job title is required"),
   body: z.string().min(1, "Meeting notes are required"),
-  l2Status: z.enum(["assigned", "visited", "dropped off"]),
+  l2Status: z.enum(["visited", "dropped off"]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -63,9 +63,7 @@ export function LogMeetingForm({
       newFirstName: contactFirstName || "",
       jobTitle: contactJobTitle || "",
       body: "",
-      l2Status: (["assigned", "visited", "dropped off"].includes(
-        contactStatus || ""
-      )
+      l2Status: (["visited", "dropped off"].includes(contactStatus || "")
         ? contactStatus
         : "assigned") as FormValues["l2Status"],
     },
@@ -157,7 +155,7 @@ export function LogMeetingForm({
             <FormItem>
               <FormLabel>Status</FormLabel>
               <div className="space-y-2">
-                {["assigned", "visited", "dropped off"].map((status) => (
+                {["visited", "dropped off"].map((status) => (
                   <label
                     key={status}
                     className="flex items-center gap-2 cursor-pointer"

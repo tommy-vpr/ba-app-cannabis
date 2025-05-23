@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { updateL2LeadStatus } from "@/app/actions/updateL2LeadStatus";
 import { toast } from "react-hot-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -19,10 +19,10 @@ type Props = {
   contact: HubSpotContact;
   refetchContact?: () => Promise<HubSpotContact | null>;
   mutateContact?: (data?: HubSpotContact, shouldRevalidate?: boolean) => void;
-  setLocalContact?: (c: HubSpotContact) => void; // ✅ to update local UI
+  setLocalContact?: (c: HubSpotContact) => void;
 };
 
-const statuses = ["assigned", "visited", "dropped off"] as const;
+const statuses = ["visited", "dropped off"] as const;
 
 export function UpdateStatusModal({
   open,
@@ -35,17 +35,24 @@ export function UpdateStatusModal({
   setLocalContact,
 }: Props) {
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState(currentStatus);
+  const [selected, setSelected] = useState<string | null>(null); // no default selection
   const { brand } = useBrand();
-  // const { refetchContacts } = useContactContext();
-
   const { updateContactInList, setStatusCounts } = useContactContext();
 
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (open) setSelected(null); // reset every time modal opens
+  }, [open]);
+
   const handleUpdate = async () => {
-    if (!contactId || !contact) return;
+    if (!contactId || !contact || !selected) {
+      toast.error("Please select a status before saving");
+      return;
+    }
+
     setLoading(true);
 
-    // ⚡ Optimistic UI update
     const updatedContact: HubSpotContact = {
       ...contact,
       properties: {
@@ -55,28 +62,22 @@ export function UpdateStatusModal({
     };
 
     mutateContact?.(updatedContact, false);
-    setLocalContact?.(updatedContact); // ✅ sync status badge in ContactPageClient
+    setLocalContact?.(updatedContact);
     updateContactInList(updatedContact);
 
-    // 🚀 Server-side update
     const res = await updateL2LeadStatus(contactId, selected, brand);
-
-    const { data: session } = useSession();
 
     if (res.success) {
       toast.success("Status updated");
       const refreshed = await refetchContact?.();
       if (refreshed) {
         mutateContact?.(refreshed, false);
-        setLocalContact?.(refreshed); // sync again with fresh data
-        updateContactInList(refreshed); // ✅ ensure global list reflects change
+        setLocalContact?.(refreshed);
+        updateContactInList(refreshed);
       }
 
-      // ✅ Update status counts globally
       const newCounts = await getStatusCounts(brand, session?.user.email ?? "");
-      setStatusCounts(newCounts); // from useContactContext
-
-      // await refetchContacts();
+      setStatusCounts(newCounts);
       setOpen(false);
     } else {
       toast.error(res.message || "Update failed");
@@ -114,7 +115,11 @@ export function UpdateStatusModal({
           ))}
         </div>
 
-        <Button onClick={handleUpdate} disabled={loading} className="w-full">
+        <Button
+          onClick={handleUpdate}
+          disabled={loading || !selected}
+          className="w-full"
+        >
           {loading ? "Saving..." : "Save"}
         </Button>
       </DialogContent>

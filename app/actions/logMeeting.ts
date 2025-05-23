@@ -2,6 +2,10 @@
 
 import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
 import { createTask } from "./createTask";
+import { getServerSession } from "next-auth";
+import { getSavedContactIds } from "./prisma/getSavedContacts";
+import { unsaveContact } from "./prisma/unsaveContact";
+import { authOptions } from "@/lib/authOptions";
 
 export async function logMeeting({
   brand,
@@ -41,6 +45,19 @@ export async function logMeeting({
       brand,
       { properties: updates }
     );
+  }
+
+  // ✅ If status was set to "dropped off", check and unsave
+  if (l2Status === "dropped off") {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+
+    if (userId) {
+      const savedContactIds = await getSavedContactIds();
+      if (savedContactIds.includes(contactId)) {
+        await unsaveContact(contactId);
+      }
+    }
   }
 
   // 🧠 Task due 3 biz days from now
