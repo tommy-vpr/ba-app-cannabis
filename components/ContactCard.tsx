@@ -20,6 +20,9 @@ import { useEffect, useRef, useState } from "react";
 import { unsaveContact } from "@/app/actions/prisma/unsaveContact";
 import { saveContact } from "@/app/actions/prisma/saveContact";
 
+import { ReorderModal } from "./ReorderModal"; // make sure import path is correct
+
+
 export function ContactCard({
   contact,
   href,
@@ -88,6 +91,8 @@ export function ContactCard({
     contact.properties.city || "-"
   }`;
 
+  const [showModal, setShowModal] = useState(false);
+
   function capitalizeWords(str: string) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
   }
@@ -140,27 +145,17 @@ export function ContactCard({
         </div>
 
         {index && (
-          <div
+          <button
             className="absolute top-2 right-2 text-gray-400 bg-gray-200 border-white dark:bg-[#30363d] dark:text-gray-200 h-7 w-7 rounded-md border-[2px] dark:border-[#161b22] flex justify-center items-center"
-            onClick={handleMoreClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowModal(true);
+            }}
           >
             <IconArrowsSort className="w-5 h-4 cursor-pointer" />
-            {onReorder && index !== undefined && showSelect && (
-              <select
-                className="absolute top-6 right-0 bg-white dark:bg-[#1c1c1c] text-sm border rounded z-10"
-                value={index}
-                onChange={handleReorderChange}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {Array.from({ length: savedIds.length }).map((_, i) => (
-                  <option key={i} value={i + 1}>
-                    Move to {i + 1}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+          </button>
         )}
+
 
         <div className="flex gap-1 px-4 pb-4">
           <button
@@ -209,6 +204,18 @@ export function ContactCard({
           )}
         </div>
       </Card>
+
+      {onReorder && (
+        <ReorderModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          contactId={contact.id}
+          currentIndex={(index ?? 1) - 1}
+          total={savedIds.length}
+          onReorder={onReorder}
+        />
+      )}
+
     </>
   );
 }

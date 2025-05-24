@@ -1,4 +1,3 @@
-// app/actions/saveContact.ts
 "use server";
 
 import { prisma } from "@/lib/prisma";
@@ -11,8 +10,21 @@ export async function saveContact(hubspotContactId: string) {
 
   if (!userId) throw new Error("Unauthorized");
 
+  // Get current max position
+  const maxPositionEntry = await prisma.savedContact.findFirst({
+    where: { userId },
+    orderBy: { position: "desc" },
+    select: { position: true },
+  });
+
+  const newPosition = maxPositionEntry ? maxPositionEntry.position + 1 : 0;
+
   const saved = await prisma.savedContact.create({
-    data: { userId, contactId: hubspotContactId },
+    data: {
+      userId,
+      contactId: hubspotContactId,
+      position: newPosition,
+    },
   });
 
   return saved;
