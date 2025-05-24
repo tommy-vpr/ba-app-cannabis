@@ -97,6 +97,16 @@ export function LogMeetingForm({
             },
           });
 
+          // ✅ Refetch from /api/saved-contacts-list if contact was dropped off
+          if (values.l2Status === "dropped off") {
+            fetch("/api/saved-contacts-list")
+              .then((res) => res.json())
+              .then((data) => {
+                // OPTIONAL: update your global contact state here if needed
+                // OR: expose a `refetchSavedContacts()` in context and call it here
+              });
+          }
+
           onSuccess?.(meeting);
         })
         .catch((err) => {
