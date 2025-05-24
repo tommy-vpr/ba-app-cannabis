@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { getSavedContactIds } from "./prisma/getSavedContacts";
 import { unsaveContact } from "./prisma/unsaveContact";
 import { authOptions } from "@/lib/authOptions";
+import { revalidatePath } from "next/cache";
 
 export async function logMeeting({
   brand,
@@ -59,6 +60,8 @@ export async function logMeeting({
       }
     }
   }
+
+  revalidatePath(`/dashboard/saved-contacts`);
 
   // 🧠 Task due 3 biz days from now
   const now = new Date();
