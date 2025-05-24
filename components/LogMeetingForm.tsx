@@ -88,15 +88,6 @@ export function LogMeetingForm({
           contactMutate?.();
           setLogOpen(false);
 
-          // ✅ Optimistic update of contact status
-          updateContactInList?.({
-            ...logContactData!,
-            properties: {
-              ...logContactData!.properties,
-              l2_lead_status: values.l2Status,
-            },
-          });
-
           // ✅ Refetch from /api/saved-contacts-list if contact was dropped off
           if (values.l2Status === "dropped off") {
             fetch("/api/saved-contacts-list")
