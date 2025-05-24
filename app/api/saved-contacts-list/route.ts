@@ -7,6 +7,8 @@ import { NextResponse } from "next/server";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
+export const dynamic = "force-dynamic"; // disables caching (or use revalidate)
+
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
