@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 
 export function ReorderModal({
   isOpen,
@@ -37,10 +37,12 @@ export function ReorderModal({
                 onReorder(contactId, i);
                 onClose();
               }}
-              className={`w-9 h-9 rounded-full text-sm flex items-center justify-center border
-                ${i === currentIndex
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300'}
+              className={`cursor-pointer w-9 h-9 rounded-full text-sm flex items-center justify-center border
+                ${
+                  i === currentIndex
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300"
+                }
                 hover:ring-2 hover:ring-blue-500 transition`}
             >
               {i + 1}

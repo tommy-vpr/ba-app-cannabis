@@ -21,7 +21,9 @@ import Spinner from "@/components/Spinner";
 
 import { logMeeting } from "@/app/actions/logMeeting";
 import { useBrand } from "@/context/BrandContext";
+import { useSavedContactContext } from "@/context/FetchAllSavedContext";
 import { useContactContext } from "@/context/ContactContext";
+import { HubSpotContactWithSaved } from "@/types/hubspot";
 
 const formSchema = z.object({
   newFirstName: z.string().min(1, "First name is required"),
@@ -57,6 +59,8 @@ export function LogMeetingForm({
     updateContactInList,
   } = useContactContext();
 
+  const { fetchAllSavedContacts } = useSavedContactContext();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -82,7 +86,7 @@ export function LogMeetingForm({
         jobTitle: values.jobTitle,
         l2Status: values.l2Status,
       })
-        .then((meeting) => {
+        .then(async (meeting) => {
           toast.success("Meeting logged!");
           logMutate?.();
           contactMutate?.();
@@ -90,12 +94,7 @@ export function LogMeetingForm({
 
           // ✅ Refetch from /api/saved-contacts-list if contact was dropped off
           if (values.l2Status === "dropped off") {
-            fetch("/api/saved-contacts-list")
-              .then((res) => res.json())
-              .then((data) => {
-                // OPTIONAL: update your global contact state here if needed
-                // OR: expose a `refetchSavedContacts()` in context and call it here
-              });
+            await fetchAllSavedContacts();
           }
 
           onSuccess?.(meeting);

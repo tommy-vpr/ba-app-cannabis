@@ -22,7 +22,6 @@ import { saveContact } from "@/app/actions/prisma/saveContact";
 
 import { ReorderModal } from "./ReorderModal"; // make sure import path is correct
 
-
 export function ContactCard({
   contact,
   href,
@@ -146,7 +145,7 @@ export function ContactCard({
 
         {index && (
           <button
-            className="absolute top-2 right-2 text-gray-400 bg-gray-200 border-white dark:bg-[#30363d] dark:text-gray-200 h-7 w-7 rounded-md border-[2px] dark:border-[#161b22] flex justify-center items-center"
+            className="hover transition duration-200 absolute top-2 right-2 text-gray-400 bg-gray-200 border-white dark:bg-[#30363d] dark:hover:bg-blue-500 hover:bg-blue-500 dark:text-gray-200 h-7 w-7 rounded-md border-[2px] dark:border-[#161b22] flex justify-center items-center hover:text-white"
             onClick={(e) => {
               e.stopPropagation();
               setShowModal(true);
@@ -155,7 +154,6 @@ export function ContactCard({
             <IconArrowsSort className="w-5 h-4 cursor-pointer" />
           </button>
         )}
-
 
         <div className="flex gap-1 px-4 pb-4">
           <button
@@ -215,7 +213,6 @@ export function ContactCard({
           onReorder={onReorder}
         />
       )}
-
     </>
   );
 }
