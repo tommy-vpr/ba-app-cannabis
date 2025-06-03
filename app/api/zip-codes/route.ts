@@ -2,6 +2,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions"; // Update path if needed
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -10,9 +12,28 @@ export async function GET(req: NextRequest) {
     | "litto-cannabis"
     | "skwezed";
 
+  const session = await getServerSession(authOptions);
+  const userEmail = session?.user?.email;
+
+  if (!userEmail) {
+    return NextResponse.json({ zips: [], after: null }, { status: 401 });
+  }
+
   const uniqueZips = new Set<string>();
 
   const body = {
+    filterGroups: [
+      {
+        filters: [
+          {
+            propertyName: "ba_email",
+            operator: "EQ",
+            value: userEmail.toLowerCase().trim(),
+          },
+        ],
+      },
+    ],
+    sorts: [{ propertyName: "createdate", direction: "DESCENDING" }],
     properties: ["zip"],
     limit: 50,
     after: after || undefined,

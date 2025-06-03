@@ -6,7 +6,6 @@ import { SkeletonCard } from "./skeleton/SkeletonCard";
 import { CreateContactModal } from "@/components/CreateContactModal";
 import { useState } from "react";
 import useSWR from "swr";
-
 import { useRouter } from "next/navigation";
 import { HubSpotContactWithSaved } from "@/types/hubspot";
 
@@ -48,13 +47,20 @@ export function ContactCardList() {
     );
   }
 
+  const noFilters =
+    contacts.length === 0 && !query && !selectedZip && selectedStatus === "all";
+
   const noResults =
     contacts.length === 0 && (query || selectedZip || selectedStatus !== "all");
 
-  if (noResults) {
+  if (noResults || noFilters) {
     return (
       <div className="text-center py-10 flex flex-col justify-center items-center gap-2">
-        <p className="text-gray-400">No contacts found.</p>
+        <p className="text-gray-400">
+          {noResults
+            ? "No contacts found."
+            : "No contacts yet. Create your first one!"}
+        </p>
         <button
           onClick={() => setOpenContactModal(true)}
           className="cursor-pointer px-3 py-1 border border-green-400 text-green-400 
@@ -86,6 +92,7 @@ export function ContactCardList() {
           />
         ))}
       </div>
+
       {contacts.length === 1 && (
         <div className="text-center my-4">
           <button

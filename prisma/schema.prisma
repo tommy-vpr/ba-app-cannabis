@@ -15,6 +15,7 @@ model User {
   lastName           String
   role               String   @default("user")
   state              String?
+  brand              String
 }
 
 

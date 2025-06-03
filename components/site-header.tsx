@@ -123,9 +123,9 @@ export function SiteHeader({
                       </DropdownMenuItem>
                     </Link>
 
-                    <DropdownMenuItem
+                    {/* <DropdownMenuItem
                       className="cursor-pointer"
-                      onClick={() => setBrand("litto-cannabis")} // ✅ set LITTO
+                      onClick={() => setBrand("litto-cannabis")}
                     >
                       <IconClipboardText />
                       LITTO
@@ -136,11 +136,11 @@ export function SiteHeader({
                       onClick={() => {
                         setTheme("light");
                         setBrand("skwezed");
-                      }} // ✅ set SKWEZED
+                      }} 
                     >
                       <IconClipboardText />
                       Skwezed
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                   </DropdownMenuGroup>
 
                   <DropdownMenuSeparator />

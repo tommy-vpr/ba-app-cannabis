@@ -1,18 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import useSWR from "swr";
 import { useRouter } from "next/navigation";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export function ZipCodes({ brand }: { brand: "litto-cannabis" | "skwezed" }) {
   const [zips, setZips] = useState<string[]>([]);
   const [after, setAfter] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  zips.map((z) => console.log(typeof z));
 
   const loadMore = async () => {
     setLoading(true);
@@ -30,32 +25,38 @@ export function ZipCodes({ brand }: { brand: "litto-cannabis" | "skwezed" }) {
   };
 
   useEffect(() => {
-    // Load initial ZIPs on mount
     loadMore();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className="">
+    <div>
       <div className="flex flex-wrap gap-2 mb-4 justify-center md:justify-start">
-        {zips.map((zip) => (
-          <span
-            key={zip}
-            onClick={() => router.push(`/dashboard/zip-codes/${zip}`)}
-            className="w-20 h-8 flex items-center justify-center transition duration-200 cursor-pointer 
-            rounded-full bg-gray-200 border border-gray-300 
-            dark:border-[#30363d] dark:bg-[#212830] text-sm text-gray-800 dark:text-gray-200
-            dark:hover:bg-[#30363d] hover:bg-gray-300"
-          >
-            {zip}
-          </span>
-        ))}
+        {!loading && zips.length === 0 ? (
+          <p className="text-gray-500 dark:text-gray-400 text-center w-full">
+            No zip codes found.
+          </p>
+        ) : (
+          zips.map((zip) => (
+            <span
+              key={zip}
+              onClick={() => router.push(`/dashboard/zip-codes/${zip}`)}
+              className="w-20 h-8 flex items-center justify-center transition duration-200 cursor-pointer 
+              rounded-full bg-gray-200 border border-gray-300 
+              dark:border-[#30363d] dark:bg-[#212830] text-sm text-gray-800 dark:text-gray-200
+              dark:hover:bg-[#30363d] hover:bg-gray-300"
+            >
+              {zip}
+            </span>
+          ))
+        )}
+
         {loading &&
           Array.from({ length: 24 }).map((_, i) => (
             <span
               key={`loading-${i}`}
               className="w-20 h-8 flex items-center justify-center rounded-full 
-        animate-pulse bg-gray-200 dark:bg-[#30363d]"
+              animate-pulse bg-gray-200 dark:bg-[#30363d]"
             />
           ))}
       </div>

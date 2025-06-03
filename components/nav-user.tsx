@@ -119,7 +119,7 @@ export function NavUser({
                   Account
                 </DropdownMenuItem>
               </Link>
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 className="cursor-pointer"
                 onClick={() => setBrand("litto-cannabis")}
               >
@@ -131,11 +131,11 @@ export function NavUser({
                 onClick={() => {
                   setTheme("light");
                   setBrand("skwezed");
-                }} // ✅ set SKWEZED
+                }}
               >
                 <IconClipboardText />
                 Skwezed
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>

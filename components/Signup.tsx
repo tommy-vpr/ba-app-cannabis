@@ -13,6 +13,7 @@ import { UserSignupSchema } from "@/lib/schemas"; // assume you extend this
 import { usStates } from "@/lib/states";
 import Image from "next/image";
 import { useBrand } from "@/context/BrandContext";
+import { registerUser } from "@/app/actions/registerUser";
 
 const SignupSchema = UserSignupSchema.extend({
   secretKey: z.string().min(1, "Secret key is required"),
@@ -38,12 +39,12 @@ const AdminRegisterForm = () => {
     setIsSubmitting(true);
 
     try {
-      // const response = await registerUser(data, brand);
+      const response = await registerUser(data, brand);
 
-      // if (response?.error) {
-      //   toast.error(response.error);
-      //   return;
-      // }
+      if (response?.error) {
+        toast.error(response.error);
+        return;
+      }
 
       const signInResponse = await signIn("credentials", {
         redirect: false,
@@ -69,7 +70,7 @@ const AdminRegisterForm = () => {
   return (
     <div className="w-full max-w-md p-6 space-y-6 rounded-xl mx-auto border border-white/10 shadow-xl bg-white/10 backdrop-blur-md">
       <h1 className="text-2xl font-bold text-center uppercase text-white">
-        Signup
+        Signup NOw
       </h1>
 
       <form onSubmit={handleSubmit(clientAction)} className="space-y-6">
