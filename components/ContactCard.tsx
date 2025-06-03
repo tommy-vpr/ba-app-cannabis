@@ -77,14 +77,14 @@ export function ContactCard({
     state,
     zip,
     hs_lead_status,
-    l2_lead_status,
+    lead_status_l2,
   } = contact.properties;
 
   const safeId = encodeURIComponent(contact.id ?? "");
-  const validL2Statuses = ["assigned", "visited", "dropped off"];
+  const validL2Statuses = ["Assigned", "Visited", "Dropped Off"];
   const showBadge =
-    hs_lead_status === "Samples" &&
-    validL2Statuses.includes(l2_lead_status ?? "");
+    hs_lead_status === "Sent Samples" &&
+    validL2Statuses.includes(lead_status_l2 ?? "");
 
   const fullAddress = `${contact.properties.address || "-"}, ${
     contact.properties.city || "-"
@@ -139,7 +139,7 @@ export function ContactCard({
               {capitalizeWords(fullAddress.toLocaleLowerCase())}, {state || "-"}{" "}
               {zip || "-"}
             </div>
-            {showBadge && <StatusBadge status={l2_lead_status || "unknown"} />}
+            {showBadge && <StatusBadge status={lead_status_l2 || "unknown"} />}
           </CardContent>
         </div>
 
@@ -179,7 +179,7 @@ export function ContactCard({
             <IconTextPlus size={18} /> Log Meeting
           </button>
 
-          {contact.properties.l2_lead_status === "dropped off" ? (
+          {contact.properties.lead_status_l2 === "dropped off" ? (
             <span className="text-sm flex items-center gap-1 p-2 text-[#4493f8] ml-auto">
               <IconCheck size={21} />
             </span>

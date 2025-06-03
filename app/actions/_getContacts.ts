@@ -14,7 +14,7 @@ export async function getContacts(
 
   if (filter.status && filter.status.trim().toLowerCase() !== "all") {
     filters.push({
-      propertyName: "l2_lead_status",
+      propertyName: "lead_status_l2",
       operator: "EQ",
       value: filter.status.trim().toLowerCase(),
     });
@@ -56,7 +56,7 @@ export async function getContacts(
       "zip",
       "address",
       "hs_lead_status",
-      "l2_lead_status",
+      "lead_status_l2",
       "meeting_logs",
     ],
     limit,

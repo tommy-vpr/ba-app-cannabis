@@ -11,9 +11,9 @@ export async function getStatusCounts(
 
   const counts: StatusCount = {
     all: 0,
-    assigned: 0,
-    visited: 0,
-    "dropped off": 0,
+    Assigned: 0,
+    Visited: 0,
+    "Dropped Off": 0,
   };
 
   let hasMore = true;
@@ -38,7 +38,7 @@ export async function getStatusCounts(
             ],
           },
         ],
-        properties: ["hs_lead_status", "l2_lead_status"],
+        properties: ["hs_lead_status", "lead_status_l2"],
         limit: 100,
         after,
       }),
@@ -58,10 +58,10 @@ export async function getStatusCounts(
     counts.all += results.length;
 
     for (const contact of results) {
-      const hsStatus = contact.properties.hs_lead_status?.toLowerCase().trim();
-      const l2Status = contact.properties.l2_lead_status?.toLowerCase().trim();
+      const hsStatus = contact.properties.hs_lead_status;
+      const l2Status = contact.properties.lead_status_l2;
 
-      if (hsStatus === "samples" && l2Status && l2Status in counts) {
+      if (hsStatus === "Sent Samples" && l2Status && l2Status in counts) {
         counts[l2Status as keyof StatusCount]++;
       }
     }

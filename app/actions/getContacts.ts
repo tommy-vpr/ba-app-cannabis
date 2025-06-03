@@ -29,11 +29,11 @@ export async function getContacts(
     });
   }
 
-  if (filter.status && filter.status.trim().toLowerCase() !== "all") {
+  if (filter.status && filter.status.trim() !== "all") {
     filters.push({
-      propertyName: "l2_lead_status",
+      propertyName: "lead_status_l2",
       operator: "EQ",
-      value: filter.status.trim().toLowerCase(),
+      value: filter.status.trim(),
     });
   }
 
@@ -77,7 +77,7 @@ export async function getContacts(
       "address",
       "ba_email",
       "hs_lead_status",
-      "l2_lead_status",
+      "lead_status_l2",
       "meeting_logs",
     ],
     limit,

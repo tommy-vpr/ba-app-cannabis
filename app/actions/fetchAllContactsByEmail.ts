@@ -32,7 +32,7 @@ export async function fetchAllContactsByEmail(
     "zip",
     "ba_email",
     "hs_lead_status",
-    "l2_lead_status",
+    "lead_status_l2",
   ];
 
   const results: HubSpotContact[] = [];

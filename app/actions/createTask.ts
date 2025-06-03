@@ -40,7 +40,7 @@ export async function createTask({
     hs_task_status: "NOT_STARTED",
     hs_task_type: "TODO",
     hubspot_owner_id: ownerId,
-    hs_queue_membership_ids: "132502520", // Static queue ID for now
+    hs_queue_membership_ids: "9680031", // Static queue ID for now
   };
 
   const taskData = await hubspotRequest(

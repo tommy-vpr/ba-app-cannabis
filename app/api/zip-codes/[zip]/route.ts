@@ -31,7 +31,7 @@ export async function GET(
       "zip",
       "address",
       "hs_lead_status",
-      "l2_lead_status",
+      "lead_status_l2",
       "meeting_logs",
     ],
     limit: 100,

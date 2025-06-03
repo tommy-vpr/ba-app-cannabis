@@ -8,7 +8,7 @@ export async function GET() {
 
     const filters = [
       {
-        propertyName: "l2_lead_status",
+        propertyName: "lead_status_l2",
         operator: "EQ",
         value: "visit requested by rep", // ✅ exact lowercase match required
       },
@@ -25,7 +25,7 @@ export async function GET() {
         "zip",
         "address",
         "hs_lead_status",
-        "l2_lead_status",
+        "lead_status_l2",
       ],
       limit: 100,
     };

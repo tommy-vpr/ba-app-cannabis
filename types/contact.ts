@@ -8,7 +8,7 @@ export type HubSpotContact = {
     phone?: string;
     address?: string;
     zip?: string;
-    l2_lead_status?: string;
+    lead_status_l2?: string;
     meeting_logs?: MeetingLog[];
     [key: string]: any;
   };

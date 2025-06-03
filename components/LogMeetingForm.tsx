@@ -24,12 +24,14 @@ import { useBrand } from "@/context/BrandContext";
 import { useSavedContactContext } from "@/context/FetchAllSavedContext";
 import { useContactContext } from "@/context/ContactContext";
 import { HubSpotContactWithSaved } from "@/types/hubspot";
+import { getStatusCounts } from "@/app/actions/getStatusCounts";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   newFirstName: z.string().min(1, "First name is required"),
   jobTitle: z.string().min(1, "Job title is required"),
   body: z.string().min(1, "Meeting notes are required"),
-  l2Status: z.enum(["visited", "dropped off"]),
+  l2Status: z.enum(["Visited", "Dropped Off"]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -51,12 +53,16 @@ export function LogMeetingForm({
 }) {
   const [isPending, startTransition] = useTransition();
   const { brand } = useBrand();
+  const { data: session } = useSession(); // ✅ to get user email
+  const userEmail = session?.user?.email;
+
   const {
     logMutate,
     setLogOpen,
     contactMutate,
     logContactData,
     updateContactInList,
+    setStatusCounts,
   } = useContactContext();
 
   const { fetchAllSavedContacts } = useSavedContactContext();
@@ -67,9 +73,9 @@ export function LogMeetingForm({
       newFirstName: contactFirstName || "",
       jobTitle: contactJobTitle || "",
       body: "",
-      l2Status: (["visited", "dropped off"].includes(contactStatus || "")
+      l2Status: (["Visited", "Dropped Off"].includes(contactStatus || "")
         ? contactStatus
-        : "assigned") as FormValues["l2Status"],
+        : "Assigned") as FormValues["l2Status"],
     },
   });
 
@@ -93,8 +99,14 @@ export function LogMeetingForm({
           setLogOpen(false);
 
           // ✅ Refetch from /api/saved-contacts-list if contact was dropped off
-          if (values.l2Status === "dropped off") {
+          if (values.l2Status === "Dropped Off") {
             await fetchAllSavedContacts();
+          }
+
+          // Refetch latest contact status
+          if (["Visited", "Dropped Off"].includes(values.l2Status)) {
+            const newCounts = await getStatusCounts(brand, userEmail ?? "");
+            setStatusCounts(newCounts); // ✅ update counts in context
           }
 
           onSuccess?.(meeting);
@@ -155,7 +167,7 @@ export function LogMeetingForm({
             <FormItem>
               <FormLabel>Status</FormLabel>
               <div className="space-y-2">
-                {["visited", "dropped off"].map((status) => (
+                {["Visited", "Dropped Off"].map((status) => (
                   <label
                     key={status}
                     className="flex items-center gap-2 cursor-pointer"

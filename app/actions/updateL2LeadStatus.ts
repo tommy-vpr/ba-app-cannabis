@@ -20,13 +20,13 @@ export async function updateL2LeadStatus(
       brand,
       {
         properties: {
-          l2_lead_status: status,
+          lead_status_l2: status,
         },
       }
     );
 
     // ✅ If status is "dropped off", check and unsave
-    if (status === "dropped off") {
+    if (status === "Dropped Off") {
       const session = await getServerSession(authOptions);
       const userId = session?.user?.id;
 
@@ -46,7 +46,7 @@ export async function updateL2LeadStatus(
     console.error("❌ updateL2LeadStatus error:", error);
     return {
       success: false,
-      message: `Failed to update l2_lead_status: ${
+      message: `Failed to update lead_status_l2: ${
         error instanceof Error ? error.message : JSON.stringify(error)
       }`,
     };
@@ -71,7 +71,7 @@ export async function updateL2LeadStatus(
 //       brand,
 //       {
 //         properties: {
-//           l2_lead_status: status,
+//           lead_status_l2: status,
 //         },
 //       }
 //     );
@@ -86,7 +86,7 @@ export async function updateL2LeadStatus(
 
 //     return {
 //       success: false,
-//       message: `Failed to update l2_lead_status: ${
+//       message: `Failed to update lead_status_l2: ${
 //         error instanceof Error ? error.message : JSON.stringify(error)
 //       }`,
 //     };

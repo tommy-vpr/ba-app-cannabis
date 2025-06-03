@@ -32,7 +32,7 @@ export async function fetchAllContactsByEmail(
     "zip",
     "ba_email",
     "hs_lead_status",
-    "l2_lead_status",
+    "lead_status_l2",
   ];
 
   const results: HubSpotContact[] = [];
@@ -91,7 +91,7 @@ export async function fetchHubSpotContactsPaginated(
     "state",
     "zip",
     "hs_lead_status",
-    "l2_lead_status",
+    "lead_status_l2",
     "ba_email",
   ];
 
@@ -141,7 +141,7 @@ export async function searchContactsByCompany(
     "state",
     "zip",
     "hs_lead_status",
-    "l2_lead_status",
+    "lead_status_l2",
     "ba_email",
   ];
 
@@ -201,13 +201,13 @@ export async function searchContactsByStatus(
     "state",
     "zip",
     "hs_lead_status",
-    "l2_lead_status",
+    "lead_status_l2",
     "ba_email",
   ];
 
   const filters: any[] = [
     {
-      propertyName: "l2_lead_status",
+      propertyName: "lead_status_l2",
       operator: "EQ",
       value: status,
     },

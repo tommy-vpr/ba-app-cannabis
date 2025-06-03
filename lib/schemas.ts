@@ -43,9 +43,9 @@ export const ContactSchema = z.object({
     "ATTEMPTED_TO_CONTACT",
     "CONNECTED",
     "BAD_TIMING",
-    "Samples",
+    "Sent Samples",
   ]),
-  l2_lead_status: z.string().default("assigned"),
+  lead_status_l2: z.string().default("assigned"),
   ba_email: z.string().email("Invalid BA email"),
   hubspot_owner_id: z.string(),
 });
@@ -55,7 +55,7 @@ export type ContactSchemaValues = z.infer<typeof ContactSchema>;
 // 2. Create a form-specific schema
 export const CreateContactSchema = ContactSchema.omit({
   hs_lead_status: true,
-  l2_lead_status: true,
+  lead_status_l2: true,
   ba_email: true,
   hubspot_owner_id: true,
 });

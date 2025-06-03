@@ -27,7 +27,7 @@ export function LogMeetingModal({ logListRef }: { logListRef?: any }) {
           contactFirstName={logContactData.properties?.firstname}
           contactJobTitle={logContactData.properties?.jobtitle}
           contactCompany={logContactData.properties?.company}
-          contactStatus={logContactData.properties?.l2_lead_status}
+          contactStatus={logContactData.properties?.lead_status_l2}
           onSuccess={async (meeting) => {
             const formatted = {
               id: meeting.id || `temp-${Date.now()}`,

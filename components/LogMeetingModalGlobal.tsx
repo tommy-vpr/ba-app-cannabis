@@ -37,7 +37,7 @@ export function LogMeetingModalGlobal({
           contactId={contactId}
           contactFirstName={contactData.properties?.firstname}
           contactJobTitle={contactData.properties?.jobtitle}
-          contactStatus={contactData.properties?.l2_lead_status}
+          contactStatus={contactData.properties?.lead_status_l2}
           // useGlobalList={true}
         />
       </DialogContent>

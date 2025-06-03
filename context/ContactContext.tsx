@@ -94,9 +94,9 @@ export const ContactProvider = ({
   initialHasNext = false,
   initialStatusCounts = {
     all: 0,
-    assigned: 0,
-    visited: 0,
-    "dropped off": 0,
+    Assigned: 0,
+    Visited: 0,
+    "Dropped Off": 0,
   },
 }: {
   children: React.ReactNode;
@@ -257,9 +257,9 @@ export const ContactProvider = ({
       const existing = prev.find((c) => c.id === updated.id);
 
       const newStatusRaw =
-        updated.properties.l2_lead_status?.toLowerCase() || "";
+        updated.properties.lead_status_l2?.toLowerCase() || "";
       const prevStatusRaw =
-        existing?.properties.l2_lead_status?.toLowerCase() || "";
+        existing?.properties.lead_status_l2?.toLowerCase() || "";
 
       const newStatus = isValidStatusKey(newStatusRaw)
         ? newStatusRaw

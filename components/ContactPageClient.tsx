@@ -165,7 +165,7 @@ export default function ContactPageClient({ id }: { id: string }) {
 
           <div className="mt-1 flex items-center gap-2">
             <StatusBadgeContactDetails
-              status={contact.properties.l2_lead_status || "unknown"}
+              status={contact.properties.lead_status_l2 || "unknown"}
             />
             <IconPencil
               className="text-gray-400 cursor-pointer"
@@ -275,7 +275,7 @@ export default function ContactPageClient({ id }: { id: string }) {
       <UpdateStatusModal
         open={showStatusModal}
         setOpen={setShowStatusModal}
-        currentStatus={contact.properties.l2_lead_status || "assigned"}
+        currentStatus={contact.properties.lead_status_l2 || "assigned"}
         contactId={contact.id}
         contact={contact}
         // mutateContact={(updated, revalidate) => mutate()}

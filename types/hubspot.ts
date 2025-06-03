@@ -12,7 +12,7 @@ export type HubSpotContact = {
     zip?: string;
     jobtitle?: string;
     hs_lead_status?: string;
-    l2_lead_status?: string;
+    lead_status_l2?: string;
     [key: string]: any; // Keep fallback for dynamic properties
   };
 };

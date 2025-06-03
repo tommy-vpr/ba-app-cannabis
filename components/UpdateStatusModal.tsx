@@ -22,7 +22,7 @@ type Props = {
   setLocalContact?: (c: HubSpotContact) => void;
 };
 
-const statuses = ["visited", "dropped off"] as const;
+const statuses = ["Visited", "Dropped Off"] as const;
 
 export function UpdateStatusModal({
   open,
@@ -57,7 +57,7 @@ export function UpdateStatusModal({
       ...contact,
       properties: {
         ...contact.properties,
-        l2_lead_status: selected,
+        lead_status_l2: selected,
       },
     };
 

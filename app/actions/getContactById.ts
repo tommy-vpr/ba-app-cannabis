@@ -20,7 +20,7 @@ export async function getContactById(
     "zip",
     "ba_email",
     "hs_lead_status",
-    "l2_lead_status",
+    "lead_status_l2",
     "hubspot_owner_id",
   ];
 

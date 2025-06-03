@@ -1,9 +1,9 @@
 // Enum for labels and keying
 export enum StatusKey {
   All = "all",
-  Assigned = "assigned",
-  Visited = "visited",
-  DroppedOff = "dropped off",
+  Assigned = "Assigned",
+  Visited = "Visited",
+  DroppedOff = "Dropped Off",
 }
 
 // Derived type
@@ -22,7 +22,7 @@ export const statusList: StatusKey[] = [
 // Optional: UI labels or styles
 export const statusLabels: Record<StatusKey, string> = {
   [StatusKey.All]: "All Status",
-  [StatusKey.Assigned]: "assigned",
-  [StatusKey.Visited]: "visited",
+  [StatusKey.Assigned]: "Assigned",
+  [StatusKey.Visited]: "Visited",
   [StatusKey.DroppedOff]: "Dropped Off",
 };

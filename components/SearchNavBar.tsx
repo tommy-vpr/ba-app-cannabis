@@ -124,16 +124,16 @@ export default function SearchNavBar() {
 
   const statusStyles: Record<StatusKey, string> = {
     all: `bg-transparent text-gray-700 dark:text-gray-300`,
-    assigned: "bg-transparent text-orange-400",
-    visited: "bg-transparent text-red-400",
-    "dropped off": "bg-transparent text-green-400",
+    Assigned: "bg-transparent text-orange-400",
+    Visited: "bg-transparent text-red-400",
+    "Dropped Off": "bg-transparent text-green-400",
   };
 
   const ringColors: Record<StatusKey, string> = {
     all: "ring-gray-400",
-    assigned: "ring-orange-400",
-    visited: "ring-red-400",
-    "dropped off": "ring-green-400",
+    Assigned: "ring-orange-400",
+    Visited: "ring-red-400",
+    "Dropped Off": "ring-green-400",
   };
 
   return (

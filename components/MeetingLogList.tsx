@@ -65,8 +65,6 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
     const isOpen = openId === meeting.id;
     const title = meeting.properties.hs_meeting_title || "Untitled Meeting";
 
-    console.log("🔁 Meeting list:", meetings);
-
     return (
       <div
         key={meeting.id}

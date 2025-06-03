@@ -23,10 +23,10 @@ export async function logMeeting({
   body: string;
   newFirstName?: string;
   jobTitle: string;
-  l2Status: "assigned" | "visited" | "dropped off";
+  l2Status: "Assigned" | "Visited" | "Dropped Off";
 }) {
   const contact = await hubspotRequest(
-    `/crm/v3/objects/contacts/${contactId}?properties=firstname,jobtitle,company,l2_lead_status`,
+    `/crm/v3/objects/contacts/${contactId}?properties=firstname,jobtitle,company,lead_status_l2`,
     "GET",
     brand
   );
@@ -36,8 +36,8 @@ export async function logMeeting({
     updates.firstname = newFirstName;
   if (jobTitle && jobTitle !== contact?.properties?.jobtitle)
     updates.jobtitle = jobTitle;
-  if (l2Status && l2Status !== contact?.properties?.l2_lead_status)
-    updates.l2_lead_status = l2Status;
+  if (l2Status && l2Status !== contact?.properties?.lead_status_l2)
+    updates.lead_status_l2 = l2Status;
 
   if (Object.keys(updates).length > 0) {
     await hubspotRequest(
@@ -49,7 +49,7 @@ export async function logMeeting({
   }
 
   // ✅ If status was set to "dropped off", check and unsave
-  if (l2Status === "dropped off") {
+  if (l2Status === "Dropped Off") {
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
 
