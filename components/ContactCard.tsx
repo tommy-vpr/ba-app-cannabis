@@ -179,7 +179,7 @@ export function ContactCard({
             <IconTextPlus size={18} /> Log Meeting
           </button>
 
-          {contact.properties.lead_status_l2 === "dropped off" ? (
+          {contact.properties.lead_status_l2 === "Dropped Off" ? (
             <span className="text-sm flex items-center gap-1 p-2 text-[#4493f8] ml-auto">
               <IconCheck size={21} />
             </span>

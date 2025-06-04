@@ -51,7 +51,7 @@ export const registerUser = async (
       },
     });
 
-    await syncBaEmailDropdown(email);
+    await syncBaEmailDropdown(brand, email);
 
     return { success: true };
   } catch (error) {

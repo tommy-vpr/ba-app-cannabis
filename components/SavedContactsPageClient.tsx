@@ -26,7 +26,7 @@ export function SavedContactsPageClient() {
           ))}
         </div>
       ) : savedContacts.length === 0 ? (
-        <p className="text-gray-500">You have no saved contacts yet.</p>
+        <p className="text-gray-500">You have no saved contacts.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {savedContacts.map((contact, index) => (
