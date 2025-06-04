@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-// import { registerUser } from "@/app/actions/registerUser";
 import SubmitButton from "./SubmitButton";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -9,7 +8,7 @@ import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserSignupSchema } from "@/lib/schemas"; // assume you extend this
+import { UserSignupSchema } from "@/lib/schemas";
 import { usStates } from "@/lib/states";
 import Image from "next/image";
 import { useBrand } from "@/context/BrandContext";
