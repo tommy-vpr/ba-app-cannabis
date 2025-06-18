@@ -147,25 +147,27 @@ export default function FilteringSystem() {
           >
             <div className="flex flex-col p-1 xl:flex-row xl:items-center gap-4 xl:gap-2 w-full md:justify-between">
               <div className="flex flex-wrap gap-2">
-                {statusList.map((status) => {
-                  const isActive = selectedStatus === status;
-                  const count = statusCounts[status];
-                  return (
-                    <button
-                      key={status}
-                      onClick={() => handleStatusClick(status)}
-                      className={`px-3 py-1 rounded-full text-sm transition cursor-pointer ${
-                        statusStyles[status]
-                      } ${
-                        isActive
-                          ? `ring-1 ${ringColors[status]} ring-offset-white dark:ring-offset-[#1a1a1a]`
-                          : "opacity-80 hover:opacity-100"
-                      }`}
-                    >
-                      {statusLabels[status]} ({count})
-                    </button>
-                  );
-                })}
+                {statusList
+                  .filter((status) => status !== "Assigned")
+                  .map((status) => {
+                    const isActive = selectedStatus === status;
+                    const count = statusCounts[status];
+                    return (
+                      <button
+                        key={status}
+                        onClick={() => handleStatusClick(status)}
+                        className={`px-3 py-1 rounded-full text-sm transition cursor-pointer ${
+                          statusStyles[status]
+                        } ${
+                          isActive
+                            ? `ring-1 ${ringColors[status]} ring-offset-white dark:ring-offset-[#1a1a1a]`
+                            : "opacity-80 hover:opacity-100"
+                        }`}
+                      >
+                        {statusLabels[status]} ({count})
+                      </button>
+                    );
+                  })}
               </div>
             </div>
           </motion.div>

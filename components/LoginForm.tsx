@@ -2,23 +2,22 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import SubmitButton from "@/components/SubmitButton";
-import { Lock } from "lucide-react";
 import { UserLoginSchema, UserLoginValues } from "@/lib/schemas";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 const AdminLoginForm: React.FC = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [blocked, setBlocked] = useState(false);
   const [retryAfter, setRetryAfter] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -92,14 +91,21 @@ const AdminLoginForm: React.FC = () => {
             )}
           </div>
 
-          <div>
-            {/* <label className="block font-medium text-white">Password</label> */}
+          <div className="relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               {...register("password")}
-              className="w-full px-4 py-2 mt-1 border border-gray-700 bg-black/30 text-white rounded-md backdrop-blur-sm"
+              className="w-full px-4 py-2 mt-1 border border-gray-700 bg-black/30 text-white rounded-md backdrop-blur-sm pr-10"
               placeholder="Password"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white cursor-pointer"
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
             {errors.password && (
               <p className="text-red-400">{errors.password.message}</p>
             )}

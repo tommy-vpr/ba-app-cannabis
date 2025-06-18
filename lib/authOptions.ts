@@ -2,6 +2,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import type { NextAuthOptions } from "next-auth";
+import { headers } from "next/headers";
+import { getClientIp } from "@/utils/getClientIp";
+import { rateLimiter } from "@/lib/rateLimiter";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -12,8 +15,15 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        const ip = getClientIp(await headers());
+        const { success } = await rateLimiter.limit(ip);
+
+        if (!success) {
+          throw new Error("Too many login attempts. Try again later.");
+        }
+
         if (!credentials?.email || !credentials.password) {
-          throw new Error("Email and password are required");
+          throw new Error("Missing credentials");
         }
 
         const user = await prisma.user.findUnique({
