@@ -73,7 +73,8 @@ export default function SearchNavBar() {
     }
     params.set("page", "1");
     // router.push(`${pathname}?${params.toString()}`);
-    router.push(`/dashboard?${params.toString()}`); // <-- force dashboard route
+    // router.push(`/dashboard?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleSearch = async () => {

@@ -16,6 +16,8 @@ import { useBrand } from "@/context/BrandContext"; // ✅
 
 import { StatusKey } from "@/types/status"; // Assuming correct import path
 import { useSession } from "next-auth/react";
+import { getNotSentSamplesContacts } from "@/app/actions/getNotSentSamplesContacts";
+import { boolean } from "zod";
 
 type ContactContextType = {
   contacts: HubSpotContact[];
@@ -77,6 +79,18 @@ type ContactContextType = {
   logMutate: (() => void) | null;
   setLogMutate: (fn: (() => void) | null) => void;
   updateContactInList: (updated: HubSpotContact) => void;
+  // ✅ Added for Not Sent Samples
+  notSentSampleContacts: HubSpotContact[];
+  fetchNotSentSamplesPage: (
+    page: number,
+    query?: string,
+    updater?: (prev: HubSpotContact[]) => HubSpotContact[],
+    zip?: string | null,
+    after?: string | null
+  ) => void;
+  notSentSamplePage: number;
+  notSentSampleCursors: Record<number, string | null>;
+  notSentSampleHasNext: boolean;
 };
 
 const ContactContext = createContext<ContactContextType | null>(null);
@@ -140,6 +154,43 @@ export const ContactProvider = ({
 
   const { data: session } = useSession();
   const email = session?.user?.email;
+
+  const [notSentSampleContacts, setNotSentSampleContacts] = useState<any[]>([]);
+  const [notSentSampleCursors, setNotSentSampleCursors] = useState<
+    Record<number, string | null>
+  >({});
+  const [notSentSampleHasNext, setNotSentSampleHasNext] = useState(false);
+  const [notSentSamplePage, setNotSentSamplePage] = useState(1);
+  // const [loading, setLoading] = useState(false);
+
+  const fetchNotSentSamplesPage = async (
+    page: number,
+    query?: string,
+    updater?: (prev: HubSpotContact[]) => HubSpotContact[],
+    zip?: string | null,
+    after?: string | null
+  ) => {
+    if (!email) return;
+    // setLoading(true);
+
+    const res = await getNotSentSamplesContacts(
+      { limit: 12, query, zip: zip ?? undefined, after: after ?? undefined },
+      brand,
+      email
+    );
+
+    setNotSentSampleContacts(
+      typeof updater === "function" ? updater(res.contacts) : res.contacts
+    );
+    setNotSentSampleHasNext(res.hasNext);
+    setNotSentSamplePage(page);
+    setNotSentSampleCursors((prev) => ({
+      ...prev,
+      [page]: res.after,
+    }));
+
+    // setLoading(false);
+  };
 
   useEffect(() => {
     const uniqueZips = Array.from(
@@ -371,6 +422,11 @@ export const ContactProvider = ({
         setLogMutate,
         logMutate,
         updateContactInList,
+        notSentSampleContacts,
+        fetchNotSentSamplesPage,
+        notSentSamplePage,
+        notSentSampleCursors,
+        notSentSampleHasNext,
       }}
     >
       {children}

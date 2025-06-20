@@ -107,7 +107,7 @@ export function ContactCardList() {
               router.replace(`/dashboard`);
               await fetchPage(1, "all", "");
             }}
-            className="cursor-pointer px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+            className="cursor-pointer px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500 transition"
           >
             View All Contacts
           </button>

@@ -12,6 +12,7 @@ import {
   IconListNumbers,
   IconPencil,
   IconTextPlus,
+  IconX,
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 
@@ -21,6 +22,10 @@ import { unsaveContact } from "@/app/actions/prisma/unsaveContact";
 import { saveContact } from "@/app/actions/prisma/saveContact";
 
 import { ReorderModal } from "./ReorderModal"; // make sure import path is correct
+
+import { removeBaEmail } from "@/app/actions/removeBaEmail";
+import toast from "react-hot-toast";
+import { RemoveBaEmailModal } from "./RemoveBaEmailModal";
 
 export function ContactCard({
   contact,
@@ -91,6 +96,7 @@ export function ContactCard({
   }`;
 
   const [showModal, setShowModal] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
 
   function capitalizeWords(str: string) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -107,6 +113,8 @@ export function ContactCard({
     e.stopPropagation();
     setShowSelect((prev) => !prev);
   };
+
+  // inside ContactCard component
 
   return (
     <>
@@ -139,21 +147,57 @@ export function ContactCard({
               {capitalizeWords(fullAddress.toLocaleLowerCase())}, {state || "-"}{" "}
               {zip || "-"}
             </div>
-            {showBadge && <StatusBadge status={lead_status_l2 || "unknown"} />}
+            {/* {showBadge && <StatusBadge status={lead_status_l2 || "unknown"} />} */}
+            {showBadge ? (
+              <StatusBadge status={lead_status_l2 || "unknown"} />
+            ) : (
+              <StatusBadge status="Not Started" />
+            )}
           </CardContent>
         </div>
 
-        {index && (
+        <div className="absolute top-2 right-2 flex items-center gap-2">
+          {index && (
+            <button
+              className="hover transition duration-200 text-gray-400 bg-gray-200 border-white dark:bg-[#30363d] dark:hover:bg-blue-500 hover:bg-blue-500 dark:text-gray-200 h-7 w-7 rounded-md border-[2px] dark:border-[#161b22] flex justify-center items-center hover:text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowModal(true);
+              }}
+            >
+              <IconArrowsSort className="w-5 h-4 cursor-pointer" />
+            </button>
+          )}
           <button
-            className="hover transition duration-200 absolute top-2 right-2 text-gray-400 bg-gray-200 border-white dark:bg-[#30363d] dark:hover:bg-blue-500 hover:bg-blue-500 dark:text-gray-200 h-7 w-7 rounded-md border-[2px] dark:border-[#161b22] flex justify-center items-center hover:text-white"
+            className="hover transition duration-200 text-gray-400 bg-gray-200 border-white dark:bg-[#30363d] dark:hover:bg-rose-400 hover:bg-rose-400 dark:text-gray-200 h-7 w-7 rounded-md border-[2px] dark:border-[#161b22] flex justify-center items-center hover:text-white"
             onClick={(e) => {
               e.stopPropagation();
-              setShowModal(true);
+              setSelectedContact(contact); // 👈 necessary for modal to know which contact
+              setShowRemoveModal(true);
             }}
           >
-            <IconArrowsSort className="w-5 h-4 cursor-pointer" />
+            <IconX className="w-5 h-4 cursor-pointer" />
           </button>
-        )}
+        </div>
+        {/* {index && (
+          <div className="absolute top-2 right-2 flex items-center gap-2">
+            <button
+              className="hover transition duration-200 text-gray-400 bg-gray-200 border-white dark:bg-[#30363d] dark:hover:bg-blue-500 hover:bg-blue-500 dark:text-gray-200 h-7 w-7 rounded-md border-[2px] dark:border-[#161b22] flex justify-center items-center hover:text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowModal(true);
+              }}
+            >
+              <IconArrowsSort className="w-5 h-4 cursor-pointer" />
+            </button>
+            <button
+              className="hover transition duration-200 text-gray-400 bg-gray-200 border-white dark:bg-[#30363d] dark:hover:bg-blue-500 hover:bg-blue-500 dark:text-gray-200 h-7 w-7 rounded-md border-[2px] dark:border-[#161b22] flex justify-center items-center hover:text-white"
+              onClick={handleUnassign}
+            >
+              <IconX className="w-5 h-4 cursor-pointer" />
+            </button>
+          </div>
+        )} */}
 
         <div className="flex gap-1 px-4 pb-4">
           <button
@@ -202,6 +246,8 @@ export function ContactCard({
           )}
         </div>
       </Card>
+
+      <RemoveBaEmailModal open={showRemoveModal} setOpen={setShowRemoveModal} />
 
       {onReorder && (
         <ReorderModal

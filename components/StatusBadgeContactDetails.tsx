@@ -34,9 +34,9 @@ const statusMap: Record<
 export function StatusBadgeContactDetails({ status }: { status: string }) {
   const config = statusMap[status.toLowerCase()] ?? {
     label: status,
-    dotColor: "bg-gray-400",
-    bgColor: "bg-gray-100",
-    textColor: "text-gray-500 dark:text-gray-400",
+    dotColor: "bg-gray-300",
+    bgColor: "transparent",
+    textColor: "text-gray-500 dark:text-gray-300",
     borderColor: "border-gray-400",
   };
 

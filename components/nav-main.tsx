@@ -29,7 +29,7 @@ import { useContactContext } from "@/context/ContactContext";
 import { useClearFiltersAndRedirect } from "@/hooks/useClearFiltersAndRedirect";
 
 import { useRouter } from "next/navigation";
-import { BookmarkCheck } from "lucide-react";
+import { BookmarkCheck, ListTodo } from "lucide-react";
 
 export function NavMain({
   items,
@@ -85,6 +85,17 @@ export function NavMain({
           >
             <IconHome size={18} />
             Home
+          </Link>
+          <Link
+            href="/dashboard/to-do"
+            className={clsx(
+              "flex items-center gap-2 p-2 transition-colors",
+              pathname === "/dashboard/to-do" &&
+                "dark:bg-[#161b22] dark:border-[#30363d] border border-gray-200 bg-gray-100 rounded-sm"
+            )}
+          >
+            <ListTodo size={18} />
+            To Do
           </Link>
           <Link
             href="/dashboard/saved-contacts"

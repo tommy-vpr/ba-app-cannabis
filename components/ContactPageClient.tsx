@@ -165,7 +165,7 @@ export default function ContactPageClient({ id }: { id: string }) {
 
           <div className="mt-1 flex items-center gap-2">
             <StatusBadgeContactDetails
-              status={contact.properties.lead_status_l2 || "unknown"}
+              status={contact.properties.lead_status_l2 || "Not Started"}
             />
             <IconPencil
               className="text-gray-400 cursor-pointer"

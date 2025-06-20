@@ -36,7 +36,7 @@ export function StatusBadge({ status }: { status: string }) {
     label: status,
     dotColor: "bg-gray-400",
     bgColor: "bg-gray-100 dark:bg-transparent",
-    textColor: "text-gray-300",
+    textColor: "text-gray-400 dark:text-gray-300",
     borderColor: "border-gray-300",
   };
 
