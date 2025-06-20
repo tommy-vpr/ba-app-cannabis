@@ -1,15 +1,14 @@
-"use client";
-
 import { useContactContext } from "@/context/ContactContext";
 import { ContactCard } from "./ContactCard";
 import { SkeletonCard } from "./skeleton/SkeletonCard";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import { CreateContactModal } from "@/components/CreateContactModal";
+import { StatusKey } from "@/types/status";
+import { HubSpotContactWithSaved } from "@/types/hubspot";
 
 export function TodoContactCardList() {
-  const { contacts, loading } = useContactContext();
-
+  const { contacts, loading, selectedStatus } = useContactContext();
   const [open, setOpen] = useState(false);
 
   const { data } = useSWR("/api/saved-contacts", (url) =>
@@ -17,12 +16,10 @@ export function TodoContactCardList() {
   );
   const savedIds = data?.savedIds ?? [];
 
-  // ✅ Filter out contacts with hs_lead_status === "Sent Sample"
-  const notSentSampleContacts = useMemo(() => {
-    return contacts.filter(
-      (c) => c.properties.hs_lead_status !== "Sent Samples"
-    );
-  }, [contacts]);
+  // ✅ Filter only Not Started contacts when selectedStatus is NotStarted
+  const filteredContacts = contacts.filter(
+    (c) => c.properties.hs_lead_status !== "Sent Samples"
+  );
 
   if (loading) {
     return (
@@ -34,7 +31,9 @@ export function TodoContactCardList() {
     );
   }
 
-  if (!notSentSampleContacts.length) {
+  console.log(filteredContacts);
+
+  if (!filteredContacts.length) {
     return (
       <div className="text-center py-10 flex flex-col items-center gap-2">
         <p className="text-gray-400">No contacts found.</p>
@@ -51,10 +50,14 @@ export function TodoContactCardList() {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      {notSentSampleContacts.map((contact) => (
+      {filteredContacts.map((contact) => (
         <ContactCard
-          key={contact.id}
-          contact={{ ...contact, isSaved: savedIds.includes(contact.id) }}
+          key={contact.id + contact.properties.company}
+          contact={{
+            ...(contact as HubSpotContactWithSaved),
+            isSaved: savedIds.includes(contact.id),
+            dbId: (contact as any).dbId ?? "unknown",
+          }}
           href={contact.id}
           savedIds={savedIds}
         />

@@ -2,7 +2,7 @@
 "use server";
 
 import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 
 const RemoveSchema = z.object({
@@ -26,6 +26,8 @@ export async function removeBaEmail(
       brand,
       { properties: { ba_email: "" } }
     );
+
+    // revalidateTag("statusCounts");
   } catch (err: any) {
     // 👇 Handle missing contacts without crashing
     if (err.message?.includes("404")) {

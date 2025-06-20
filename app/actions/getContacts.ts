@@ -29,7 +29,13 @@ export async function getContacts(
     });
   }
 
-  if (filter.status && filter.status.trim() !== "all") {
+  if (filter.status === "Not Started") {
+    filters.push({
+      propertyName: "hs_lead_status",
+      operator: "NEQ",
+      value: "Sent Samples",
+    });
+  } else if (filter.status && filter.status.trim() !== "all") {
     filters.push({
       propertyName: "lead_status_l2",
       operator: "EQ",

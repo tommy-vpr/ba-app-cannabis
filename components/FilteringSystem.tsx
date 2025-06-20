@@ -15,16 +15,15 @@ export default function FilteringSystem() {
     setSelectedZip,
     fetchPage,
     statusCounts,
+    localQuery,
+    setLocalQuery,
+    localZip,
+    setLocalZip,
   } = useContactContext();
 
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  // const [localQuery, setLocalQuery] = useState("");
-  // const [localZip, setLocalZip] = useState("");
-  const { localQuery, setLocalQuery, localZip, setLocalZip } =
-    useContactContext();
   const [showFilters, setShowFilters] = useState(true); // Toggle state
 
   const hasFilters =
@@ -102,6 +101,7 @@ export default function FilteringSystem() {
     Assigned: "bg-transparent text-amber-400",
     Visited: "bg-transparent text-rose-400",
     "Dropped Off": "bg-transparent text-green-400",
+    "Not Started": "bg-transparent text-amber-400",
   };
 
   const ringColors: Record<StatusKey, string> = {
@@ -109,6 +109,7 @@ export default function FilteringSystem() {
     Assigned: "ring-amber-400",
     Visited: "ring-rose-400",
     "Dropped Off": "ring-green-400",
+    "Not Started": "ring-amber-300",
   };
 
   return (

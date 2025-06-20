@@ -47,6 +47,7 @@ export function CreateContactModal({
     setLocalZip,
     fetchPage,
     setStatusCounts,
+    setContacts,
     updateContactInList,
   } = useContactContext();
   const clearFiltersAndRedirect = useClearFiltersAndRedirect();
@@ -90,8 +91,8 @@ export function CreateContactModal({
       // ✅ Optimistically show the new contact immediately
       updateContactInList(res.contact);
 
-      const newCounts = await getStatusCounts(brand, session?.user.email || "");
-      setStatusCounts(newCounts); // from useContactContext
+      // const newCounts = await getStatusCounts(brand, session?.user.email || "");
+      // setStatusCounts(newCounts); // from useContactContext
 
       toast.success("Contact created");
       reset();
@@ -113,8 +114,20 @@ export function CreateContactModal({
 
       router.replace("/dashboard");
 
-      const rawStatus = res.contact.properties.lead_status?.toLowerCase() ?? "";
-      const statusKey = isStatusKey(rawStatus) ? rawStatus : StatusKey.Assigned;
+      // const rawStatus = res.contact.properties.lead_status?.toLowerCase() ?? "";
+      // const statusKey = isStatusKey(rawStatus) ? rawStatus : StatusKey.Assigned;
+
+      // setStatusCounts((prev) => ({
+      //   ...prev,
+      //   [StatusKey.All]: prev[StatusKey.All] + 1,
+      //   [statusKey]: (prev[statusKey] ?? 0) + 1,
+      // }));
+      const l2Status = res.contact.properties.lead_status_l2 ?? "";
+      const statusKey: StatusKey = Object.values(StatusKey).includes(
+        l2Status as StatusKey
+      )
+        ? (l2Status as StatusKey)
+        : StatusKey.NotStarted;
 
       setStatusCounts((prev) => ({
         ...prev,

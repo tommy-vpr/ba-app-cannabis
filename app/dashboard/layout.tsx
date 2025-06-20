@@ -19,8 +19,14 @@ export default async function DashboardLayout({
     "litto-cannabis") as "litto-cannabis" | "skwezed";
 
   const session = await getServerSession(authOptions);
+  console.log("SESSION:", session); // 🔍 Add this
+
   const userEmail = session?.user?.email;
-  if (!userEmail) redirect("/login");
+
+  if (!userEmail || typeof userEmail !== "string" || userEmail.trim() === "") {
+    console.error("Missing or invalid user email:", userEmail); // 🔍 Debug
+    redirect("/login");
+  }
 
   // ⬇️ Fetch contacts for this brand + user
   const { contacts, after, hasNext, statusCounts } =

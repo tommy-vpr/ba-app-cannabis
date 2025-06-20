@@ -34,18 +34,18 @@ export const ContactSchema = z.object({
     .string()
     .regex(/^\d{3}-\d{3}-\d{4}$/, "Phone must be in 123-456-7890 format"),
 
-  hs_lead_status: z.enum([
-    "NEW",
-    "OPEN",
-    "IN_PROGRESS",
-    "OPEN_DEAL",
-    "UNQUALIFIED",
-    "ATTEMPTED_TO_CONTACT",
-    "CONNECTED",
-    "BAD_TIMING",
-    "Sent Samples",
-  ]),
-  lead_status_l2: z.string().default("assigned"),
+  // hs_lead_status: z.enum([
+  //   "NEW",
+  //   "OPEN",
+  //   "IN_PROGRESS",
+  //   "OPEN_DEAL",
+  //   "UNQUALIFIED",
+  //   "ATTEMPTED_TO_CONTACT",
+  //   "CONNECTED",
+  //   "BAD_TIMING",
+  //   "Sent Samples",
+  // ]),
+  // lead_status_l2: z.string().default("assigned"),
   ba_email: z.string().email("Invalid BA email"),
   hubspot_owner_id: z.string(),
 });
@@ -54,8 +54,8 @@ export type ContactSchemaValues = z.infer<typeof ContactSchema>;
 
 // 2. Create a form-specific schema
 export const CreateContactSchema = ContactSchema.omit({
-  hs_lead_status: true,
-  lead_status_l2: true,
+  // hs_lead_status: true,
+  // lead_status_l2: true,
   ba_email: true,
   hubspot_owner_id: true,
 });

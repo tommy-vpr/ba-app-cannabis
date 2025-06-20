@@ -14,6 +14,7 @@ export async function getStatusCounts(
     Assigned: 0,
     Visited: 0,
     "Dropped Off": 0,
+    "Not Started": 0,
   };
 
   let hasMore = true;
@@ -42,10 +43,10 @@ export async function getStatusCounts(
         limit: 100,
         after,
       }),
-      next: {
-        revalidate: 60,
-        tags: ["statusCounts"],
-      },
+      // next: {
+      //   revalidate: 60,
+      //   tags: ["statusCounts"],
+      // },
     });
 
     if (!res.ok) {
@@ -63,6 +64,8 @@ export async function getStatusCounts(
 
       if (hsStatus === "Sent Samples" && l2Status && l2Status in counts) {
         counts[l2Status as keyof StatusCount]++;
+      } else {
+        counts[StatusKey.NotStarted]++;
       }
     }
 

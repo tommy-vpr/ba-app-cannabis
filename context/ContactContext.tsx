@@ -18,6 +18,8 @@ import { StatusKey } from "@/types/status"; // Assuming correct import path
 import { useSession } from "next-auth/react";
 import { getNotSentSamplesContacts } from "@/app/actions/getNotSentSamplesContacts";
 import { boolean } from "zod";
+import useSWR from "swr";
+import { getStatusCounts } from "@/app/actions/getStatusCounts";
 
 type ContactContextType = {
   contacts: HubSpotContact[];
@@ -80,6 +82,8 @@ type ContactContextType = {
   setLogMutate: (fn: (() => void) | null) => void;
   updateContactInList: (updated: HubSpotContact) => void;
   // ✅ Added for Not Sent Samples
+  refreshCounts: () => Promise<void>;
+
   notSentSampleContacts: HubSpotContact[];
   fetchNotSentSamplesPage: (
     page: number,
@@ -111,6 +115,7 @@ export const ContactProvider = ({
     Assigned: 0,
     Visited: 0,
     "Dropped Off": 0,
+    "Not Started": 0,
   },
 }: {
   children: React.ReactNode;
@@ -120,6 +125,7 @@ export const ContactProvider = ({
   initialStatusCounts?: StatusCount;
 }) => {
   const [contacts, setContacts] = useState<HubSpotContact[]>(initialContacts);
+
   const [statusCounts, setStatusCounts] =
     useState<StatusCount>(initialStatusCounts);
 
@@ -162,6 +168,14 @@ export const ContactProvider = ({
   const [notSentSampleHasNext, setNotSentSampleHasNext] = useState(false);
   const [notSentSamplePage, setNotSentSamplePage] = useState(1);
   // const [loading, setLoading] = useState(false);
+
+  const refreshCounts = async () => {
+    if (!email || !brand) return;
+    const counts = await getStatusCounts(brand, email);
+    console.log("[refreshCounts] Fetched updated counts:", counts);
+
+    setStatusCounts({ ...counts });
+  };
 
   const fetchNotSentSamplesPage = async (
     page: number,
@@ -261,22 +275,6 @@ export const ContactProvider = ({
     });
   };
 
-  // useEffect(() => {
-  //   if (initialContacts.length > 0) return; // already hydrated from layout
-
-  //   const loadInitial = async () => {
-  //     setPage(1);
-  //     setSelectedStatus("all");
-  //     setSelectedZip(null);
-  //     setQuery("");
-  //     setCursors({});
-
-  //     await fetchPage(1, "all", "");
-  //   };
-
-  //   loadInitial();
-  // }, [brand]);
-
   const optimisticUpdate = (
     id: string,
     updates: Partial<HubSpotContact["properties"]>
@@ -286,19 +284,6 @@ export const ContactProvider = ({
     });
   };
 
-  // const updateContactInList = (updated: HubSpotContact) => {
-  //   setOptimisticContacts((prev) =>
-  //     prev.map((c) => (c.id === updated.id ? updated : c))
-  //   );
-  // };
-  // const updateContactInList = (updated: HubSpotContact) => {
-  //   setContacts((prev) => {
-  //     const exists = prev.some((c) => c.id === updated.id);
-  //     if (!exists) return [updated, ...prev];
-  //     return prev.map((c) => (c.id === updated.id ? updated : c));
-  //   });
-  // };
-
   function isValidStatusKey(key: string): key is StatusKey {
     return Object.values(StatusKey).includes(key as StatusKey);
   }
@@ -307,10 +292,8 @@ export const ContactProvider = ({
     setContacts((prev) => {
       const existing = prev.find((c) => c.id === updated.id);
 
-      const newStatusRaw =
-        updated.properties.lead_status_l2?.toLowerCase() || "";
-      const prevStatusRaw =
-        existing?.properties.lead_status_l2?.toLowerCase() || "";
+      const newStatusRaw = updated.properties.lead_status_l2 ?? "";
+      const prevStatusRaw = existing?.properties.lead_status_l2 ?? "";
 
       const newStatus = isValidStatusKey(newStatusRaw)
         ? newStatusRaw
@@ -319,21 +302,19 @@ export const ContactProvider = ({
         ? prevStatusRaw
         : undefined;
 
-      // ✅ Contact already exists, possibly status update
       if (existing) {
         if (newStatus && prevStatus && newStatus !== prevStatus) {
           setStatusCounts((counts) => ({
             ...counts,
-            [prevStatus]: Math.max(counts[prevStatus] - 1, 0),
-            [newStatus]: counts[newStatus] + 1,
+            [prevStatus]: Math.max((counts[prevStatus] || 0) - 1, 0),
+            [newStatus]: (counts[newStatus] || 0) + 1,
+            all: counts.all, // stays the same
           }));
         }
 
-        // Replace contact
         return prev.map((c) => (c.id === updated.id ? updated : c));
       }
 
-      // ✅ New contact — check if it should be included and counted
       if (newStatus) {
         const statusOk =
           selectedStatus === StatusKey.All || newStatus === selectedStatus;
@@ -352,16 +333,14 @@ export const ContactProvider = ({
         if (statusOk && queryOk && zipOk) {
           setStatusCounts((counts) => ({
             ...counts,
-            [newStatus]: counts[newStatus] + 1,
+            [newStatus]: (counts[newStatus] || 0) + 1,
+            all: counts.all + 1,
           }));
 
-          // Deduplicate just in case and prepend
-          const deduped = [updated, ...prev.filter((c) => c.id !== updated.id)];
-          return deduped;
+          return [updated, ...prev.filter((c) => c.id !== updated.id)];
         }
       }
 
-      // No update needed
       return prev;
     });
   };
@@ -427,6 +406,7 @@ export const ContactProvider = ({
         notSentSamplePage,
         notSentSampleCursors,
         notSentSampleHasNext,
+        refreshCounts,
       }}
     >
       {children}

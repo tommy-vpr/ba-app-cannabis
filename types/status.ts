@@ -4,6 +4,7 @@ export enum StatusKey {
   Assigned = "Assigned",
   Visited = "Visited",
   DroppedOff = "Dropped Off",
+  NotStarted = "Not Started",
 }
 
 // Derived type
@@ -17,6 +18,7 @@ export const statusList: StatusKey[] = [
   StatusKey.Assigned,
   StatusKey.Visited,
   StatusKey.DroppedOff,
+  StatusKey.NotStarted,
 ];
 
 // Optional: UI labels or styles
@@ -25,4 +27,5 @@ export const statusLabels: Record<StatusKey, string> = {
   [StatusKey.Assigned]: "Assigned",
   [StatusKey.Visited]: "Visited",
   [StatusKey.DroppedOff]: "Dropped Off",
+  [StatusKey.NotStarted]: "Not Started",
 };

@@ -86,7 +86,7 @@ export function NavMain({
             <IconHome size={18} />
             Home
           </Link>
-          <Link
+          {/* <Link
             href="/dashboard/to-do"
             className={clsx(
               "flex items-center gap-2 p-2 transition-colors",
@@ -96,7 +96,7 @@ export function NavMain({
           >
             <ListTodo size={18} />
             To Do
-          </Link>
+          </Link> */}
           <Link
             href="/dashboard/saved-contacts"
             className={clsx(

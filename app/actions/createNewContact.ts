@@ -29,8 +29,8 @@ export async function createNewContact(
     const result = ContactSchema.safeParse({
       ...input,
       ba_email: baEmail,
-      hs_lead_status: "Sent Samples",
-      lead_status_l2: "Assigned",
+      // hs_lead_status: "Sent Samples",
+      // lead_status_l2: "Assigned",
       hubspot_owner_id: ownerId,
     });
 

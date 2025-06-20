@@ -8,6 +8,9 @@ import { useState } from "react";
 import { useSavedContactContext } from "@/context/FetchAllSavedContext";
 import { getStatusCounts } from "@/app/actions/getStatusCounts";
 import { unsaveContact } from "@/app/actions/prisma/unsaveContact";
+import useSWR from "swr";
+import { getSavedContactIds } from "@/app/actions/prisma/getSavedContacts";
+import { StatusKey } from "@/types/status";
 
 export function RemoveBaEmailModal({
   open,
@@ -28,10 +31,17 @@ export function RemoveBaEmailModal({
     setStatusCounts,
     setContacts,
     contacts,
+    updateContactInList,
+    refreshCounts,
+    statusCounts,
   } = useContactContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { fetchAllSavedContacts } = useSavedContactContext();
+
+  const { data: savedIds = [] } = useSWR("saved-contacts", () =>
+    getSavedContactIds()
+  );
 
   const handleConfirm = async () => {
     if (!selectedContact) return;
@@ -44,29 +54,37 @@ export function RemoveBaEmailModal({
         await fetchPage(page, selectedStatus, query);
       }
 
-      // Backend update: remove BA email
       await removeBaEmail(selectedContact.id, "litto-cannabis");
 
-      // 🔥 Unsave the contact now (remove it from saved list)
-      await unsaveContact(selectedContact.id);
+      if (savedIds.includes(selectedContact.id)) {
+        await unsaveContact(selectedContact.id);
+      }
 
-      // Re-fetch saved contacts (to update UI context)
       await fetchAllSavedContacts();
 
-      // Re-fetch contact list with filter to ensure the removed contact is gone
-      await fetchPage(page, undefined, undefined, (prev) =>
-        prev.filter((c) => c.id !== selectedContact.id)
-      );
+      // await refreshCounts();
 
-      // Re-fetch status counts
-      const newCounts = await getStatusCounts(
-        "litto-cannabis",
-        selectedContact.properties.ba_email
-      );
-      setStatusCounts(newCounts);
+      // await fetchPage(page, undefined, undefined, (prev) =>
+      //   prev.filter((c) => c.id !== selectedContact.id)
+      // );
 
-      // Revalidate current contact if needed
-      contactMutate?.();
+      // contactMutate?.();
+
+      const rawStatus = selectedContact?.properties?.lead_status_l2 ?? "";
+
+      // Match it exactly to your enum (case-sensitive)
+      const statusKey: StatusKey = Object.values(StatusKey).includes(
+        rawStatus as StatusKey
+      )
+        ? (rawStatus as StatusKey)
+        : StatusKey.NotStarted;
+
+      // Decrement both "all" and the matching status
+      setStatusCounts((prev) => ({
+        ...prev,
+        [StatusKey.All]: Math.max(0, prev[StatusKey.All] - 1),
+        [statusKey]: Math.max(0, (prev[statusKey] ?? 1) - 1),
+      }));
 
       setOpen(false);
     } catch (err) {
