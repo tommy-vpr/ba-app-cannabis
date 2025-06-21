@@ -123,19 +123,19 @@ export default function SearchNavBar() {
     await fetchPage(1, "all", "", undefined, null);
   };
 
-  const statusStyles: Record<StatusKey, string> = {
-    all: `bg-transparent text-gray-700 dark:text-gray-300`,
-    Assigned: "bg-transparent text-orange-400",
-    Visited: "bg-transparent text-red-400",
-    "Dropped Off": "bg-transparent text-green-400",
-  };
+  // const statusStyles: Record<StatusKey, string> = {
+  //   all: `bg-transparent text-gray-700 dark:text-gray-300`,
+  //   Assigned: "bg-transparent text-orange-400",
+  //   Visited: "bg-transparent text-red-400",
+  //   "Dropped Off": "bg-transparent text-green-400",
+  // };
 
-  const ringColors: Record<StatusKey, string> = {
-    all: "ring-gray-400",
-    Assigned: "ring-orange-400",
-    Visited: "ring-red-400",
-    "Dropped Off": "ring-green-400",
-  };
+  // const ringColors: Record<StatusKey, string> = {
+  //   all: "ring-gray-400",
+  //   Assigned: "ring-orange-400",
+  //   Visited: "ring-red-400",
+  //   "Dropped Off": "ring-green-400",
+  // };
 
   return (
     <div className="w-full flex flex-col gap-2 px-2 md:px-0">

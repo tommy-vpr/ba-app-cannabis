@@ -39,6 +39,8 @@ export async function logMeeting({
   if (l2Status && l2Status !== contact?.properties?.lead_status_l2)
     updates.lead_status_l2 = l2Status;
 
+  updates.hs_lead_status = "Sent Samples";
+
   if (Object.keys(updates).length > 0) {
     await hubspotRequest(
       `/crm/v3/objects/contacts/${contactId}`,

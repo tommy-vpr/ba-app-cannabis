@@ -9,7 +9,7 @@ export default function DashboardPage() {
   return (
     <div className="p-4 w-full max-w-[1200px] mx-auto">
       {/* <CompactSearchAndFilter /> */}
-      <FilteringSystem />
+      {/* <FilteringSystem /> */}
       <div className="mt-4">
         <ContactCardList />
         {/* <EditContactModal /> */}

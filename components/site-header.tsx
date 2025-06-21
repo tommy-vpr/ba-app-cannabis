@@ -29,6 +29,8 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useBrand } from "@/context/BrandContext"; // ✅ use your Brand context
 import { useTheme } from "next-themes";
 import SearchNavBar from "./SearchNavBar";
+import FilteringSystem from "./FilteringSystem";
+import SearchbarFiltering from "./SearchbarFiltering";
 
 export function SiteHeader({
   user,
@@ -58,7 +60,7 @@ export function SiteHeader({
     <div className="sticky top-0 z-50">
       <div className="flex flex-col">
         <header className="p-[6px] bg-background dark:bg-[#06070a] flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height]">
-          <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+          <div className="flex w-full items-start gap-1 px-4 lg:gap-2 lg:px-6">
             <SidebarTrigger className="-ml-1" />
             <Separator
               orientation="vertical"
@@ -157,10 +159,11 @@ export function SiteHeader({
             </div>
           </div>
         </header>
-        <div className="p-2 bg-gray-200 md:hidden dark:bg-[#0d1117] border-b dark:border-b-[#30363d]">
+        {/* <div className="p-2 bg-gray-200 md:hidden dark:bg-[#0d1117] border-b dark:border-b-[#30363d]">
           <SearchNavBar />
-        </div>
+        </div> */}
       </div>
+      <SearchbarFiltering />
     </div>
   );
 }
