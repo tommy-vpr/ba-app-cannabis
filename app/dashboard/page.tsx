@@ -1,5 +1,4 @@
 // app/dashboard/page.tsx
-import CompactSearchAndFilter from "@/components/CompactSearchAndFilter";
 import { ContactCardList } from "@/components/ContactCardList";
 import { EditContactModal } from "@/components/EditContactModal";
 import FilteringSystem from "@/components/FilteringSystem";
