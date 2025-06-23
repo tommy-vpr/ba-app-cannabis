@@ -98,24 +98,24 @@ export default function SearchbarFiltering() {
 
   const statusStyles: Record<StatusKey, string> = {
     all: `bg-transparent text-gray-700 dark:text-gray-300`,
-    Assigned: "bg-transparent text-amber-400",
+    Assigned: "bg-transparent text-blue-400",
     Visited: "bg-transparent text-rose-400",
     "Dropped Off": "bg-transparent text-green-400",
-    "Not Started": "bg-transparent text-amber-400",
+    "Not Started": "bg-transparent text-blue-400",
   };
 
   const ringColors: Record<StatusKey, string> = {
     all: "ring-gray-400",
-    Assigned: "ring-amber-400",
+    Assigned: "ring-blue-400",
     Visited: "ring-rose-400",
     "Dropped Off": "ring-green-400",
-    "Not Started": "ring-amber-300",
+    "Not Started": "ring-blue-300",
   };
 
   return (
-    <div className="w-full flex flex-col md:flex-row justify-center">
-      <div className="p-2 border-b-1 dark:border-b-[#30363d] bg-white dark:bg-[#0d1117] flex flex-col xl:flex-row xl:items-center gap-4 xl:gap-2 w-full md:justify-center">
-        <div className="flex flex-wrap gap-2">
+    <div className="w-full ">
+      <div className="flex flex-col-reverse sm:flex-row justify-center p-2 border-b-1 dark:border-b-[#30363d] bg-white dark:bg-[#0d1117] xl:flex-row xl:items-center gap-4 xl:gap-2 w-full md:justify-center">
+        <div className="flex flex-wrap gap-1 md:gap-2">
           {statusList
             .filter((status) => status !== "Assigned")
             .map((status) => {
@@ -125,7 +125,7 @@ export default function SearchbarFiltering() {
                 <button
                   key={status}
                   onClick={() => handleStatusClick(status)}
-                  className={`px-3 py-1 rounded-full text-sm transition cursor-pointer ${
+                  className={`px-3 py-1 rounded-full text-xs md:text-sm transition cursor-pointer ${
                     statusStyles[status]
                   } ${
                     isActive
@@ -138,21 +138,20 @@ export default function SearchbarFiltering() {
               );
             })}
         </div>
-      </div>
-
-      <div className="flex items-center justify-end gap-3">
-        {hasFilters && (
-          <button
-            onClick={handleClearAll}
-            className="text-sm cursor-pointer flex items-center gap-1 transition rounded-full hover:opacity-80 text-rose-400 whitespace-nowrap"
-          >
-            <IconX
-              size={14}
-              className="text-white bg-rose-400 dark:text-black"
-            />
-            Clear filters
-          </button>
-        )}
+        <div className="flex items-center justify-end gap-3">
+          {hasFilters && (
+            <button
+              onClick={handleClearAll}
+              className="text-sm cursor-pointer flex items-center gap-1 transition rounded-full hover:opacity-80 text-rose-400 whitespace-nowrap"
+            >
+              <IconX
+                size={14}
+                className="text-white bg-rose-400 dark:text-black"
+              />
+              Clear filters
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

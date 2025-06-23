@@ -163,7 +163,7 @@ export function SiteHeader({
           <SearchNavBar />
         </div> */}
       </div>
-      <SearchbarFiltering />
+      {pathname.replace(/\/$/, "") === "/dashboard" && <SearchbarFiltering />}
     </div>
   );
 }
