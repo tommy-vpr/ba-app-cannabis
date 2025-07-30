@@ -19,7 +19,7 @@ export default async function DashboardLayout({
     "litto-cannabis") as "litto-cannabis" | "skwezed";
 
   const session = await getServerSession(authOptions);
-  console.log("SESSION:", session); // 🔍 Add this
+  // console.log("SESSION:", session);
 
   const userEmail = session?.user?.email;
 
@@ -32,7 +32,7 @@ export default async function DashboardLayout({
   const { contacts, after, hasNext, statusCounts } =
     await getInitialDashboardData(selectedBrand, userEmail);
 
-  console.log(contacts.length);
+  // console.log(contacts.length);
 
   return (
     <ContactProvider

@@ -168,7 +168,7 @@ export function ContactCard({
               <IconArrowsSort className="w-5 h-4 cursor-pointer" />
             </button>
           )}
-          <button
+          {/* <button
             className="hover transition duration-200 text-gray-400 bg-gray-200 border-white dark:bg-[#30363d] dark:hover:bg-rose-400 hover:bg-rose-400 dark:text-gray-200 h-7 w-7 rounded-md border-[2px] dark:border-[#161b22] flex justify-center items-center hover:text-white"
             onClick={(e) => {
               e.stopPropagation();
@@ -177,7 +177,7 @@ export function ContactCard({
             }}
           >
             <IconX className="w-5 h-4 cursor-pointer" />
-          </button>
+          </button> */}
         </div>
         {/* {index && (
           <div className="absolute top-2 right-2 flex items-center gap-2">
