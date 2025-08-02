@@ -38,6 +38,4 @@ export async function registerUser(data: UserSignupValues) {
       role: "user", // or 'admin' based on your flow
     },
   });
-
-  redirect("/dashboard");
 }

@@ -51,7 +51,7 @@ const AdminRegisterForm = () => {
         toast.error("Sign-in failed. Try logging in manually.");
       } else {
         toast.success("Welcome!");
-        router.push("/dashboard");
+        router.replace("/dashboard");
       }
     } catch (error: any) {
       console.error("Registration/sign-in error:", error);
