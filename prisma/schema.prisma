@@ -8,25 +8,24 @@ datasource db {
 }
 
 model User {
-  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
-  email              String   @unique
-  password           String
-  firstName          String
-  lastName           String
-  role               String   @default("user")
-  state              String?
-  brand              String
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  email     String          @unique
+  password  String
+  firstName String
+  lastName  String
+  role      String          @default("user")
+  state     String?
+  bookmarks SavedCompany[] @relation("UserBookmarks")
 }
 
-
-// prisma/schema.prisma
-model SavedContact {
+model SavedCompany {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String
-  contactId String   // HubSpot contact ID
+  companyId String   // HubSpot company ID
   createdAt DateTime @default(now())
-  position Int @default(0)
 
-  @@unique([userId, contactId]) // prevent duplicates
+  user User @relation(fields: [userId], references: [id], name: "UserBookmarks")
+
+  @@unique([userId, companyId])
 }
 

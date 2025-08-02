@@ -7,7 +7,7 @@ export type Company = {
   state?: string | null;
   zip?: string | null;
   county?: string | null;
-  ba_email?: string | null;
+  isBookmarked?: boolean;
   contacts: {
     id: string;
     properties: {

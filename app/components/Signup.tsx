@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { UserSignupSchema } from "@/lib/schemas"; // assume you extend this
 import { usStates } from "@/lib/states";
 import Image from "next/image";
+import { registerUser } from "../actions/registerUser";
 
 const SignupSchema = UserSignupSchema.extend({
   secretKey: z.string().min(1, "Secret key is required"),
@@ -36,6 +37,10 @@ const AdminRegisterForm = () => {
     setIsSubmitting(true);
 
     try {
+      // ✅ 1. Register the user via server action
+      await registerUser(data);
+
+      // ✅ 2. Auto-login after successful registration
       const signInResponse = await signIn("credentials", {
         redirect: false,
         email: data.email,
@@ -43,14 +48,14 @@ const AdminRegisterForm = () => {
       });
 
       if (signInResponse?.error) {
-        toast.error("Sign-in failed. Please try logging in.");
+        toast.error("Sign-in failed. Try logging in manually.");
       } else {
         toast.success("Welcome!");
         router.push("/dashboard");
       }
-    } catch (error) {
-      console.error("An error occurred:", error);
-      toast.error("An unexpected error occurred. Please try again later.");
+    } catch (error: any) {
+      console.error("Registration/sign-in error:", error);
+      toast.error(error?.message || "Unexpected error during signup.");
     } finally {
       setIsSubmitting(false);
       reset();
@@ -76,7 +81,6 @@ const AdminRegisterForm = () => {
             <p className="text-red-400">{errors.email.message}</p>
           )}
         </div>
-
         <div>
           {/* <label className="block font-medium text-white">First Name</label> */}
           <input
@@ -89,7 +93,6 @@ const AdminRegisterForm = () => {
             <p className="text-red-400">{errors.firstName.message}</p>
           )}
         </div>
-
         <div>
           {/* <label className="block font-medium text-white">Last Name</label> */}
           <input
@@ -102,7 +105,6 @@ const AdminRegisterForm = () => {
             <p className="text-red-400">{errors.lastName.message}</p>
           )}
         </div>
-
         <div>
           {/* <label className="block font-medium text-white">State</label> */}
           <select
@@ -120,7 +122,6 @@ const AdminRegisterForm = () => {
             <p className="text-red-400">{errors.state.message}</p>
           )}
         </div>
-
         <div>
           {/* <label className="block font-medium text-white">Password</label> */}
           <input
@@ -133,7 +134,6 @@ const AdminRegisterForm = () => {
             <p className="text-red-400">{errors.password.message}</p>
           )}
         </div>
-
         <div>
           {/* <label className="block font-medium text-white">BA Key</label> */}
           <input
@@ -146,7 +146,6 @@ const AdminRegisterForm = () => {
             <p className="text-red-400">{errors.secretKey.message}</p>
           )}
         </div>
-
         <SubmitButton
           isSubmitting={isSubmitting || formSubmitting}
           type="Sign up"
