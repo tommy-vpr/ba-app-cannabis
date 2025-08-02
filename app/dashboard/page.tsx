@@ -1,19 +1,11 @@
 // app/dashboard/page.tsx
-import { ContactCardList } from "@/components/ContactCardList";
-import { EditContactModal } from "@/components/EditContactModal";
-import FilteringSystem from "@/components/FilteringSystem";
-import { PaginationControls } from "@/components/PaginationControls";
+
+import { CompanyList } from "../components/CompanyList";
 
 export default function DashboardPage() {
   return (
     <div className="p-4 w-full max-w-[1200px] mx-auto">
-      {/* <CompactSearchAndFilter /> */}
-      {/* <FilteringSystem /> */}
-      <div className="mt-4">
-        <ContactCardList />
-        {/* <EditContactModal /> */}
-        <PaginationControls />
-      </div>
+      <CompanyList />
     </div>
   );
 }

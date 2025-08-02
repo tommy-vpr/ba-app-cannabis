@@ -1,17 +1,9 @@
 // app/layout.tsx
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Providers } from "@/components/Providers";
-import { Toaster } from "react-hot-toast";
-import { getInitialDashboardData } from "@/app/actions/getInitialDashboardData";
-import { ContactProvider } from "@/context/ContactContext";
-import { EditContactModal } from "@/components/EditContactModal";
-import { LogMeetingModal } from "@/components/LogMeetingModal";
-import { cookies } from "next/headers";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
-import { redirect } from "next/navigation";
+import { Providers } from "./components/Providers";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({

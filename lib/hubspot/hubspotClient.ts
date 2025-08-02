@@ -1,15 +1,15 @@
+//hubspot client
 "use server";
 
-import { getHubspotCredentials } from "../getHubspotCredentials";
 import { hubspotLimiter } from "./bottleneck";
 
 export const hubspotRequest = async (
   path: string,
   method: "GET" | "POST" | "PATCH" | "DELETE" | "PUT" = "GET",
-  brand: "litto-cannabis" | "skwezed",
   data?: any
 ): Promise<any> => {
-  const { baseUrl, token } = getHubspotCredentials(brand);
+  const baseUrl = process.env.LITTO_HUBSPOT_API_BASE!;
+  const token = process.env.LITTO_HUBSPOT_ACCESS_TOKEN!;
 
   const performRequest = async () => {
     const res = await fetch(`${baseUrl}${path}`, {

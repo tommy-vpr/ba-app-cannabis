@@ -1,6 +1,6 @@
 "use client";
 
-import FormSwitcher from "@/components/FormSwitcher";
+import FormSwitcher from "@/app/components/FormSwitcher";
 import React, { useState } from "react";
 
 export default function Page() {
