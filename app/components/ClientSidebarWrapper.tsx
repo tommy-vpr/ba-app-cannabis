@@ -27,13 +27,7 @@ export function ClientSidebarWrapper({
       </AppSidebar>
 
       <SidebarInset>
-        <SiteHeader
-          user={{
-            name: "Tommy",
-            email: "tommy@example.com",
-            avatar: "",
-          }}
-        />
+        <SiteHeader />
         <main className="flex flex-col gap-6 w-full bg-muted/90 dark:bg-[#0d1117] min-h-screen items-start justify-start">
           {children}
         </main>

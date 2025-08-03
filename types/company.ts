@@ -1,3 +1,5 @@
+import { HubSpotContact } from "./hubspot";
+
 export type Company = {
   id: string;
   name: string;
@@ -8,12 +10,14 @@ export type Company = {
   zip?: string | null;
   county?: string | null;
   isBookmarked?: boolean;
-  contacts: {
-    id: string;
-    properties: {
-      firstname: string | null;
-      lastname: string | null;
-      email: string;
+  contacts: HubSpotContact[];
+};
+
+export type PaginatedCompaniesResponse = {
+  results: Company[];
+  paging?: {
+    next?: {
+      after: string;
     };
-  }[];
+  };
 };

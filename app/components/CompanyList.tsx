@@ -1,38 +1,71 @@
 "use client";
 
-import { Company } from "@/types/company";
-import { useEffect, useState } from "react";
-import { getCannabisCompaniesWithContacts } from "@/app/actions/getCompaniesWithContacts";
+import { useCannabisCompanies } from "@/context/CompanyContext";
+import { SkeletonCompanyList } from "@/app/components/skeleton/SkeletonCompanyList";
+import { MapPin, Bookmark, BookmarkCheck } from "lucide-react";
+import { Button } from "@/app/components/ui/button";
 
-import { MapPin } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export const CompanyList = () => {
-  const [companies, setCompanies] = useState<Company[]>([]);
+  const { companies, loading, hasNextPage, loadMore, toggleBookmark } =
+    useCannabisCompanies();
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      const data = await getCannabisCompaniesWithContacts(); // pass userEmail if needed in the action
-      setCompanies(data);
-    };
-
-    fetchCompanies();
-  }, []);
+  const pathname = usePathname();
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      {companies.map((company) => (
-        <div key={company.id} className="border rounded-lg p-4 shadow">
-          <h2 className="text-lg font-bold">{company.legal_business_name}</h2>
-          <p className="text-sm text-gray-500 flex items-center gap-1">
-            <span>
-              <MapPin size={14} />
-            </span>{" "}
-            <span>
-              {company.address}, {company.city}, {company.zip} {company.state}
-            </span>
-          </p>
-        </div>
-      ))}
+    <div className="space-y-4">
+      {loading && companies.length === 0 ? (
+        <SkeletonCompanyList />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {companies.map((company) => (
+              <Link
+                href={`${pathname}/companies/${company.id}`}
+                key={company.id}
+              >
+                <div className="border rounded-lg p-4 shadow bg-zinc-900 relative">
+                  <button
+                    onClick={() => toggleBookmark(company.id)}
+                    className="absolute top-2 right-2 text-yellow-400 hover:scale-110 transition-transform"
+                  >
+                    {company.isBookmarked ? (
+                      <BookmarkCheck size={20} />
+                    ) : (
+                      <Bookmark size={20} />
+                    )}
+                  </button>
+
+                  <h2 className="text-md mb-2 font-bold text-gray-200">
+                    {company.legal_business_name}
+                  </h2>
+                  <p className="text-xs text-gray-400 flex items-baseline gap-1">
+                    <MapPin size={14} />
+                    <span>
+                      {company.address}, {company.city}, {company.zip}{" "}
+                      {company.state}
+                    </span>
+                  </p>
+
+                  <div className="mt-2 px-3 py-1 rounded-full w-fit text-xs border border-blue-400 text-blue-400">
+                    Not Started
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {hasNextPage && (
+            <div className="flex justify-center">
+              <Button onClick={loadMore} disabled={loading}>
+                {loading ? "Loading..." : "Load More"}
+              </Button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

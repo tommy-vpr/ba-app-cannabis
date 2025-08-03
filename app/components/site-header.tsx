@@ -33,15 +33,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useTheme } from "next-themes";
 import SearchNavBar from "./SearchNavBar";
 
-export function SiteHeader({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function SiteHeader() {
   const { isMobile } = useSidebar();
   const { theme, setTheme } = useTheme();
 
@@ -51,6 +43,9 @@ export function SiteHeader({
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });
   };
+
+  const { data: session } = useSession();
+  const user = session?.user;
 
   return (
     <div className="sticky top-0 z-50">
@@ -88,17 +83,21 @@ export function SiteHeader({
                   <DropdownMenuLabel className="p-0 font-normal">
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                       <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src={user.avatar} alt="tommy" />
+                        <AvatarImage
+                          src={user?.image ?? ""}
+                          alt={user?.name ?? "User"}
+                        />
+
                         <AvatarFallback className="rounded-lg dark:bg-[#30363d]">
                           BA
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-medium capitalize">
-                          Tom
+                          {user?.name ?? "Unknown"}
                         </span>
                         <span className="text-muted-foreground truncate text-xs">
-                          Tom@gmail.com
+                          {user?.email ?? "No email"}
                         </span>
                       </div>
                     </div>

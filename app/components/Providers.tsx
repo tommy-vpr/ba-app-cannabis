@@ -5,6 +5,8 @@ import { SessionProvider } from "next-auth/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useEffect, useState } from "react";
 
+import { CannabisCompanyProvider } from "@/context/CompanyContext";
+
 export function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
@@ -13,14 +15,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider>
-      <NextThemesProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem
-        disableTransitionOnChange
-      >
-        {children}
-      </NextThemesProvider>
+      <CannabisCompanyProvider>
+        <NextThemesProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </NextThemesProvider>
+      </CannabisCompanyProvider>
     </SessionProvider>
   );
 }
