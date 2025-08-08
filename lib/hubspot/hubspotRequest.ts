@@ -1,6 +1,6 @@
 export async function hubspotRequest(
   url: string,
-  method: "GET" | "POST" = "GET",
+  method: "GET" | "PUT" | "PATCH" | "POST" = "GET",
   paramsOrBody?: Record<string, any>
 ): Promise<any> {
   const BASE_URL = process.env.LITTO_HUBSPOT_API_BASE!;
@@ -21,7 +21,7 @@ export async function hubspotRequest(
       .map((p: string) => `properties=${p}`)
       .join("&");
     fullUrl += `?${query}`;
-  } else if (method === "POST") {
+  } else if (["POST", "PATCH", "PUT"].includes(method)) {
     body = JSON.stringify(paramsOrBody);
   }
 

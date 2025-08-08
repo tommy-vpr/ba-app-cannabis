@@ -1,18 +1,14 @@
 // app/companies/[id]/page.tsx
 import { getCompanyById } from "@/app/actions/getCompanyById";
 import { notFound } from "next/navigation";
-import { MapPin } from "lucide-react";
-import { FaCircleUser } from "react-icons/fa6";
 
-import {
-  IconDeviceMobile,
-  IconMail,
-  IconMapPin,
-  IconPencil,
-  IconPlus,
-  IconUser,
-  IconUserFilled,
-} from "@tabler/icons-react";
+import { IconMapPin, IconPencil, IconPhone } from "@tabler/icons-react";
+import CreateNewContactButton from "@/app/components/CreateNewContactButton";
+import ContactCard from "./(components)/ContactCard"; // Update path as needed
+import { LeadStatusBadge } from "@/app/components/LeadStatusBadge";
+import { LeadStatus } from "@/types/company";
+
+import { formatUSPhoneNumber } from "@/lib/formatPhoneNumber";
 
 type Params = {
   id: string;
@@ -69,7 +65,7 @@ export default async function CompanyDetailPage({ params }: Props) {
     <div className="w-full max-w-[900px] mx-auto p-6 space-y-6">
       <div className="shadow-md shadow-gray-200 dark:shadow-black/30 flex flex-col md:flex-row rounded-md gap-8 p-6 border border-muted dark:border-[#30363d] bg-white dark:bg-[#161b22]">
         <div
-          className="hidden h-36 w-36 rounded-full md:flex m-auto items-center justify-center text-4xl md:text-[48px] 
+          className="hidden h-36 w-36 rounded-full md:flex m-auto items-center justify-center text-4xl md:text-[48px]
         font-bold uppercase transition-all duration-300 ease-in-out"
           style={{ backgroundColor: bg, color: text }}
         >
@@ -77,30 +73,25 @@ export default async function CompanyDetailPage({ params }: Props) {
         </div>
 
         <div className="flex-1">
-          <h3 className="dark:text-white font-bold text-2xl uppercase">
+          <h3 className="text-zinc-800 dark:text-white font-bold text-2xl uppercase">
             {company?.legal_business_name}
           </h3>
 
-          <div className="mt-1 flex items-center gap-2">
-            <div className="mt-2 px-3 py-1 rounded-full w-fit text-xs border border-blue-400 text-blue-400">
-              Not Started
-            </div>
+          <div className="my-3 flex items-center gap-2">
+            <LeadStatusBadge status={company.lead_status_l2 as LeadStatus} />
             <IconPencil className="text-gray-400 cursor-pointer" />
           </div>
-
-          {/* Email */}
-          {/* <div className="flex items-center gap-2 mt-4 dark:text-gray-300">
-            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-[#212830] dark:hover:bg-zinc-700 transition">
-              <IconMail size={18} />
-            </div>
-          </div> */}
 
           {/* Phone */}
           <div className="flex items-center gap-2 dark:text-gray-300 my-1">
             <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-[#212830] dark:hover:bg-zinc-700 transition">
-              <IconDeviceMobile size={18} />
+              <IconPhone size={18} />
             </div>
-            888.555.999
+            {formatUSPhoneNumber(company.phone) ? (
+              <span>{formatUSPhoneNumber(company.phone)}</span>
+            ) : (
+              <span className="text-gray-400 italic">Not Available</span>
+            )}
           </div>
 
           {/* Address */}
@@ -110,97 +101,29 @@ export default async function CompanyDetailPage({ params }: Props) {
             </div>
             {fullAddress}
           </div>
-
-          <div className="flex flex-col md:flex-row gap-2 items-center">
-            <button
-              className="cursor-pointer text-sm text-center w-full md:w-fit mt-6 px-4 py-2 border border-black hover:bg-black hover:text-white dark:border-gray-100 
-              dark:bg-gray-100 dark:text-black md:dark:text-gray-100 md:dark:hover:bg-gray-100 md:dark:bg-transparent md:dark:hover:text-black rounded transition duration-200 flex items-center gap-1 justify-center"
-            >
-              <IconPencil size={18} /> Edit Contact
-            </button>
-
-            <button
-              className="text-black md:dark:text-green-400 md:dark:bg-transparent md:dark:hover:bg-green-400 dark:hover:text-black text-center w-full md:w-fit group 
-            cursor-pointer text-sm mt-1 md:mt-6 px-4 py-2 border border-green-400 rounded transition duration-200 flex items-center justify-center gap-1"
-            >
-              <span className="transition-transform duration-500 transform group-hover:rotate-[180deg]">
-                <IconPlus size={18} />
-              </span>
-              Log Meeting
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* <h1 className="text-3xl font-bold text-gray-100">
-        {company.legal_business_name}
-      </h1>
-      <p className="text-gray-400 flex items-center gap-2">
-        <MapPin size={16} />
-        {company.address}, {company.city}, {company.state} {company.zip}
-      </p> */}
-
-      {/* <div>
-        <h2 className="text-xl font-semibold text-gray-200 mb-2">
-          Company Info
-        </h2>
-        <ul className="text-gray-300 space-y-1">
-          <li>
-            <strong>Name:</strong> {company.name}
-          </li>
-          <li>
-            <strong>Legal Name:</strong> {company.legal_business_name}
-          </li>
-          <li>
-            <strong className="text-green-500">Address:</strong>{" "}
-            {company.address}
-          </li>
-          <li>
-            <strong>City:</strong> {company.city}
-          </li>
-          <li>
-            <strong>State:</strong> {company.state}
-          </li>
-          <li>
-            <strong>ZIP:</strong> {company.zip}
-          </li>
-          <li>
-            <strong>County:</strong> {company.county}
-          </li>
-        </ul>
-      </div> */}
-
-      {company.contacts?.length > 0 && (
+      {company.contacts?.length > 0 ? (
         <div>
-          <h2 className="text-xl font-semibold text-gray-200 mb-2">
+          <h2 className="text-xl font-semibold text-zinc-800 dark:text-gray-200 mb-2">
             Associated Contacts
           </h2>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {company.contacts.map((contact) => (
-              <li
-                key={contact.id}
-                className="h-full flex flex-col md:flex-row shadow-md shadow-gray-200 dark:shadow-black/30 rounded-md gap-4 p-6 border border-muted dark:border-[#30363d] bg-white dark:bg-[#161b22]"
-              >
-                <FaCircleUser size={24} />
-                <div className="flex">
-                  <div className="flex flex-col gap-2">
-                    <h3>
-                      {contact.properties.firstname}{" "}
-                      {contact.properties.lastname}
-                    </h3>
-                    <span className="text-blue-400 flex items-center gap-1 text-sm">
-                      <IconMail size={16} />
-                      {contact.properties.email
-                        ? contact.properties.email
-                        : "N/A"}
-                    </span>
-                  </div>
-                </div>
-              </li>
+              <ContactCard key={contact.id} contact={contact} />
             ))}
           </ul>
         </div>
+      ) : (
+        <div className="mt-4 flex flex-col gap-2">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            No associated contacts.
+          </p>
+        </div>
       )}
+
+      <CreateNewContactButton companyId={company.id} />
     </div>
   );
 }

@@ -12,6 +12,8 @@ export async function getCompanyById(id: string): Promise<Company | null> {
     "city",
     "state",
     "county",
+    "phone",
+    "lead_status_l2",
   ].join(",");
 
   const res = await hubspotRequest(
@@ -34,7 +36,14 @@ export async function getCompanyById(id: string): Promise<Company | null> {
       "/crm/v3/objects/contacts/batch/read",
       "POST",
       {
-        properties: ["firstname", "lastname", "email"],
+        properties: [
+          "firstname",
+          "lastname",
+          "email",
+          "address",
+          "phone",
+          "jobtitle",
+        ],
         inputs: contactIds.map((id: string) => ({ id })),
       }
     );
@@ -44,6 +53,8 @@ export async function getCompanyById(id: string): Promise<Company | null> {
   return {
     id: res.id,
     name: res.properties.name,
+    phone: res.properties.phone,
+    lead_status_l2: res.properties.lead_status_l2,
     legal_business_name: res.properties.legal_business_name,
     zip: res.properties.zip,
     address: res.properties.address,

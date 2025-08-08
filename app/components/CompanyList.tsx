@@ -6,65 +6,92 @@ import { MapPin, Bookmark, BookmarkCheck } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { LeadStatusBadge } from "./LeadStatusBadge";
+import { LeadStatus } from "@/types/company";
 
 export const CompanyList = () => {
-  const { companies, loading, hasNextPage, loadMore, toggleBookmark } =
+  const { companies, loading, page, goToPage, hasNextPage, toggleBookmark } =
     useCannabisCompanies();
 
+  const router = useRouter();
   const pathname = usePathname();
+
+  console.log(companies);
 
   return (
     <div className="space-y-4">
-      {loading && companies.length === 0 ? (
+      {loading ? (
         <SkeletonCompanyList />
+      ) : companies.length === 0 ? (
+        <p className="text-center text-gray-400 mt-6">
+          No company assigned yet
+        </p>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {companies.map((company) => (
-              <Link
-                href={`${pathname}/companies/${company.id}`}
+              <div
                 key={company.id}
+                onClick={() =>
+                  router.push(`${pathname}/companies/${company.id}`)
+                }
+                className="group cursor-pointer hover:-translate-y-0.5 duration-150 relative p-4 rounded-md shadow-md shadow-gray-200 
+                dark:shadow-black/30 hover:shadow-lg transition h-full flex flex-col gap-2 bg-white dark:bg-[#161b22] dark:border dark:border-[#30363d]"
               >
-                <div className="border rounded-lg p-4 shadow bg-zinc-900 relative">
-                  <button
-                    onClick={() => toggleBookmark(company.id)}
-                    className="absolute top-2 right-2 text-yellow-400 hover:scale-110 transition-transform"
-                  >
-                    {company.isBookmarked ? (
-                      <BookmarkCheck size={20} />
-                    ) : (
-                      <Bookmark size={20} />
-                    )}
-                  </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleBookmark(company.id);
+                  }}
+                  className="absolute top-2 right-2 text-yellow-400 hover:scale-110 transition-transform"
+                >
+                  {company.isBookmarked ? (
+                    <BookmarkCheck size={20} />
+                  ) : (
+                    <Bookmark size={20} />
+                  )}
+                </button>
 
-                  <h2 className="text-md mb-2 font-bold text-gray-200">
-                    {company.legal_business_name}
-                  </h2>
-                  <p className="text-xs text-gray-400 flex items-baseline gap-1">
-                    <MapPin size={14} />
-                    <span>
-                      {company.address}, {company.city}, {company.zip}{" "}
-                      {company.state}
-                    </span>
-                  </p>
+                <h2 className="text-md mb-2 font-bold text-zinc-600 dark:text-gray-200">
+                  {company.legal_business_name}
+                </h2>
+                <p className="text-xs text-gray-400 flex items-baseline gap-1">
+                  <MapPin size={14} />
+                  <span>
+                    {company.address}, {company.city}, {company.zip}{" "}
+                    {company.state}
+                  </span>
+                </p>
 
-                  <div className="mt-2 px-3 py-1 rounded-full w-fit text-xs border border-blue-400 text-blue-400">
-                    Not Started
-                  </div>
-                </div>
-              </Link>
+                <LeadStatusBadge
+                  status={company.lead_status_l2 as LeadStatus}
+                />
+              </div>
             ))}
           </div>
-
-          {hasNextPage && (
-            <div className="flex justify-center">
-              <Button onClick={loadMore} disabled={loading}>
-                {loading ? "Loading..." : "Load More"}
-              </Button>
-            </div>
-          )}
         </>
+      )}
+      {companies.length > 12 && (
+        <div className="flex justify-center gap-4 mt-6">
+          <Button
+            onClick={() => goToPage(page - 1)}
+            disabled={page === 1 || loading}
+            className="bg-white text-zinc-800 hover:bg-gray-300 transition duration-200"
+          >
+            Previous
+          </Button>
+          <span className="text-zinc-800 dark:text-gray-200 text-sm mt-2">
+            Page {page}
+          </span>
+          <Button
+            onClick={() => goToPage(page + 1)}
+            disabled={!hasNextPage || loading}
+            className="bg-white text-zinc-800 hover:bg-gray-300 transition duration-200"
+          >
+            Next
+          </Button>
+        </div>
       )}
     </div>
   );

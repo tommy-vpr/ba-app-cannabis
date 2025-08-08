@@ -6,7 +6,12 @@ import { getCannabisCompaniesPaginated } from "@/app/actions/getCannabisCompanie
 
 interface CannabisCompanyContextValue {
   companies: Company[];
+  filteredCompanies: Company[];
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
   loading: boolean;
+  page: number;
+  goToPage: (page: number) => Promise<void>;
   loadMore: () => Promise<void>;
   hasNextPage: boolean;
   refreshCompanies: () => Promise<void>;
@@ -33,24 +38,40 @@ export const useCannabisCompanies = () => {
 
 export const CannabisCompanyProvider = ({
   children,
+  userEmail,
 }: {
   children: React.ReactNode;
+  userEmail: string;
 }) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
-  const [afterCursor, setAfterCursor] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [cursors, setCursors] = useState<Record<number, string | null>>({
+    1: null,
+  });
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([]);
 
-  const fetchCompanies = async (after: string | null = null) => {
+  const fetchCompaniesForPage = async (pageNumber: number) => {
+    if (!userEmail) return;
+
     setLoading(true);
     try {
+      const after = cursors[pageNumber] ?? null;
       const { companies: fetchedCompanies, nextCursor } =
-        await getCannabisCompaniesPaginated(10, after || undefined);
-      setCompanies((prev) =>
-        after ? [...prev, ...fetchedCompanies] : fetchedCompanies
-      );
-      setAfterCursor(nextCursor);
+        await getCannabisCompaniesPaginated(12, after || undefined, userEmail);
+
+      setCompanies(fetchedCompanies);
       setHasNextPage(!!nextCursor);
+      setPage(pageNumber);
+
+      if (nextCursor) {
+        setCursors((prev) => ({
+          ...prev,
+          [pageNumber + 1]: nextCursor,
+        }));
+      }
     } catch (err) {
       console.error("Failed to fetch companies", err);
     } finally {
@@ -59,18 +80,19 @@ export const CannabisCompanyProvider = ({
   };
 
   const refreshCompanies = async () => {
-    await fetchCompanies(null);
+    setCursors({ 1: null });
+    await fetchCompaniesForPage(1);
   };
 
-  const loadMore = async () => {
-    if (afterCursor) {
-      await fetchCompanies(afterCursor);
-    }
+  const goToPage = async (pageNumber: number) => {
+    if (pageNumber === page) return;
+    await fetchCompaniesForPage(pageNumber);
   };
 
   useEffect(() => {
-    refreshCompanies();
-  }, []);
+    if (!userEmail) return;
+    fetchCompaniesForPage(1);
+  }, [userEmail]); // Only run when userEmail becomes available
 
   const toggleBookmark = (companyId: string) => {
     setCompanies((prev) =>
@@ -79,6 +101,18 @@ export const CannabisCompanyProvider = ({
       )
     );
   };
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredCompanies([]);
+      return;
+    }
+
+    const q = searchQuery.toLowerCase();
+    const matches = companies.filter((c) => c.name.toLowerCase().includes(q));
+
+    setFilteredCompanies(matches);
+  }, [searchQuery, companies]);
 
   const updateContact = (
     companyId: string,
@@ -104,11 +138,16 @@ export const CannabisCompanyProvider = ({
       value={{
         companies,
         loading,
-        loadMore,
+        loadMore: () => goToPage(page + 1),
         hasNextPage,
         refreshCompanies,
         toggleBookmark,
         updateContact,
+        page,
+        goToPage,
+        searchQuery,
+        setSearchQuery,
+        filteredCompanies,
       }}
     >
       {children}

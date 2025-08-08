@@ -3,6 +3,7 @@ export type HubSpotContact = {
   properties: {
     firstname?: string;
     lastname?: string;
+    jobtitle?: string;
     email?: string;
     company?: string;
     phone?: string;
@@ -14,9 +15,20 @@ export type HubSpotContact = {
   };
 };
 
+export type EditableContact = {
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  address?: string;
+  jobtitle?: string;
+};
+
 export type MeetingLog = {
   id: string;
-  date: string;
-  notes: string;
-  createdBy: string;
+  title: string;
+  createdAt: string;
+  notes?: string;
+  status?: string;
 };

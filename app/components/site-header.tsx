@@ -64,6 +64,7 @@ export function SiteHeader() {
             </div>
 
             <div className="ml-auto flex items-center gap-2">
+              <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton
@@ -112,16 +113,6 @@ export function SiteHeader() {
                         Account
                       </DropdownMenuItem>
                     </Link>
-
-                    <DropdownMenuItem className="cursor-pointer">
-                      <IconClipboardText />
-                      LITTO
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem className="cursor-pointer">
-                      <IconClipboardText />
-                      Skwezed
-                    </DropdownMenuItem>
                   </DropdownMenuGroup>
 
                   <DropdownMenuSeparator />
