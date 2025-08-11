@@ -6,13 +6,13 @@ import {
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@/app/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
+} from "@/app/components/ui/popover";
+import { Button } from "@/app/components/ui/button";
 import { Check, ChevronDown } from "lucide-react";
 
 interface ComboboxProps {
