@@ -56,10 +56,10 @@ export function NavMain({
             Home
           </Link>
           <Link
-            href="/dashboard/saved-contacts"
+            href="/dashboard/priority"
             className={clsx(
               "flex items-center gap-2 p-2 transition-colors",
-              pathname === "/dashboard/saved-contacts" &&
+              pathname === "/dashboard/priority" &&
                 "dark:bg-[#161b22] dark:border-[#30363d] border border-gray-200 bg-gray-100 rounded-sm"
             )}
           >

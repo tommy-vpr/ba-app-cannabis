@@ -29,6 +29,7 @@ export default async function RootLayout({
       >
         <Providers>
           <Toaster position="top-center" />
+
           {children}
         </Providers>
       </body>

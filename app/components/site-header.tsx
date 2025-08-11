@@ -32,6 +32,7 @@ import { signOut, useSession } from "next-auth/react";
 import { ThemeToggle } from "./ThemeToggle";
 import { useTheme } from "next-themes";
 import SearchNavBar from "./SearchNavBar";
+import { LeadStatusFilter } from "./LeadStatusFilter";
 
 export function SiteHeader() {
   const { isMobile } = useSidebar();
@@ -39,6 +40,7 @@ export function SiteHeader() {
 
   const pathname = usePathname();
   const pageHeader = pathname.split("/dashboard/")[1];
+  const showLeadFilter = pathname.replace(/\/+$/, "") === "/dashboard"; // exact match, ignore trailing slash
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });
@@ -50,7 +52,10 @@ export function SiteHeader() {
   return (
     <div className="sticky top-0 z-50">
       <div className="flex flex-col">
-        <header className="p-[6px] bg-background dark:bg-[#06070a] flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height]">
+        <header
+          className="p-[6px] bg-background dark:bg-[#06070a] flex h-[--header-height] 
+        shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height]"
+        >
           <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
             <SidebarTrigger className="-ml-1" />
             <Separator
@@ -133,6 +138,8 @@ export function SiteHeader() {
           <SearchNavBar />
         </div>
       </div>
+      {/* If you also render it below the header, guard it too */}
+      {showLeadFilter && <LeadStatusFilter />}
     </div>
   );
 }

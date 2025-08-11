@@ -9,6 +9,7 @@ import { LeadStatusBadge } from "@/app/components/LeadStatusBadge";
 import { LeadStatus } from "@/types/company";
 
 import { formatUSPhoneNumber } from "@/lib/formatPhoneNumber";
+import EditCompanyModal from "@/app/components/EditCompanyModal";
 
 type Params = {
   id: string;
@@ -79,7 +80,8 @@ export default async function CompanyDetailPage({ params }: Props) {
 
           <div className="my-3 flex items-center gap-2">
             <LeadStatusBadge status={company.lead_status_l2 as LeadStatus} />
-            <IconPencil className="text-gray-400 cursor-pointer" />
+            {/* <IconPencil className="text-gray-400 cursor-pointer" /> */}
+            <EditCompanyModal company={company} />
           </div>
 
           {/* Phone */}

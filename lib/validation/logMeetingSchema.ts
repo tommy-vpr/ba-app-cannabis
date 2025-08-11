@@ -8,6 +8,7 @@ export const logMeetingSchema = z.object({
   // l2Status: z.enum(["Visited", "Dropped Off"], {
   //   errorMap: () => ({ message: "Status is required" }),
   // }),
+  leadStatusL2: z.enum(["Visited", "Dropped Off", "Not Started"]), // ⬅️ add this
 });
 
 export type LogMeetingFormValues = z.infer<typeof logMeetingSchema>;

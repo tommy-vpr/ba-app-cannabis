@@ -21,16 +21,8 @@ export function AppSidebar({
 }: React.ComponentProps<typeof Sidebar> & {
   children?: React.ReactNode;
 }) {
-  // const { setQuery, setSelectedZip, setSelectedStatus } = useContactContext();
   const pathname = usePathname();
 
-  // const handleReset = () => {
-  //   setQuery("");
-  //   setSelectedZip(null);
-  //   setSelectedStatus("all");
-  // };
-
-  // Check if path matches /dashboard/contacts/[zip] format
   const isZipContactRoute = /^\/dashboard\/(contacts|zipcodes)\/[^/]+$/.test(
     pathname
   );

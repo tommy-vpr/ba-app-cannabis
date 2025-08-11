@@ -61,12 +61,15 @@ export default async function ContactDetailPage({ params }: Props) {
         <div className="flex-1">
           <h3 className="leading-none mb-4 text-zinc-800 dark:text-white font-bold text-2xl flex flex-col gap-1">
             {contact.firstname} {contact.lastname}
-            <span
+            <span className="text-xs text-zinc-500 dark:text-gray-400 tracking-wide font-light">
+              {contact.jobtitle}
+            </span>
+            {/* <span
               className="text-xs text-gray-200 flex items-center gap-1 px-3 py-1
             bg-zinc-700 rounded-4xl w-fit leading-none"
             >
               {contact.jobtitle}
-            </span>
+            </span> */}
           </h3>
 
           <div className="flex items-center gap-2 dark:text-gray-300 my-1">

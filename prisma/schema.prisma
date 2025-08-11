@@ -29,3 +29,16 @@ model SavedCompany {
   @@unique([userId, companyId])
 }
 
+model Bookmark {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   // your NextAuth user id (string for Mongo)
+  companyId     String   // HubSpot company ID (e.g. "1234567890")
+  companyName   String   // snapshot for quick rendering
+  companyCity   String?
+  companyState  String?
+  companyZip    String?
+  companyStatus String?
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, companyId]) // 1 bookmark per user/company
+}
