@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  IconClipboardText,
-  IconCreditCard,
-  IconDotsVertical,
-  IconLogout,
-  IconNotification,
-  IconUserCircle,
-} from "@tabler/icons-react";
-
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import {
   Avatar,
   AvatarFallback,
@@ -29,26 +22,22 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/app/components/ui/sidebar";
-import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
-import clsx from "clsx";
-import { useTheme } from "next-themes";
+import {
+  IconClipboardText,
+  IconDotsVertical,
+  IconLogout,
+} from "@tabler/icons-react";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function NavUser() {
   const { isMobile } = useSidebar();
+  const { data: session } = useSession();
 
-  const { theme, setTheme } = useTheme();
+  const name = session?.user?.name ?? "Unknown User";
+  const email = session?.user?.email ?? "No email";
+  const avatar = (session?.user as any)?.avatar ?? ""; // if you have avatar in session
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/" }); // 👈 optional redirect after sign out
+    await signOut({ callbackUrl: "/" });
   };
 
   return (
@@ -62,10 +51,10 @@ export function NavUser({
             >
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium capitalize text-white">
-                  Tom
+                  {name}
                 </span>
                 <span className="truncate text-xs text-muted-foreground">
-                  Tom@gmail.com
+                  {email}
                 </span>
               </div>
               <IconDotsVertical className="ml-auto size-4" />
@@ -80,13 +69,17 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt="tommy" />
-                  <AvatarFallback className="rounded-lg">BA</AvatarFallback>
+                  <AvatarImage src={avatar} alt={name} />
+                  <AvatarFallback className="rounded-lg">
+                    {name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium capitalize">Tom</span>
+                  <span className="truncate font-medium capitalize">
+                    {name}
+                  </span>
                   <span className="text-muted-foreground truncate text-xs">
-                    Tom@gmail.com
+                    {email}
                   </span>
                 </div>
               </div>
