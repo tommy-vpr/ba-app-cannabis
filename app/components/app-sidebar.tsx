@@ -58,13 +58,7 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter className={`dark:bg-[#06070a]`}>
-        <NavUser
-          user={{
-            name: "Tom",
-            email: "default@vpr.com",
-            avatar: "/avatars/shadcn.jpg",
-          }}
-        />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );
