@@ -129,29 +129,46 @@ export function LogMeetingForm({
             <FormItem>
               <FormLabel>Sample Status</FormLabel>
               <FormControl>
-                <RadioGroup
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  className="grid grid-cols-1 sm:grid-cols-3 gap-3"
-                >
-                  <label className="flex items-center gap-2 rounded-md border p-2 cursor-pointer">
-                    <RadioGroupItem value="Visited" id="status-visited" />
-                    <span>Visited</span>
-                  </label>
+                <fieldset className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <legend className="sr-only">Status</legend>
 
-                  <label className="flex items-center gap-2 rounded-md border p-2 cursor-pointer">
-                    <RadioGroupItem value="Dropped Off" id="status-dropped" />
-                    <span>Dropped Off</span>
-                  </label>
-
-                  <label className="flex items-center gap-2 rounded-md border p-2 cursor-pointer">
-                    <RadioGroupItem
-                      value="Not Started"
-                      id="status-notstarted"
-                    />
-                    <span>Not Started</span>
-                  </label>
-                </RadioGroup>
+                  {[
+                    {
+                      label: "Visited",
+                      value: "Visited",
+                      id: "status-visited",
+                    },
+                    {
+                      label: "Dropped Off",
+                      value: "Dropped Off",
+                      id: "status-dropped",
+                    },
+                    {
+                      label: "Not Started",
+                      value: "Not Started",
+                      id: "status-notstarted",
+                    },
+                  ].map((opt, i) => (
+                    <label
+                      key={opt.value}
+                      htmlFor={opt.id}
+                      className="flex items-center gap-2 rounded-md border p-2 cursor-pointer"
+                    >
+                      <input
+                        id={opt.id}
+                        type="radio"
+                        name={field.name}
+                        value={opt.value}
+                        checked={field.value === opt.value}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onBlur={field.onBlur}
+                        ref={i === 0 ? field.ref : undefined} // attach ref to one input
+                        className="h-4 w-4 accent-green-400" // style as you like
+                      />
+                      <span>{opt.label}</span>
+                    </label>
+                  ))}
+                </fieldset>
               </FormControl>
               <FormMessage />
             </FormItem>

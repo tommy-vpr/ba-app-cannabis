@@ -1,4 +1,5 @@
 import { hubspotRequest } from "@/lib/hubspot/hubspotClient";
+import { MeetingLog } from "@/types/contact";
 
 export async function getContactByIdWithCompanyAndMeetings(contactId: string) {
   // Step 1: Fetch contact properties
@@ -82,12 +83,17 @@ export async function getContactByIdWithCompanyAndMeetings(contactId: string) {
       }
     );
 
-    meetings = meetingBatchRes.results.map((m: any) => ({
-      id: m.id,
-      title: `Meeting note with ${contact.firstname} ${contact.lastname}`,
-      notes: m.properties.hs_body_preview ?? "",
-      createdAt: m.properties.hs_timestamp ?? "",
-    }));
+    meetings = meetingBatchRes.results
+      .map((m: any) => ({
+        id: m.id,
+        title: `Meeting note with ${contact.firstname} ${contact.lastname}`,
+        notes: m.properties.hs_body_preview ?? "",
+        createdAt: m.properties.hs_timestamp ?? "",
+      }))
+      .sort(
+        (a: MeetingLog, b: MeetingLog) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
   }
 
   return {
