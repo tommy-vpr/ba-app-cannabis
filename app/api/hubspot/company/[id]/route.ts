@@ -4,9 +4,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const company = await getCompanyById(params.id);
+  const { id } = await context.params;
+  const company = await getCompanyById(id);
   if (!company) return new NextResponse("Company not found", { status: 404 });
   return NextResponse.json(company);
 }
