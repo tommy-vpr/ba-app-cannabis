@@ -29,7 +29,7 @@ export default async function BookmarksPage() {
         Priority Companies
       </h1>
 
-      <BookmarkGrid initial={initial} />
+      <BookmarkGrid />
     </div>
   );
 }
